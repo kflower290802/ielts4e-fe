@@ -15,3 +15,6 @@ export interface IUserSignInResponse {
   refreshToken: string;
   tokenExpires: number;
 }
+export interface IUserLogout {
+  refreshToken: string;
+}

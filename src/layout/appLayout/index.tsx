@@ -14,9 +14,11 @@ export default function Layout() {
       )}
     >
       <Sidebar />
-      <div className="flex-1 ml-64">
+      <div className="flex flex-col flex-1 ml-64 h-screen">
         <Header />
-        <Outlet />
+        <div className="flex-1 overflow-auto">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

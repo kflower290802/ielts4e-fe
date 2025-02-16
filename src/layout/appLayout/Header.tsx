@@ -5,12 +5,26 @@ import { Route } from "@/constant/route";
 import { useAuthStore } from "@/store/auth";
 import { getStorage } from "@/utils/storage";
 import { Search } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Link } from "react-router-dom";
+import { useLogout } from "./hooks/useLogOut";
 const Header = () => {
   const { isAuthenticated } = useAuthStore();
+  const { mutateAsync: logOut } = useLogout();
   const userName = getStorage("userName");
+  const handleLogout = async() => {
+    await logOut();
+  }
   return (
-    <div className="flex items-center h-24 justify-between bg-white sticky top-0 right-0 left-64 z-50 shadow-lg p-10">
+    <div className="flex items-center h-24 justify-between bg-white sticky top-0 right-0 left-64 z-40 shadow-lg p-10">
       <div className="flex items-center flex-1">
         <div className="relative w-4/5">
           <Input
@@ -31,12 +45,31 @@ const Header = () => {
               <span>VIP</span>
             </div>
           </div>
-          <Link to={Route.Home}>
-            <Avatar className="w-12 h-12">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </Link>
+          <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="w-12 h-12">
+                  <AvatarImage
+                    src='https://img.freepik.com/premium-vector/man-empty-avatar-casual-business-style-vector-photo-placeholder-social-networks-resumes_885953-434.jpg?w=360'
+                    alt="Avatar"
+                    className="object-cover"
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-40 bg-white text-text">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <Link to="/profile">
+                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                  </Link>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
         </div>
       ) : (
         <div className="flex items-center gap-4">

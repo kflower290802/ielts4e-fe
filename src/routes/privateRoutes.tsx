@@ -1,7 +1,9 @@
 import { Route } from "@/constant/route";
-import Home from "@/features/Home";
 import HomeUser from "@/features/HomeUser";
-import Layout from "@/layout";
+import { Exam } from "@/features/Exam";
+import Layout from "@/layout/appLayout";
+import ExerciseLayout from "@/layout/exerciseLayout";
+import ReadingTest from "@/features/ReadingTest";
 
 export const privateRoutes = [
   {
@@ -11,7 +13,20 @@ export const privateRoutes = [
         element: <HomeUser />,
         path: Route.Home,
       },
+      {
+        element: <Exam />,
+        path: Route.Exam,
+      },
     ],
   },
-  ];
-  
+  {
+    element: <ExerciseLayout />,
+    children: [
+      {
+        element: <ReadingTest />,
+        path: Route.ReadingTest,
+      },
+    ],
+  },
+
+];
