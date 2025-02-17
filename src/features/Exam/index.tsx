@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -162,31 +161,60 @@ export function Exam() {
             </TabsContent>
           ))}
         </Tabs>
-        {(data?.data ?? []).length < 8 ? (
-          ""
-        ) : (
+        {data?.pages && data.pages > 1 && (
           <div className="mt-4 flex items-center justify-center gap-2">
             <Pagination>
               <PaginationContent>
+                {/* Nút Previous */}
                 <PaginationItem>
-                  <PaginationPrevious href="#" />
+                  <PaginationPrevious
+                    onClick={() => {
+                      setParams((prev) => ({
+                        ...prev,
+                        page: (data.page ?? 1) - 1,
+                      }));
+                    }}
+                    className={
+                      data.page === 1 ? "opacity-50 pointer-events-none" : ""
+                    }
+                  />
                 </PaginationItem>
+
+                {/* Danh sách số trang */}
+                {Array.from(
+                  { length: data.pages },
+                  (_, index) => index + 1
+                ).map((page) => (
+                  <PaginationItem
+                    key={page}
+                    onClick={() => {
+                      setParams((prev) => ({
+                        ...prev,
+                        page: page,
+                      }));
+                    }}
+                  >
+                    <PaginationLink isActive={page === data.page}>
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                {/* Nút Next */}
                 <PaginationItem>
-                  <PaginationLink href="#">1</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#" isActive>
-                    2
-                  </PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">3</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href="#" />
+                  <PaginationNext
+                    onClick={() => {
+                      setParams((prev) => ({
+                        ...prev,
+                        page: (data.page ?? 1) + 1,
+                      }));
+                    }}
+                    className={
+                      data.page === data.pages
+                        ? "opacity-50 pointer-events-none"
+                        : ""
+                    }
+                  />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>

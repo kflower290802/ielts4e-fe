@@ -13,7 +13,10 @@ export interface IExcercise {
       status: StatusExcercise
     }
   ];
-  hasNextPage: true;
+  pages?: number;
+  page?: number;
+  limit?: 10;
+  total?: number;
 }
 export enum TypeExcercise {
     Reading = "reading",
