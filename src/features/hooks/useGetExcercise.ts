@@ -14,7 +14,7 @@ export const useGetExcercise = ({
 }: IRequestExcercise) => {
   const { data, error, isLoading, refetch } = useQuery<IExcercise, Error>({
     queryKey: ["getExcercise"],
-    queryFn: () => getExcercise({ ...rest, page, limit }),
+    queryFn: () => getExcercise({ ...rest, page, limit, type }),
   });
   return { data, error, isLoading, refetch };
 };

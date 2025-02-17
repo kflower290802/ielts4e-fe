@@ -4,6 +4,8 @@ import { Exam } from "@/features/Exam";
 import Layout from "@/layout/appLayout";
 import ExerciseLayout from "@/layout/exerciseLayout";
 import ReadingTest from "@/features/ReadingTest";
+import { Practice } from "@/features/Practice";
+import Learn from "@/features/Learn";
 
 export const privateRoutes = [
   {
@@ -16,6 +18,14 @@ export const privateRoutes = [
       {
         element: <Exam />,
         path: Route.Exam,
+      },
+      {
+        element: <Practice />,
+        path: Route.Practice,
+      },
+      {
+        element: <Learn />,
+        path: Route.Learn,
       },
     ],
   },

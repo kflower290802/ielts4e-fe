@@ -15,6 +15,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
 export default function Page() {
   const userName = getStorage("userName");
   const recentWork: LearningCard[] = [
@@ -80,9 +81,9 @@ export default function Page() {
         />
       </div>
 
-      <main className="space-y-8">
-        <section>
-          <h2 className="mb-4 text-lg font-semibold">BÀI LÀM GẦN ĐÂY</h2>
+      <main className="flex justify-between items-center gap-10">
+        <div className="bg-white p-5">
+          <h2 className="mb-4 text-lg font-semibold">RECENT WORK</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {recentWork.map((item, index) => (
               <div
@@ -93,9 +94,7 @@ export default function Page() {
                   <img
                     src={item.image || "/placeholder.svg"}
                     alt={item.title}
-                    width={400}
-                    height={200}
-                    className="h-48 w-full object-cover"
+                    className="h-24 w-full object-cover"
                   />
                   {item.date && (
                     <span className="absolute left-2 top-2 rounded bg-white/80 px-2 py-1 text-sm">
@@ -103,11 +102,11 @@ export default function Page() {
                     </span>
                   )}
                 </div>
-                <div className="p-4">
-                  <h3 className="mb-4 line-clamp-2 text-sm">{item.title}</h3>
-                  <button className="rounded-full border border-blue-600 px-6 py-1 text-sm text-blue-600 hover:bg-blue-50">
-                    {item.buttonText}
-                  </button>
+                <div className="p-3 flex flex-col items-center">
+                  <h3 className="mb-4 text-sm line-clamp-2">{item.title}</h3>
+                  <Button className="border-2 border-[#164C7E] bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]">
+                    REVIEW
+                  </Button>
                 </div>
               </div>
             ))}
@@ -138,10 +137,10 @@ export default function Page() {
               </PaginationContent>
             </Pagination>
           </div>
-        </section>
+        </div>
 
-        <section>
-          <h2 className="mb-4 text-lg font-semibold">GỢI Ý CHO BẠN</h2>
+        <div className="bg-white p-5">
+          <h2 className="mb-4 text-lg font-semibold">SUGGESTIONS FOR YOU</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {suggestions.map((item, index) => (
               <div
@@ -152,9 +151,7 @@ export default function Page() {
                   <img
                     src={item.image || "/placeholder.svg"}
                     alt={item.title}
-                    width={400}
-                    height={200}
-                    className="h-48 w-full object-cover"
+                    className="h-24 w-full object-cover"
                   />
                   {item.questions && (
                     <span className="absolute left-2 top-2 rounded bg-white/80 px-2 py-1 text-sm">
@@ -162,11 +159,11 @@ export default function Page() {
                     </span>
                   )}
                 </div>
-                <div className="p-4">
-                  <h3 className="mb-4 line-clamp-2 text-sm">{item.title}</h3>
-                  <button className="rounded-full bg-blue-600 px-6 py-1 text-sm text-white hover:bg-blue-700">
-                    {item.buttonText}
-                  </button>
+                <div className="p-3 flex flex-col items-center">
+                  <h3 className="mb-4 text-sm line-clamp-2">{item.title}</h3>
+                  <Button className="border-2 border-[#164C7E] bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]">
+                    START
+                  </Button>
                 </div>
               </div>
             ))}
@@ -197,7 +194,7 @@ export default function Page() {
               </PaginationContent>
             </Pagination>
           </div>
-        </section>
+        </div>
       </main>
     </div>
   );

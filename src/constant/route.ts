@@ -3,6 +3,8 @@ export const Route = {
   SignUp: '/sign-up',
   Home: '/',
   Exam: '/exam',
+  Practice: '/practice',
+  Learn: '/learn',
   ReadingTest: '/reading-test'
 }
 

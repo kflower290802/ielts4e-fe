@@ -20,6 +20,8 @@ export enum TypeExcercise {
     Listening = "listening",
     Writing = "writing",
     Speaking = "speaking",
+    Grammar = "grammar",
+    Vocabulary = "vocabulary"
 }
 export enum StatusExcercise {
     NotStarted = "not-started",

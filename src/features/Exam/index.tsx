@@ -21,22 +21,8 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useGetYear } from "../hooks/useGetYear";
-const tabs = [
-  { id: TypeExcercise.Reading, label: "READING" },
-  { id: TypeExcercise.Listening, label: "LISTENING" },
-  { id: TypeExcercise.Writing, label: "WRITING" },
-  { id: TypeExcercise.Speaking, label: "SPEAKING" },
-];
-
-const statusFilters = [
-  { id: StatusExcercise.NotStarted, label: "Not Started" },
-  { id: StatusExcercise.InProgress, label: "In Progress" },
-  { id: StatusExcercise.Completed, label: "Completed" },
-];
-const examFilters = [
-  { id: "academic", label: "Academic " },
-  { id: "general", label: "General" },
-];
+import { examFilters, examTabs, statusFilters } from "@/constant/filter";
+import { Link } from "react-router-dom";
 
 export function Exam() {
   const [params, setParams] = useState<IRequestExcercise>({});
@@ -122,7 +108,7 @@ export function Exam() {
           }}
         >
           <TabsList className="w-full justify-between">
-            {tabs.map((tab) => (
+            {examTabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
@@ -133,7 +119,7 @@ export function Exam() {
             ))}
           </TabsList>
 
-          {tabs.map((tab) => (
+          {examTabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id} className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
                 {data?.data?.map((card) => (
@@ -150,21 +136,23 @@ export function Exam() {
                     </CardContent>
                     <CardFooter className="flex flex-col items-center gap-2 p-3">
                       <p className="text-sm text-center">{card.name}</p>
-                      <Button
-                        className={cn(
-                          card.status === StatusExcercise.NotStarted
-                            ? "border-2 border-[#164C7E] bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
+                      <Link to="/reading-test">
+                        <Button
+                          className={cn(
+                            card.status === StatusExcercise.NotStarted
+                              ? "border-2 border-[#164C7E] bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
+                              : card.status === StatusExcercise.InProgress
+                              ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
+                              : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
+                          )}
+                        >
+                          {card.status === StatusExcercise.Completed
+                            ? "RETRY"
                             : card.status === StatusExcercise.InProgress
-                            ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
-                            : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
-                        )}
-                      >
-                        {card.status === StatusExcercise.Completed
-                          ? "LÀM LẠI"
-                          : card.status === StatusExcercise.InProgress
-                          ? "LÀM TIẾP"
-                          : "LÀM NGAY"}
-                      </Button>
+                            ? "CONTINUTE"
+                            : "START"}
+                        </Button>
+                      </Link>
                     </CardFooter>
                   </Card>
                 ))}
