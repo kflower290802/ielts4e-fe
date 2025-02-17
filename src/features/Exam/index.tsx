@@ -161,7 +161,7 @@ export function Exam() {
             </TabsContent>
           ))}
         </Tabs>
-        {data?.pages && data.pages > 1 && (
+        {(data?.pages || 0) > 1 && (
           <div className="mt-4 flex items-center justify-center gap-2">
             <Pagination>
               <PaginationContent>
@@ -171,18 +171,18 @@ export function Exam() {
                     onClick={() => {
                       setParams((prev) => ({
                         ...prev,
-                        page: (data.page ?? 1) - 1,
+                        page: (data?.page ?? 1) - 1,
                       }));
                     }}
                     className={
-                      data.page === 1 ? "opacity-50 pointer-events-none" : ""
+                      data?.page === 1 ? "opacity-50 pointer-events-none" : ""
                     }
                   />
                 </PaginationItem>
 
                 {/* Danh sách số trang */}
                 {Array.from(
-                  { length: data.pages },
+                  { length: data?.pages ?? 1 },
                   (_, index) => index + 1
                 ).map((page) => (
                   <PaginationItem
@@ -194,7 +194,7 @@ export function Exam() {
                       }));
                     }}
                   >
-                    <PaginationLink isActive={page === data.page}>
+                    <PaginationLink isActive={page === data?.page}>
                       {page}
                     </PaginationLink>
                   </PaginationItem>
@@ -206,11 +206,11 @@ export function Exam() {
                     onClick={() => {
                       setParams((prev) => ({
                         ...prev,
-                        page: (data.page ?? 1) + 1,
+                        page: (data?.page ?? 1) + 1,
                       }));
                     }}
                     className={
-                      data.page === data.pages
+                      data?.page === data?.pages
                         ? "opacity-50 pointer-events-none"
                         : ""
                     }
