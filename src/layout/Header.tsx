@@ -39,7 +39,7 @@ const Header = () => {
       {isAuthenticated ? (
         <div className="flex items-center gap-10">
           <div className="flex items-center gap-2 flex-col">
-            <span>{userName}</span>
+            <span>{userName?.toUpperCase()}</span>
             <div className="flex items-center justify-between w-full">
               <span>Exp: 1000</span>
               <span>VIP</span>

@@ -21,11 +21,32 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useGetYear } from "../hooks/useGetYear";
 import { examFilters, examTabs, statusFilters } from "@/constant/filter";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { Route } from "@/constant/route";
 
 export function Exam() {
-  const [params, setParams] = useState<IRequestExcercise>({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [params, setParams] = useState<IRequestExcercise>(() => {
+    return {
+      status: searchParams.get("status") as StatusExcercise | undefined,
+      year: searchParams.get("year") || undefined,
+      type: (searchParams.get("type") as TypeExcercise) ?? "reading",
+      page: searchParams.get("page")
+        ? Number(searchParams.get("page"))
+        : undefined,
+    };
+  });
   const { data, refetch } = useGetExcercise(params);
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams();
+    if (params.status) newSearchParams.set("status", params.status);
+    if (params.year) newSearchParams.set("year", params.year);
+    if (params.type) newSearchParams.set("type", params.type);
+    if (params.page != undefined)
+      newSearchParams.set("page", params.page.toString());
+
+    setSearchParams(newSearchParams);
+  }, [params, setSearchParams]);
   const { data: year } = useGetYear();
   const yearString = Array.isArray(year) ? year.map(String) : [];
   useEffect(() => {
@@ -41,6 +62,7 @@ export function Exam() {
             <h3 className="text-lg font-semibold mb-3">Status</h3>
             <div className="space-y-2">
               <RadioGroup
+                value={params.status || ""}
                 onValueChange={(value) => {
                   setParams((prev) => ({
                     ...prev,
@@ -63,6 +85,7 @@ export function Exam() {
             <h3 className="text-lg font-semibold mb-3">Year</h3>
             <div className="space-y-2">
               <RadioGroup
+                value={params.year || ""}
                 onValueChange={(value) => {
                   setParams((prev) => ({
                     ...prev,
@@ -94,12 +117,20 @@ export function Exam() {
               </RadioGroup>
             </div>
           </div>
+          <Button
+            variant="outline"
+            className="w-full mt-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+            onClick={() => setParams({})}
+          >
+            Clear Filter
+          </Button>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex justify-between flex-col items-center">
         <Tabs
+          value={params.type}
           defaultValue="reading"
           className="w-full grid-cols-4 gap-6"
           onValueChange={(value) => {
@@ -135,7 +166,7 @@ export function Exam() {
                     </CardContent>
                     <CardFooter className="flex flex-col items-center gap-2 p-3">
                       <p className="text-sm text-center">{card.name}</p>
-                      <Link to="/reading-test">
+                      <Link to={`${Route.Exercise}/${card.id}`}>
                         <Button
                           className={cn(
                             card.status === StatusExcercise.NotStarted

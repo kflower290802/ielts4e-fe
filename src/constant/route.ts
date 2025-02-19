@@ -5,7 +5,7 @@ export const Route = {
   Exam: '/exam',
   Practice: '/practice',
   Learn: '/learn',
-  ReadingTest: '/reading-test'
+  Exercise: '/excercise'
 }
 
 export const authRoutes = [Route.Login, Route.SignUp]

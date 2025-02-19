@@ -1,16 +1,20 @@
 import Header from "./Header";
 import Footer from "./Footer";
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
+import { useStartExam } from "@/features/Exercise/hooks/useStartExam";
 
 export default function ExerciseLayout() {
+  const { id } = useParams<{ id: string }>();
+  const { data,refetch } = useStartExam(id ?? "");
+  useEffect(() => {
+    if (id) {
+      refetch();
+    }
+  }, [id, refetch]);
+
   const [timeLeft, setTimeLeft] = useState(3528);
   const [currentPassage, setCurrentPassage] = useState(1);
-  const [scores, setScores] = useState({
-    passage1: "2/13",
-    passage2: "0/13",
-    passage3: "0/14",
-  });
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -19,15 +23,15 @@ export default function ExerciseLayout() {
   }, []);
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
-      <Header timeLeft={timeLeft} />
+      <Header timeLeft={timeLeft} title={data?.exam.name ?? ''}/>
       {/* Main Content */}
       <div className="flex-1 my-24 overflow-y-hidden">
-        <Outlet />
+        <Outlet/>
       </div>
       <Footer
         currentPassage={currentPassage}
         setCurrentPassage={setCurrentPassage}
-        scores={scores}
+        passages={data?.exam.examPassage!}
       />
     </div>
   );

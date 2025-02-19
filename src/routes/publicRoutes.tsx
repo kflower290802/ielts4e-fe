@@ -3,7 +3,7 @@ import Authentication from "@/features/Authentication";
 import Login from "@/features/Authentication/components/Login";
 import SignUpForm from "@/features/Authentication/components/SignUp";
 import Home from "@/features/Home";
-import Layout from "@/layout/appLayout";
+import Layout from "@/layout";
 
 export const publicRoutes = [
   {

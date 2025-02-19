@@ -1,11 +1,10 @@
 import { Route } from "@/constant/route";
 import HomeUser from "@/features/HomeUser";
 import { Exam } from "@/features/Exam";
-import Layout from "@/layout/appLayout";
-import ExerciseLayout from "@/layout/exerciseLayout";
-import ReadingTest from "@/features/ReadingTest";
 import { Practice } from "@/features/Practice";
 import Learn from "@/features/Learn";
+import Exercise from "@/features/Exercise";
+import Layout from "@/layout";
 
 export const privateRoutes = [
   {
@@ -30,13 +29,7 @@ export const privateRoutes = [
     ],
   },
   {
-    element: <ExerciseLayout />,
-    children: [
-      {
-        element: <ReadingTest />,
-        path: Route.ReadingTest,
-      },
-    ],
+    element: <Exercise />,
+    path: `${Route.Exercise}/:id`,
   },
-
 ];

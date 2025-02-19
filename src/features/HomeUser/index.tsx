@@ -70,7 +70,7 @@ export default function Page() {
     <div className="p-14">
       <div className="mb-8 flex items-center gap-4">
         <h1 className="text-xl font-bold">
-          WELCOME BACK, <span>{userName}</span>
+          WELCOME BACK, <span>{userName?.toUpperCase()}</span>
         </h1>
         <img
           src="/images/hand.svg"
