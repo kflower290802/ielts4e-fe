@@ -4,9 +4,9 @@ import { Exam } from "@/features/Exam";
 import { Practice } from "@/features/Practice";
 import Learn from "@/features/Learn";
 import Layout from "@/layout";
-import ReadingTest from "@/features/Exercise/ReadingTest";
-import ListeningTest from "@/features/Exercise/ListeningTest";
-import SpeakingTest from "@/features/Exercise/SpeakingTest";
+import ReadingTest from "@/features/ExamExercise/ReadingTest";
+import ListeningTest from "@/features/ExamExercise/ListeningTest";
+import SpeakingTest from "@/features/ExamExercise/SpeakingTest";
 import PracticeReading from "@/features/Practice/PracticeReading";
 
 export const privateRoutes = [

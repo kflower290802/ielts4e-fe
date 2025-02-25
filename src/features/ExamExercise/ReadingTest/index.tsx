@@ -8,39 +8,82 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import ReadingFooter from "./components/ReadingFooter";
 import { useExamPassage } from "./hooks/useExamPassage";
+import { useExamAnswers } from "../hooks/useExamAnswer";
 const ReadingTest = () => {
   const { id } = useParams<{ id: string }>();
   const { data, refetch, isLoading } = useExamPassage(id ?? "");
+  const { mutateAsync: examAnswers } = useExamAnswers();
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  console.log(answers);
+  
+  useEffect(() => {
+    if (data?.exam) {
+      const initialAnswers: Record<string, string> = {};
+        data.exam.forEach((passage) => {
+        passage.questions.forEach((question) => {
+          initialAnswers[question.id] = question.answer || "";
+        });
+      });
+  
+      setAnswers(initialAnswers);
+    }
+  }, [data]);
   useEffect(() => {
     if (id) {
       refetch();
     }
   }, [id]);
+
+  useEffect(() => {
+    const sendAnswers = async () => {
+      if (Object.keys(answers).length === 0) return;
+
+      const answerArray = Object.entries(answers).map(([questionId, answer]) => ({
+        examId: id ?? "",
+        examPassageQuestionId: questionId,
+        answer,
+      }));
+
+      try {
+        await examAnswers(answerArray);
+        console.log("Answers sent successfully");
+      } catch (error) {
+        console.error("Failed to send answers:", error);
+      }
+    };
+
+    const interval = setInterval(() => {
+      sendAnswers();
+    }, 20000); // Gửi mỗi 20 giây
+
+    return () => clearInterval(interval); // Xóa interval khi component unmount
+  }, [answers, id, examAnswers]);
+
   const [searchParams, setSearchParams] = useSearchParams();
-  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeLeft, setTimeLeft] = useState(3528);
   const passageParam = searchParams.get("passage") ?? "1";
   const [currentPassage, setCurrentPassage] = useState(
     passageParam ? parseInt(passageParam) : 1
   );
   const [currentQuestionPage, setCurrentQuestionPage] = useState(1);
+
   useEffect(() => {
     const newSearchParams = new URLSearchParams();
     if (currentPassage)
       newSearchParams.set("passage", currentPassage.toString());
     setSearchParams(newSearchParams);
   }, [currentPassage, setSearchParams]);
+
   const questionsPerPage = 4;
-  const questions =
-    data?.exam[currentPassage - 1]?.questions || [];
+  const questions = data?.exam[currentPassage - 1]?.questions || [];
+
   const startQuestion = (currentQuestionPage - 1) * questionsPerPage;
+
   const endQuestion = Math.min(
     startQuestion + questionsPerPage,
     questions.length
   );
-  const totalQuestion = data?.exam
-    .map((p) => p.questions)
-    .flat().length;
+  const totalQuestion = data?.exam.map((p) => p.questions).flat().length;
   const visibleQuestions = questions.slice(startQuestion, endQuestion);
   // useEffect(() => {
   //   const timer = setInterval(() => {
@@ -55,6 +98,7 @@ const ReadingTest = () => {
         [questionId]: e.target.value,
       }));
     };
+
   const handleNextPage = () => {
     if (endQuestion < questions.length) {
       setCurrentQuestionPage((prev) => prev + 1);
@@ -70,9 +114,9 @@ const ReadingTest = () => {
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
       <Header
         timeLeft={timeLeft}
-        title='Reading Test'
+        title="Reading Test"
         isLoading={isLoading}
-        id = {id}
+        id={id}
       />
       <div className="flex-1 my-24 h-full overflow-y-hidden">
         <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">

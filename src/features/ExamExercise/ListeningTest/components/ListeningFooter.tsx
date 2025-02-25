@@ -1,28 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { IExam } from "@/types/exam";
+import { ExamPassage, Question } from "@/types/exam";
 import React, { memo, useState } from "react";
 import DialogConfirm from "../../components/DialogConfirm";
 interface IProps {
-  passages: IExam["exam"]["examPassage"];
+  passages: ExamPassage[];
   answers: Record<string, string>;
   passageParam: string;
   totalQuestion: number | undefined;
   setCurrentPassage: React.Dispatch<React.SetStateAction<number>>;
   setCurrentQuestionPage: React.Dispatch<React.SetStateAction<number>>;
-  questions:
-    | [
-        {
-          id: string;
-          examPassage: {
-            id: string;
-          };
-          question: string;
-          createdAt: string;
-          updatedAt: string;
-        }
-      ]
-    | [];
+  questions: Question[];
 }
 const ListeningFooter = ({
   passages,

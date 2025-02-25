@@ -1,14 +1,13 @@
+import { IExcerciseDetail } from "./excercise";
+import { IUserExam } from "./user";
+
 export interface IExam {
   exam: ExamPassage[];
-  answers: Answer[];
-  remainingTime: number;
 }
 
 export interface ExamPassage {
   id: string;
-  exam: {
-    id: string;
-  };
+  exam: IExcerciseDetail;
   passage: string;
   title: string;
   createdAt: string;
@@ -18,15 +17,29 @@ export interface ExamPassage {
 
 export interface Question {
   id: string;
-  examPassage: {
-    id: string;
-  };
+  examPassage: ExamPassage;
   question: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Answer {
-  questionId: string;
   answer: string;
+}
+export interface Answer {
+  id: string;
+  examPassageQuestion: {
+    id: string;
+  }
+  answer: string;
+}
+export interface IUserAnswer {
+  examId: string;
+  examPassageQuestionId: string;
+  answer: string;
+}
+export interface IExamResponse {
+  id: string;
+  userExam: IUserExam;
+  examPassageQuestion: Question;
+  answer: string;
+  createdAt: string;
+  updatedAt: string;
 }
