@@ -12,7 +12,9 @@ export default function Sidebar() {
       </div>
       <div className="space-y-4">
       {menuItems.map((item) => {
-          const isActive = pathname === item.href; // Kiểm tra nếu đường dẫn khớp
+          const isActive = item.href === Route.Home
+          ? pathname === Route.Home
+          : pathname.startsWith(item.href);
           return (
             <Link
               key={item.label}

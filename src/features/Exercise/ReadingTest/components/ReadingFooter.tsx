@@ -1,30 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { IExam } from "@/types/exam";
-import React, { memo } from "react";
+import { ExamPassage, Question } from "@/types/exam";
+import React, { memo, useState } from "react";
+import DialogConfirm from "../../components/DialogConfirm";
 interface IProps {
-  passages: IExam["exam"]["examPassage"];
-  currentPassage: number;
+  passages: ExamPassage[];
   answers: Record<string, string>;
+  passageParam: string;
+  totalQuestion: number | undefined;
   setCurrentPassage: React.Dispatch<React.SetStateAction<number>>;
-  questions:
-    | [
-        {
-          id: string;
-          examPassage: {
-            id: string;
-          };
-          question: string;
-          createdAt: string;
-          updatedAt: string;
-        }
-      ]
-    | [];
+  setCurrentQuestionPage: React.Dispatch<React.SetStateAction<number>>;
+  questions: Question[];
 }
-const Footer = ({
+const ReadingFooter = ({
   passages,
-  currentPassage,
+  passageParam,
+  totalQuestion,
   setCurrentPassage,
+  setCurrentQuestionPage,
   questions,
   answers,
 }: IProps) => {
@@ -35,8 +28,18 @@ const Footer = ({
         ?.questions.filter((q) => answers[q.id])?.length || 0
     );
   };
+  const totalAnswered = Object.values(answers).filter(
+    (answer) => answer.trim() !== ""
+  ).length;
+  const [openDia, setOpenDia] = useState<boolean>(false);
   return (
     <div className="fixed bottom-0 left-0 right-0 border-t bg-white h-28 px-6">
+      <DialogConfirm
+        openDia={openDia}
+        setOpenDia={setOpenDia}
+        totalQuestion={totalQuestion}
+        totalAnswered={totalAnswered}
+      />
       <div className="flex h-full items-center justify-between gap-20">
         <div className="grid grid-cols-5 gap-10 min-w-1/3">
           {passages?.map((passage, idx) => (
@@ -45,12 +48,15 @@ const Footer = ({
                 key={passage.id}
                 onClick={() => setCurrentPassage(idx + 1)}
                 className={cn(
-                  currentPassage === idx + 1
+                  Number(passageParam) === idx + 1
                     ? "bg-white border-2 border-[#164C7E] text-[#164C7E] font-bold px-8 py-5 hover:bg-[#164C7E] hover:text-white"
-                    : "bg-white border-2 px-8 py-5 hover:bg-[#164C7E] hover:text-white"
+                    : "bg-white border-2 px-8 py-5 hover:bg-[#164C7E] hover:text-white",
+                  answeredQuestionsCount(passage.id) ===
+                    passage.questions.length &&
+                    "border-2 border-[#188F09] text-[#188F09]"
                 )}
               >
-                Passage {idx + 1}
+                Passage {passageParam}
               </Button>
               <span>
                 {answeredQuestionsCount(passage.id)}/{passage.questions.length}
@@ -72,6 +78,10 @@ const Footer = ({
                       ? "bg-[#3C64CE] text-white"
                       : "bg-[#D9D9D9] hover:bg-[#3C64CE] hover:text-white"
                   )}
+                  onClick={() => {
+                    const newPage = Math.floor(idx / 4) + 1;
+                    setCurrentQuestionPage(newPage);
+                  }}
                 >
                   {idx + 1}
                 </Button>
@@ -80,7 +90,12 @@ const Footer = ({
           </div>
         </div>
         <div className="w-1/6 flex justify-end">
-          <Button className="ml-4 bg-[#66B032] hover:bg-[#66B032]/80 text-white font-bold rounded-xl">
+          <Button
+            className="ml-4 bg-[#66B032] hover:bg-[#66B032]/80 text-white font-bold rounded-xl"
+            onClick={() => {
+              setOpenDia(true);
+            }}
+          >
             SUBMIT
           </Button>
         </div>
@@ -89,4 +104,4 @@ const Footer = ({
   );
 };
 
-export default memo(Footer);
+export default memo(ReadingFooter);

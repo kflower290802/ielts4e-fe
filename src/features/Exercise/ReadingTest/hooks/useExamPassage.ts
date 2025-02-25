@@ -1,12 +1,12 @@
-import { startExam } from "@/api/excercise";
+import { getExamById } from "@/api/exam";
 import { IExam } from "@/types/exam";
 import { useQuery } from "@tanstack/react-query";
 
-export const useStartExam = (id:string) => {
+export const useExamPassage = (id: string) => {
   const { data, error, isLoading, refetch } = useQuery<IExam, Error>({
-    queryKey: ["startExam"],
-    queryFn: () => startExam(id),
-    enabled: !!id
+    queryKey: ["exampassage"],
+    queryFn: () => getExamById(id),
+    enabled: !!id,
   });
   return { data, error, isLoading, refetch };
 };

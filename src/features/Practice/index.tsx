@@ -95,8 +95,11 @@ import {
   statusFilters,
   topicFilters,
 } from "@/constant/filter";
+import { useNavigate } from "react-router-dom";
+import { Route } from "@/constant/route";
 
 export function Practice() {
+  const nav = useNavigate()
   return (
     <div className="flex h-full p-8 gap-14">
       {/* Sidebar */}
@@ -189,6 +192,7 @@ export function Practice() {
                             ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
                             : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
                         )}
+                        onClick={() => nav(Route.PracticeReading)}
                       >
                         {card.status === "retry"
                           ? "RETRY"

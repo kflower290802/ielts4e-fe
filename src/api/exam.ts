@@ -7,4 +7,7 @@ export const getExcercise = (params: IRequestExcercise): Promise<IExcercise> =>
     params,
   });
 export const getYear = (): Promise<number[]> => api.get(`/exams/year`);
-export const startExam = (id: string): Promise<IExam> => api.get(`/exams/start-exam/${id}`);
+export const startExam = (id: string) => api.get(`/exams/start-exam/${id}`);
+export const getExamById = (id: string): Promise<IExam> => api.get(`/exams/exam/${id}`);
+export const exitExam = (id: string) => api.post(`/exams/exit-exam/${id}`);
+

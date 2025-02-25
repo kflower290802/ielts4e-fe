@@ -1,4 +1,4 @@
-import { getExcercise } from "@/api/excercise";
+import { getExcercise } from "@/api/exam";
 import {
   IExcercise,
   IRequestExcercise,

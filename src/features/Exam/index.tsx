@@ -23,6 +23,7 @@ import { useGetYear } from "../hooks/useGetYear";
 import { examFilters, examTabs, statusFilters } from "@/constant/filter";
 import { Link, useSearchParams } from "react-router-dom";
 import { Route } from "@/constant/route";
+import { startExam } from "@/api/exam";
 
 export function Exam() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,6 +38,9 @@ export function Exam() {
     };
   });
   const { data, refetch } = useGetExcercise(params);
+  const handleStart = (id: string) => {
+    startExam(id);
+  }
   useEffect(() => {
     const newSearchParams = new URLSearchParams();
     if (params.status) newSearchParams.set("status", params.status);
@@ -44,7 +48,6 @@ export function Exam() {
     if (params.type) newSearchParams.set("type", params.type);
     if (params.page != undefined)
       newSearchParams.set("page", params.page.toString());
-
     setSearchParams(newSearchParams);
   }, [params, setSearchParams]);
   const { data: year } = useGetYear();
@@ -54,11 +57,9 @@ export function Exam() {
   }, [params]);
   return (
     <div className="flex h-full p-8 gap-14">
-      {/* Sidebar */}
       <div className="w-64 border bg-white rounded-lg p-6">
         <div className="space-y-6">
-          {/* Status Section */}
-          <div>
+          <section>
             <h3 className="text-lg font-semibold mb-3">Status</h3>
             <div className="space-y-2">
               <RadioGroup
@@ -78,10 +79,9 @@ export function Exam() {
                 ))}
               </RadioGroup>
             </div>
-          </div>
+          </section>
 
-          {/* Topics Section */}
-          <div>
+          <section>
             <h3 className="text-lg font-semibold mb-3">Year</h3>
             <div className="space-y-2">
               <RadioGroup
@@ -101,10 +101,9 @@ export function Exam() {
                 ))}
               </RadioGroup>
             </div>
-          </div>
+          </section>
 
-          {/* Question Types Section */}
-          <div>
+          <section>
             <h3 className="text-lg font-semibold mb-3">Exam</h3>
             <div className="space-y-2">
               <RadioGroup>
@@ -116,7 +115,7 @@ export function Exam() {
                 ))}
               </RadioGroup>
             </div>
-          </div>
+          </section>
           <Button
             variant="outline"
             className="w-full mt-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
@@ -127,7 +126,6 @@ export function Exam() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex justify-between flex-col items-center">
         <Tabs
           value={params.type}
@@ -166,7 +164,7 @@ export function Exam() {
                     </CardContent>
                     <CardFooter className="flex flex-col items-center gap-2 p-3">
                       <p className="text-sm text-center">{card.name}</p>
-                      <Link to={`${Route.Exercise}/${card.id}`}>
+                      <Link to={`${Route.Exam}/${card.type}/${card.id}`}>
                         <Button
                           className={cn(
                             card.status === StatusExcercise.NotStarted
@@ -175,6 +173,7 @@ export function Exam() {
                               ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
                               : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
                           )}
+                          onClick={() => handleStart(card.id)}
                         >
                           {card.status === StatusExcercise.Completed
                             ? "RETRY"
@@ -187,8 +186,6 @@ export function Exam() {
                   </Card>
                 ))}
               </div>
-
-              {/* Pagination */}
             </TabsContent>
           ))}
         </Tabs>
@@ -196,7 +193,6 @@ export function Exam() {
           <div className="mt-4 flex items-center justify-center gap-2">
             <Pagination>
               <PaginationContent>
-                {/* Nút Previous */}
                 <PaginationItem>
                   <PaginationPrevious
                     onClick={() => {
@@ -211,7 +207,6 @@ export function Exam() {
                   />
                 </PaginationItem>
 
-                {/* Danh sách số trang */}
                 {Array.from(
                   { length: data?.pages ?? 1 },
                   (_, index) => index + 1
@@ -231,7 +226,6 @@ export function Exam() {
                   </PaginationItem>
                 ))}
 
-                {/* Nút Next */}
                 <PaginationItem>
                   <PaginationNext
                     onClick={() => {

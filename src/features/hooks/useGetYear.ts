@@ -1,4 +1,4 @@
-import { getYear } from "@/api/excercise";
+import { getYear } from "@/api/exam";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetYear = () => {

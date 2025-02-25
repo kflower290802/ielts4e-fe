@@ -3,8 +3,11 @@ import HomeUser from "@/features/HomeUser";
 import { Exam } from "@/features/Exam";
 import { Practice } from "@/features/Practice";
 import Learn from "@/features/Learn";
-import Exercise from "@/features/Exercise";
 import Layout from "@/layout";
+import ReadingTest from "@/features/Exercise/ReadingTest";
+import ListeningTest from "@/features/Exercise/ListeningTest";
+import SpeakingTest from "@/features/Exercise/SpeakingTest";
+import PracticeReading from "@/features/Practice/PracticeReading";
 
 export const privateRoutes = [
   {
@@ -26,10 +29,22 @@ export const privateRoutes = [
         element: <Learn />,
         path: Route.Learn,
       },
+      {
+        element: <PracticeReading />,
+        path: `${Route.PracticeReading}`,
+      },
     ],
   },
   {
-    element: <Exercise />,
-    path: `${Route.Exercise}/:id`,
+    element: <ReadingTest />,
+    path: `${Route.ExamReading}/:id`,
+  },
+  {
+    element: <ListeningTest />,
+    path: `${Route.ExamListening}/:id`,
+  },
+  {
+    element: <SpeakingTest />,
+    path: `${Route.ExamSpeaking}/:id`,
   },
 ];
