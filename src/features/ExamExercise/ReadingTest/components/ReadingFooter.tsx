@@ -11,6 +11,7 @@ interface IProps {
   setCurrentPassage: React.Dispatch<React.SetStateAction<number>>;
   setCurrentQuestionPage: React.Dispatch<React.SetStateAction<number>>;
   questions: Question[];
+  id: string | undefined
 }
 const ReadingFooter = ({
   passages,
@@ -20,7 +21,9 @@ const ReadingFooter = ({
   setCurrentQuestionPage,
   questions,
   answers,
+  id
 }: IProps) => {
+  const [openDia, setOpenDia] = useState<boolean>(false);
   const answeredQuestionsCount = (passageId: string) => {
     return (
       passages
@@ -28,17 +31,14 @@ const ReadingFooter = ({
         ?.questions.filter((q) => answers[q.id])?.length || 0
     );
   };
-  const totalAnswered = Object.values(answers).filter(
-    (answer) => answer.trim() !== ""
-  ).length;
-  const [openDia, setOpenDia] = useState<boolean>(false);
   return (
     <div className="fixed bottom-0 left-0 right-0 border-t bg-white h-28 px-6">
       <DialogConfirm
         openDia={openDia}
         setOpenDia={setOpenDia}
         totalQuestion={totalQuestion}
-        totalAnswered={totalAnswered}
+        answers={answers}
+        id={id}
       />
       <div className="flex h-full items-center justify-between gap-20">
         <div className="grid grid-cols-5 gap-10 min-w-1/3">
@@ -56,7 +56,7 @@ const ReadingFooter = ({
                     "border-2 border-[#188F09] text-[#188F09]"
                 )}
               >
-                Passage {passageParam}
+                Passage {idx +1}
               </Button>
               <span>
                 {answeredQuestionsCount(passage.id)}/{passage.questions.length}

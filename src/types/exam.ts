@@ -4,7 +4,14 @@ import { IUserExam } from "./user";
 export interface IExam {
   exam: ExamPassage[];
 }
-
+export interface IExamResult {
+  summary: [{
+    questionId: string;
+    isCorrect: boolean;
+    userAnswer: string;
+  }]
+  score: number;
+}
 export interface ExamPassage {
   id: string;
   exam: IExcerciseDetail;
@@ -35,6 +42,11 @@ export interface IUserAnswer {
   examPassageQuestionId: string;
   answer: string;
 }
+export interface IExamAnswerSubmit {
+  questionId: string;
+  answer: string;
+}
+
 export interface IExamResponse {
   id: string;
   userExam: IUserExam;

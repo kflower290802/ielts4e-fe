@@ -1,65 +1,23 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import Header from "../components/Header";
-import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useExamPassage } from "../hooks/useExamPassage";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import ReadingFooter from "./components/ReadingFooter";
-import { useExamPassage } from "./hooks/useExamPassage";
-import { useExamAnswers } from "../hooks/useExamAnswer";
-const ReadingTest = () => {
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import ReadingFooterResult from "./ReadingFooterResult";
+import { useExamResult } from "../hooks/useExamResult";
+import { Badge } from "@/components/ui/badge";
+import { Route } from "@/constant/route";
+
+const ReadingResult = () => {
+  const nav = useNavigate();
+  const { idResult } = useParams<{ idResult: string }>();
   const { id } = useParams<{ id: string }>();
-  const { data, refetch, isLoading } = useExamPassage(id ?? "");
-  const { mutateAsync: examAnswers } = useExamAnswers();
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  
-  useEffect(() => {
-    if (data?.exam) {
-      const initialAnswers: Record<string, string> = {};
-        data.exam.forEach((passage) => {
-        passage.questions.forEach((question) => {
-          initialAnswers[question.id] = question.answer || "";
-        });
-      });
-  
-      setAnswers(initialAnswers);
-    }
-  }, [data]);
-  useEffect(() => {
-    if (id) {
-      refetch();
-    }
-  }, [id]);
-
-  useEffect(() => {
-    const sendAnswers = async () => {
-      if (Object.keys(answers).length === 0) return;
-
-      const answerArray = Object.entries(answers).map(([questionId, answer]) => ({
-        examId: id ?? "",
-        examPassageQuestionId: questionId,
-        answer,
-      }));
-
-      try {
-        await examAnswers(answerArray);
-        console.log("Answers sent successfully");
-      } catch (error) {
-        console.error("Failed to send answers:", error);
-      }
-    };
-
-    const interval = setInterval(() => {
-      sendAnswers();
-    }, 20000); // Gửi mỗi 20 giây
-
-    return () => clearInterval(interval); // Xóa interval khi component unmount
-  }, [answers, id, examAnswers]);
+  const { data } = useExamPassage(id ?? "");
+  const { data: result } = useExamResult(idResult ?? "");
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [timeLeft, setTimeLeft] = useState(3528);
   const passageParam = searchParams.get("passage") ?? "1";
   const [currentPassage, setCurrentPassage] = useState(
     passageParam ? parseInt(passageParam) : 1
@@ -82,21 +40,7 @@ const ReadingTest = () => {
     startQuestion + questionsPerPage,
     questions.length
   );
-  const totalQuestion = data?.exam.map((p) => p.questions).flat().length;
   const visibleQuestions = questions.slice(startQuestion, endQuestion);
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-  //   }, 1000);
-  //   return () => clearInterval(timer);
-  // }, []);
-  const handleInput =
-    (questionId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAnswers((prev) => ({
-        ...prev,
-        [questionId]: e.target.value,
-      }));
-    };
 
   const handleNextPage = () => {
     if (endQuestion < questions.length) {
@@ -108,16 +52,12 @@ const ReadingTest = () => {
       setCurrentQuestionPage((prev) => prev - 1);
     }
   };
-
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
-      <Header
-        timeLeft={timeLeft}
-        title="Reading Test"
-        isLoading={isLoading}
-        id={id}
-      />
-      <div className="flex-1 my-24 h-full overflow-y-hidden">
+      <div className="px-6 flex items-center gap-4 text-lg font-semibold cursor-pointer" onClick={() => nav(Route.Exam)}>
+        <ArrowLeft className="h-8 w-8" /> Back To Exam
+      </div>
+      <div className="flex-1 h-full overflow-y-hidden">
         <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
           <Card className="p-6 overflow-y-auto">
             {data?.exam && data.exam.length > 0 ? (
@@ -157,12 +97,20 @@ const ReadingTest = () => {
                   <p className="text-sm">
                     {startQuestion + index + 1}. {question.question}
                   </p>
-                  <Input
-                    id={question.id}
-                    value={answers[question.id] || ""}
-                    onChange={handleInput(question.id)}
-                    className="w-[1/3] border-b-4 rounded-xl text-[#164C7E] border-[#164C7E]"
-                  />
+                  <Badge
+                    className={cn(
+                      "w-32 h-10 border-b-4 rounded-xl",
+                      result?.summary[startQuestion + index].userAnswer === ""
+                        ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
+                        : result?.summary[startQuestion + index].isCorrect
+                        ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
+                        : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                    )}
+                  >
+                    {result?.summary[startQuestion + index].userAnswer === ""
+                      ? "Not answered"
+                      : result?.summary[startQuestion + index].userAnswer}
+                  </Badge>
                 </div>
               ))}
             </div>
@@ -221,18 +169,16 @@ const ReadingTest = () => {
           </Card>
         </div>
       </div>
-      <ReadingFooter
+      <ReadingFooterResult
+        result={result}
         setCurrentPassage={setCurrentPassage}
         passages={data?.exam ?? []}
         questions={questions}
-        answers={answers}
         passageParam={passageParam}
         setCurrentQuestionPage={setCurrentQuestionPage}
-        totalQuestion={totalQuestion}
-        id = {id}
       />
     </div>
   );
 };
 
-export default ReadingTest;
+export default ReadingResult;

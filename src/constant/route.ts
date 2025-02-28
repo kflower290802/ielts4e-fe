@@ -6,6 +6,7 @@ export const Route = {
   Practice: '/practice',
   Learn: '/learn',
   ExamReading: '/exam/reading',
+  ExamReadingResult: '/exam/reading/result',
   ExamListening: '/exam/listening',
   ExamSpeaking: '/exam/speaking',
   PracticeReading: '/practice/reading',

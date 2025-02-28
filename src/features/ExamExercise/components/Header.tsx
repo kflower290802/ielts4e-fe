@@ -23,7 +23,7 @@ const Header = ({ timeLeft, title, isLoading, id }: IProps) => {
 
   }
   return (
-    <div className="bg-white flex items-center justify-between shadow border-b h-20 px-6 fixed top-0 w-full">
+    <div className="bg-white flex items-center justify-between shadow border-b h-20 px-6 fixed top-0 z-50 w-full">
       {isLoading ? (
         <Skeleton className="h-4 w-[250px]" />
       ) : (

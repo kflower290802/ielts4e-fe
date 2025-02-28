@@ -44,7 +44,10 @@
 
     --chart-5: 27 87% 67%;
   }
-
+  audio::-webkit-media-controls-panel {
+    background-color: #ffff;
+  }
+  
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
