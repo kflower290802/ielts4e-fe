@@ -102,10 +102,8 @@ export function Practice() {
   const nav = useNavigate()
   return (
     <div className="flex h-full p-8 gap-14">
-      {/* Sidebar */}
       <div className="w-64 border bg-white rounded-lg p-6">
         <div className="space-y-6">
-          {/* Status Section */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Status</h3>
             <div className="space-y-2">
@@ -119,8 +117,6 @@ export function Practice() {
               </RadioGroup>
             </div>
           </div>
-
-          {/* Topics Section */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Year</h3>
             <div className="space-y-2">
@@ -134,8 +130,6 @@ export function Practice() {
               </RadioGroup>
             </div>
           </div>
-
-          {/* Question Types Section */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Exam</h3>
             <div className="space-y-2">
@@ -151,8 +145,6 @@ export function Practice() {
           </div>
         </div>
       </div>
-
-      {/* Main Content */}
       <div className="flex-1 flex justify-between flex-col items-center">
         <Tabs defaultValue="reading" className="w-full grid-cols-4 gap-6">
           <TabsList className="w-full justify-between">
@@ -205,7 +197,6 @@ export function Practice() {
                 ))}
               </div>
 
-              {/* Pagination */}
             </TabsContent>
           ))}
         </Tabs>

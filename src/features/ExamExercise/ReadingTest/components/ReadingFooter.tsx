@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ExamPassage, Question } from "@/types/exam";
 import React, { memo, useState } from "react";
-import DialogConfirm from "../../components/DialogConfirm";
+import { ExamPassage, ReadingQuestion } from "@/types/readingExam";
+import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
 interface IProps {
   passages: ExamPassage[];
   answers: Record<string, string>;
@@ -10,7 +10,7 @@ interface IProps {
   totalQuestion: number | undefined;
   setCurrentPassage: React.Dispatch<React.SetStateAction<number>>;
   setCurrentQuestionPage: React.Dispatch<React.SetStateAction<number>>;
-  questions: Question[];
+  questions: ReadingQuestion[];
   id: string | undefined
 }
 const ReadingFooter = ({
@@ -33,7 +33,7 @@ const ReadingFooter = ({
   };
   return (
     <div className="fixed bottom-0 left-0 right-0 border-t bg-white h-28 px-6">
-      <DialogConfirm
+      <DialogSubmitConfirm
         openDia={openDia}
         setOpenDia={setOpenDia}
         totalQuestion={totalQuestion}
@@ -45,7 +45,6 @@ const ReadingFooter = ({
           {passages?.map((passage, idx) => (
             <div className="flex flex-col items-center gap-3" key={passage.id}>
               <Button
-                key={passage.id}
                 onClick={() => setCurrentPassage(idx + 1)}
                 className={cn(
                   Number(passageParam) === idx + 1

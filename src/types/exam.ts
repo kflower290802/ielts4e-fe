@@ -1,8 +1,9 @@
-import { IExcerciseDetail } from "./excercise";
+import { ReadingQuestion } from "./readingExam";
 import { IUserExam } from "./user";
 
-export interface IExam {
-  exam: ExamPassage[];
+export interface IExam<T> {
+  exam: T[];
+  remainingTime: number;
 }
 export interface IExamResult {
   summary: [{
@@ -12,33 +13,13 @@ export interface IExamResult {
   }]
   score: number;
 }
-export interface ExamPassage {
-  id: string;
-  exam: IExcerciseDetail;
-  passage: string;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-  questions: Question[];
-}
-
-export interface Question {
-  id: string;
-  examPassage: ExamPassage;
-  question: string;
-  createdAt: string;
-  updatedAt: string;
-  answer: string;
-}
-export interface Answer {
-  id: string;
-  examPassageQuestion: {
-    id: string;
-  }
-  answer: string;
-}
 export interface IUserAnswer {
   examId: string;
+  examPassageQuestionId: string;
+  answer: string;
+}
+export interface IUserListenAnswer {
+  userExamId: string;
   examPassageQuestionId: string;
   answer: string;
 }
@@ -47,10 +28,10 @@ export interface IExamAnswerSubmit {
   answer: string;
 }
 
-export interface IExamResponse {
+export interface IExamResponse<T> {
   id: string;
   userExam: IUserExam;
-  examPassageQuestion: Question;
+  examPassageQuestion: T;
   answer: string;
   createdAt: string;
   updatedAt: string;

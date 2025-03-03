@@ -20,7 +20,6 @@ const Header = ({ timeLeft, title, isLoading, id }: IProps) => {
   const handleExit = (id: string) => {
     exitExam(id);
     nav(Route.Exam);
-
   }
   return (
     <div className="bg-white flex items-center justify-between shadow border-b h-20 px-6 fixed top-0 z-50 w-full">

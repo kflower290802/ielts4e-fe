@@ -1,4 +1,4 @@
-import { getExamReadingResult } from "@/api/exam";
+import { getExamReadingResult } from "@/api/readingExam";
 import { IExamResult } from "@/types/exam";
 import { useQuery } from "@tanstack/react-query";
 

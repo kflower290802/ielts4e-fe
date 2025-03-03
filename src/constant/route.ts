@@ -9,6 +9,7 @@ export const Route = {
   ExamReadingResult: '/exam/reading/result',
   ExamListening: '/exam/listening',
   ExamSpeaking: '/exam/speaking',
+  ExamSpeakingStart:'/exam/speaking/start',
   PracticeReading: '/practice/reading',
   PracticeListening: '/practice/listening',
   PracticeSpeaking: '/practice/speaking',

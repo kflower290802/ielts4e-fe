@@ -1,9 +1,7 @@
 import * as React from "react";
-import { ArrowLeft, ChevronLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import DialogPracticeConfirm from "./components/DialogPracticeConfirm";
 
 interface QuizQuestion {
@@ -35,10 +33,10 @@ const questions: QuizQuestion[] = [
 
 export default function PracticeReading() {
   const [answers, setAnswers] = React.useState<Record<number, string>>({});
-  const [openDia, setOpenDia] = React.useState<boolean>(false)
+  const [openDia, setOpenDia] = React.useState<boolean>(false);
   return (
     <div className="h-full p-4 flex justify-between">
-      <DialogPracticeConfirm openDia = {openDia} setOpenDia={setOpenDia}/>
+      <DialogPracticeConfirm openDia={openDia} setOpenDia={setOpenDia} />
       <Button variant="ghost" className="mb-4 w-fit" size="sm">
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
@@ -96,29 +94,16 @@ export default function PracticeReading() {
                     <p className="font-medium">
                       {q.id}. {q.question}
                     </p>
-                    <RadioGroup
-                      value={answers[q.id]}
-                      onValueChange={(value) =>
-                        setAnswers((prev) => ({ ...prev, [q.id]: value }))
-                      }
-                      className="grid-cols-2 gap-5"
-                    >
+                    <div className="grid grid-cols-2 gap-2">
                       {q.options.map((option, idx) => (
                         <div key={idx} className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={`${idx}`}
-                            id={`q${q.id}-${idx}`}
-                            className="border-2 w-5 h-5"
-                          />
-                          <Label
-                            htmlFor={`q${q.id}-${idx}`}
-                            className="text-sm"
-                          >
-                            {["A", "B", "C", "D"][idx]}. {option}
-                          </Label>
+                          <Button className="text-sm bg-[#D9D9D9] hover:bg-[#3C64CE] hover:text-white text-black font-bold rounded-full">
+                            {["A", "B", "C", "D"][idx]}
+                          </Button>
+                          <span>{option}</span>
                         </div>
                       ))}
-                    </RadioGroup>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -138,8 +123,10 @@ export default function PracticeReading() {
               </Button>
             ))}
           </div>
-          <Button className="ml-4 bg-[#3C64CE] hover:bg-[#3C64CE]/80 text-white font-bold rounded-xl"
-          onClick={() => setOpenDia(true)}>
+          <Button
+            className="ml-4 bg-[#3C64CE] hover:bg-[#3C64CE]/80 text-white font-bold rounded-xl"
+            onClick={() => setOpenDia(true)}
+          >
             SUBMIT
           </Button>
         </div>

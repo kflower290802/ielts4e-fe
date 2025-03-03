@@ -6,9 +6,10 @@ import Learn from "@/features/Learn";
 import Layout from "@/layout";
 import ReadingTest from "@/features/ExamExercise/ReadingTest";
 import ListeningTest from "@/features/ExamExercise/ListeningTest";
-import SpeakingTest from "@/features/ExamExercise/SpeakingTest";
 import PracticeReading from "@/features/Practice/PracticeReading";
 import ReadingResult from "@/features/ExamExercise/ReadingTest/components/ReadingResult";
+import MicrophoneTest from "@/features/ExamExercise/SpeakingTest/MicrophoneTest";
+import SpeakingTest from "@/features/ExamExercise/SpeakingTest/SpeakingTest";
 
 export const privateRoutes = [
   {
@@ -49,7 +50,11 @@ export const privateRoutes = [
     path: `${Route.ExamListening}/:id`,
   },
   {
-    element: <SpeakingTest />,
+    element: <MicrophoneTest />,
     path: `${Route.ExamSpeaking}/:id`,
   },
+  {
+    element: <SpeakingTest />,
+    path: `${Route.ExamSpeakingStart}/:id`,
+  }
 ];

@@ -7,23 +7,23 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import ReadingFooter from "./components/ReadingFooter";
-import { useExamPassage } from "./hooks/useExamPassage";
 import { useExamAnswers } from "../hooks/useExamAnswer";
+import { useReadingExamPassage } from "./hooks/useReadingExamPassage";
 const ReadingTest = () => {
   const { id } = useParams<{ id: string }>();
-  const { data, refetch, isLoading } = useExamPassage(id ?? "");
+  const { data, refetch, isLoading } = useReadingExamPassage(id ?? "");
   const { mutateAsync: examAnswers } = useExamAnswers();
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  
+
   useEffect(() => {
     if (data?.exam) {
       const initialAnswers: Record<string, string> = {};
-        data.exam.forEach((passage) => {
+      data.exam.forEach((passage) => {
         passage.questions.forEach((question) => {
           initialAnswers[question.id] = question.answer || "";
         });
       });
-  
+
       setAnswers(initialAnswers);
     }
   }, [data]);
@@ -37,11 +37,13 @@ const ReadingTest = () => {
     const sendAnswers = async () => {
       if (Object.keys(answers).length === 0) return;
 
-      const answerArray = Object.entries(answers).map(([questionId, answer]) => ({
-        examId: id ?? "",
-        examPassageQuestionId: questionId,
-        answer,
-      }));
+      const answerArray = Object.entries(answers).map(
+        ([questionId, answer]) => ({
+          examId: id ?? "",
+          examPassageQuestionId: questionId,
+          answer,
+        })
+      );
 
       try {
         await examAnswers(answerArray);
@@ -229,7 +231,7 @@ const ReadingTest = () => {
         passageParam={passageParam}
         setCurrentQuestionPage={setCurrentQuestionPage}
         totalQuestion={totalQuestion}
-        id = {id}
+        id={id}
       />
     </div>
   );

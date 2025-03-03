@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { useExamPassage } from "../hooks/useExamPassage";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -9,12 +8,13 @@ import ReadingFooterResult from "./ReadingFooterResult";
 import { useExamResult } from "../hooks/useExamResult";
 import { Badge } from "@/components/ui/badge";
 import { Route } from "@/constant/route";
+import { useReadingExamPassage } from "../hooks/useReadingExamPassage";
 
 const ReadingResult = () => {
   const nav = useNavigate();
   const { idResult } = useParams<{ idResult: string }>();
   const { id } = useParams<{ id: string }>();
-  const { data } = useExamPassage(id ?? "");
+  const { data } = useReadingExamPassage(id ?? "");
   const { data: result } = useExamResult(idResult ?? "");
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,7 +54,10 @@ const ReadingResult = () => {
   };
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
-      <div className="px-6 flex items-center gap-4 text-lg font-semibold cursor-pointer" onClick={() => nav(Route.Exam)}>
+      <div
+        className="px-6 flex items-center gap-4 text-lg font-semibold cursor-pointer"
+        onClick={() => nav(Route.Exam)}
+      >
         <ArrowLeft className="h-8 w-8" /> Back To Exam
       </div>
       <div className="flex-1 h-full overflow-y-hidden">

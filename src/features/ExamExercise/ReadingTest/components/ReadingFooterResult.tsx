@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ExamPassage, IExamResult, Question } from "@/types/exam";
+import { IExamResult } from "@/types/exam";
 import React, { memo } from "react";
 import { Badge } from "@/components/ui/badge";
+import { ExamPassage, ReadingQuestion } from "@/types/readingExam";
 interface IProps {
   passages: ExamPassage[];
   passageParam: string;
   setCurrentPassage: React.Dispatch<React.SetStateAction<number>>;
   setCurrentQuestionPage: React.Dispatch<React.SetStateAction<number>>;
-  questions: Question[];
+  questions: ReadingQuestion[];
   result: IExamResult | undefined
 }
 const ReadingFooterResult = ({

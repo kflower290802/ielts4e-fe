@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format } from "date-fns";
 import {
   Pagination,
   PaginationContent,
@@ -40,7 +41,7 @@ export function Exam() {
   const { data, refetch } = useGetExcercise(params);
   const handleStart = (id: string) => {
     startExam(id);
-  }
+  };
   useEffect(() => {
     const newSearchParams = new URLSearchParams();
     if (params.status) newSearchParams.set("status", params.status);
@@ -159,7 +160,7 @@ export function Exam() {
                         className="w-full h-24 object-cover"
                       />
                       <div className="absolute top-2 left-2 bg-white/90 px-2 py-1 rounded-md text-sm">
-                        {card.time} min
+                        {format(card.time, 'mm:ss')}
                       </div>
                     </CardContent>
                     <CardFooter className="flex flex-col items-center gap-2 p-3">

@@ -11,7 +11,7 @@ interface IProps {
   totalQuestion: number | undefined;
   id: string | undefined;
 }
-const DialogConfirm = ({
+const DialogSubmitConfirm = ({
   openDia,
   setOpenDia,
   answers,
@@ -64,4 +64,4 @@ const DialogConfirm = ({
   );
 };
 
-export default DialogConfirm;
+export default DialogSubmitConfirm;
