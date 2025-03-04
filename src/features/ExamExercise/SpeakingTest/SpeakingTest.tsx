@@ -4,12 +4,16 @@ import AudioPlayer from "../ListeningTest/components/AudioPlayer";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import SpeakingFooter from "./components/SpeakingFooter";
+import Header from "../components/Header";
+import { useParams } from "react-router-dom";
 
 const SpeakingTest = () => {
+  const { id } = useParams<{ id: string }>();
   const [showQuestion, setShowQuestion] = useState<boolean>(false);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F1FFEF]">
-      <div className="w-2/3 h-[80vh] p-6 bg-[#F5F5F5] rounded-lg shadow-sm">
+      <Header timeLeft={3528} title="Speaking Test" isLoading={false} id={id} />
+      <div className="flex-1 w-2/3 h-full p-6 bg-[#F5F5F5] mt-24 rounded-lg shadow-sm">
         <div className="mb-6 bg-[#164C7E] h-20 text-white flex gap-10 items-center justify-center rounded-lg">
           <h1 className="text-xl font-semibold">SPEAKING TEST</h1>
           <div className="font-medium">
@@ -38,7 +42,7 @@ const SpeakingTest = () => {
           <div className="flex items-center gap-10">
             <Button
               className={cn(
-                " border-2 font-bold bg-[#F5F5F5] ",
+                " border-2 font-bold bg-[#F5F5F5]",
                 showQuestion
                   ? "text-[#188F09] border-[#188F09] hover:bg-[#188F09] hover:text-white"
                   : "text-[#164C7E] border-[#164C7E] hover:bg-[#164C7E] hover:text-white"

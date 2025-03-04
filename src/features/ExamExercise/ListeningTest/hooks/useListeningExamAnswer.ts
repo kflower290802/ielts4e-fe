@@ -1,11 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { validateError } from '@/utils/validate';
-import { IUserListenAnswer } from '@/types/exam';
+import { IUserAnswer } from '@/types/exam';
 import { userListeningExamAnswers } from '@/api/listeningExam';
-export const useListenExamAnswers = () => {
+export const useListeningExamAnswers = () => {
   return useMutation({
-    mutationFn: (values: IUserListenAnswer[]) => userListeningExamAnswers(values),
+    mutationFn: (values: IUserAnswer[]) => userListeningExamAnswers(values),
     onError(error) {
       toast.error(validateError(error));
     },

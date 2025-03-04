@@ -1,83 +1,42 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import Header from "../components/Header";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import ReadingFooter from "./components/ReadingFooter";
-import { useExamAnswers } from "./hooks/useExamAnswer";
-import { useReadingExamPassage } from "./hooks/useReadingExamPassage";
-const ReadingTest = () => {
+import { useListeningExamSection } from "../hooks/useListeningExamSection";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Route } from "@/constant/route";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useExamResult } from "../../ReadingTest/hooks/useExamResult";
+import ListeningFooterResult from "./ListeningFooterResult";
+
+const ListeningTestResult = () => {
+  const nav = useNavigate();
+  const { idResult } = useParams<{ idResult: string }>();
   const { id } = useParams<{ id: string }>();
-  const { data, refetch, isLoading } = useReadingExamPassage(id ?? "");
-  const { mutateAsync: examAnswers } = useExamAnswers();
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sectionParam = searchParams.get("section") ?? "1";
+  const [currentSection, setCurrentSection] = useState(
+    sectionParam ? parseInt(sectionParam) : 1
+  );
+  // const [answers, setAnswers] = useState<Record<string, string>>({});
+  const { data, refetch } = useListeningExamSection(id ?? "");
+  const { data: result } = useExamResult(idResult ?? "");
+  const [currentQuestionPage, setCurrentQuestionPage] = useState(1);
   useEffect(() => {
-    if (data?.exam) {
-      const initialAnswers: Record<string, string> = {};
-      data.exam.forEach((passage) => {
-        passage.questions.forEach((question) => {
-          initialAnswers[question.id] = question.answer || "";
-        });
-      });
+    const newSearchParams = new URLSearchParams();
+    if (currentSection)
+      newSearchParams.set("section", currentSection.toString());
+    setSearchParams(newSearchParams);
+  }, [currentSection, setSearchParams]);
 
-      setAnswers(initialAnswers);
-    }
-  }, [data]);
   useEffect(() => {
     if (id) {
       refetch();
     }
   }, [id]);
-
-  useEffect(() => {
-    const sendAnswers = async () => {
-      if (Object.keys(answers).length === 0) return;
-
-      const answerArray = Object.entries(answers).map(
-        ([questionId, answer]) => ({
-          examId: id ?? "",
-          examPassageQuestionId: questionId,
-          answer,
-        })
-      );
-
-      try {
-        await examAnswers(answerArray);
-        console.log("Answers sent successfully");
-      } catch (error) {
-        console.error("Failed to send answers:", error);
-      }
-    };
-
-    const interval = setInterval(() => {
-      sendAnswers();
-    }, 20000); // Gửi mỗi 20 giây
-
-    return () => clearInterval(interval); // Xóa interval khi component unmount
-  }, [answers, id, examAnswers]);
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [timeLeft, setTimeLeft] = useState(3528);
-  const passageParam = searchParams.get("passage") ?? "1";
-  const [currentPassage, setCurrentPassage] = useState(
-    passageParam ? parseInt(passageParam) : 1
-  );
-  const [currentQuestionPage, setCurrentQuestionPage] = useState(1);
-
-  useEffect(() => {
-    const newSearchParams = new URLSearchParams();
-    if (currentPassage)
-      newSearchParams.set("passage", currentPassage.toString());
-    setSearchParams(newSearchParams);
-  }, [currentPassage, setSearchParams]);
-
-  const questionsPerPage = 4;
-  const questions = data?.exam[currentPassage - 1]?.questions || [];
-
+  const questionsPerPage = 5;
+  const questions = data?.exam[currentSection - 1]?.questions || [];
   const startQuestion = (currentQuestionPage - 1) * questionsPerPage;
 
   const endQuestion = Math.min(
@@ -86,20 +45,6 @@ const ReadingTest = () => {
   );
   const totalQuestion = data?.exam.map((p) => p.questions).flat().length;
   const visibleQuestions = questions.slice(startQuestion, endQuestion);
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-  //   }, 1000);
-  //   return () => clearInterval(timer);
-  // }, []);
-  const handleInput =
-    (questionId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAnswers((prev) => ({
-        ...prev,
-        [questionId]: e.target.value,
-      }));
-    };
-
   const handleNextPage = () => {
     if (endQuestion < questions.length) {
       setCurrentQuestionPage((prev) => prev + 1);
@@ -111,31 +56,28 @@ const ReadingTest = () => {
     }
   };
 
+  // const handleAnswerChange = (id: number, value: string) => {
+  //   setQuestions(
+  //     questions.map((question) =>
+  //       question.id === id ? { ...question, answer: value } : question
+  //     )
+  //   );
+  // };
+  // useEffect(() => {
+  //   if (id) {
+  //     refetch();
+  //   }
+  // }, [id]);
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
-      <Header
-        timeLeft={timeLeft}
-        title="Reading Test"
-        isLoading={isLoading}
-        id={id}
-      />
-      <div className="flex-1 my-24 h-full overflow-y-hidden">
-        <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
-          <Card className="p-6 overflow-y-auto">
-            {data?.exam && data.exam.length > 0 ? (
-              <>
-                <h2 className="mb-4 text-2xl font-bold">
-                  {data.exam[currentPassage - 1].title ?? ""}
-                </h2>
-                <p className="mb-4">
-                  {data.exam[currentPassage - 1].passage ?? ""}
-                </p>
-              </>
-            ) : (
-              <p>Loading passage...</p>
-            )}
-          </Card>
-
+      <div
+        className="px-6 flex items-center gap-4 text-lg font-semibold cursor-pointer"
+        onClick={() => nav(Route.Exam)}
+      >
+        <ArrowLeft className="h-8 w-8" /> Back To Exam
+      </div>
+      <div className="flex-1 my-20 h-full overflow-y-hidden relative">
+        <div className="grid grid-cols-1 gap-6 p-6">
           <Card className="p-6 overflow-y-auto">
             <div className="mb-6 rounded-lg bg-blue-900 p-4 text-white">
               <h3 className="text-lg font-semibold">
@@ -159,12 +101,20 @@ const ReadingTest = () => {
                   <p className="text-sm">
                     {startQuestion + index + 1}. {question.question}
                   </p>
-                  <Input
-                    id={question.id}
-                    value={answers[question.id] || ""}
-                    onChange={handleInput(question.id)}
-                    className="w-[1/3] border-b-4 rounded-xl text-[#164C7E] border-[#164C7E]"
-                  />
+                  <Badge
+                    className={cn(
+                      "w-32 h-10 border-b-4 rounded-xl",
+                      result?.summary[startQuestion + index].userAnswer === ""
+                        ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
+                        : result?.summary[startQuestion + index].isCorrect
+                        ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
+                        : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                    )}
+                  >
+                    {result?.summary[startQuestion + index].userAnswer === ""
+                      ? "Not answered"
+                      : result?.summary[startQuestion + index].userAnswer}
+                  </Badge>
                 </div>
               ))}
             </div>
@@ -223,18 +173,18 @@ const ReadingTest = () => {
           </Card>
         </div>
       </div>
-      <ReadingFooter
-        setCurrentPassage={setCurrentPassage}
-        passages={data?.exam ?? []}
-        questions={questions}
-        answers={answers}
-        passageParam={passageParam}
-        setCurrentQuestionPage={setCurrentQuestionPage}
+      <ListeningFooterResult
+        audio={data?.exam[currentSection]?.audio}
+        section={data?.exam ?? []}
+        setCurrentSection={setCurrentSection}
         totalQuestion={totalQuestion}
-        id={id}
+        sectionParam={sectionParam}
+        result = {result}
+        setCurrentQuestionPage={setCurrentQuestionPage}
+        idResult = {idResult}
       />
     </div>
   );
 };
 
-export default ReadingTest;
+export default ListeningTestResult;

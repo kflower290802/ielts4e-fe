@@ -5,13 +5,13 @@ import ListeningFooter from "./components/ListeningFooter";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useListeningExamSection } from "./hooks/useListeningExamSection";
-import { useListenExamAnswers } from "./hooks/useListenExamAnswer";
+import { useListeningExamAnswers } from "./hooks/useListeningExamAnswer";
 
 const ListeningTest = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const sectionParam = searchParams.get("section") ?? "1";
-    const { mutateAsync: examListenAnswers } = useListenExamAnswers();
+  const { mutateAsync: examListenAnswers } = useListeningExamAnswers();
   const [currentSection, setCurrentSection] = useState(
     sectionParam ? parseInt(sectionParam) : 1
   );
@@ -22,7 +22,7 @@ const ListeningTest = () => {
       const initialAnswers: Record<string, string> = {};
       data.exam.forEach((passage) => {
         passage.questions.forEach((question) => {
-          initialAnswers[question.id] = question.answers[0]?.answer || "";
+          initialAnswers[question.id] = question.answer || "";
         });
       });
 
@@ -35,7 +35,7 @@ const ListeningTest = () => {
 
       const answerArray = Object.entries(answers).map(
         ([questionId, answer]) => ({
-          userExamId: id ?? "",
+          examId: id ?? "",
           examPassageQuestionId: questionId,
           answer,
         })
@@ -55,7 +55,6 @@ const ListeningTest = () => {
 
     return () => clearInterval(interval); // Xóa interval khi component unmount
   }, [answers, id, examListenAnswers]);
-
 
   useEffect(() => {
     const newSearchParams = new URLSearchParams();
@@ -123,8 +122,8 @@ const ListeningTest = () => {
                   </p>
                   <Input
                     id={question.id}
-                    value={question.answers[0]?.answer}
-                    onChange={(e) => handleInput(question.id)}
+                    value={answers[question.id] || ""}
+                    onChange={handleInput(question.id)}
                     className="w-[1/3] border-b-4 rounded-xl text-[#164C7E] border-[#164C7E]"
                   />
                 </div>

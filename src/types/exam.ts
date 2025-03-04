@@ -1,4 +1,3 @@
-import { ReadingQuestion } from "./readingExam";
 import { IUserExam } from "./user";
 
 export interface IExam<T> {
@@ -15,11 +14,6 @@ export interface IExamResult {
 }
 export interface IUserAnswer {
   examId: string;
-  examPassageQuestionId: string;
-  answer: string;
-}
-export interface IUserListenAnswer {
-  userExamId: string;
   examPassageQuestionId: string;
   answer: string;
 }

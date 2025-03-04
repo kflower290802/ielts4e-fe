@@ -10,6 +10,9 @@ import PracticeReading from "@/features/Practice/PracticeReading";
 import ReadingResult from "@/features/ExamExercise/ReadingTest/components/ReadingResult";
 import MicrophoneTest from "@/features/ExamExercise/SpeakingTest/MicrophoneTest";
 import SpeakingTest from "@/features/ExamExercise/SpeakingTest/SpeakingTest";
+import WritingTest from "@/features/ExamExercise/WritingTest";
+import WritingTestResult from "@/features/ExamExercise/WritingTest/WritingTestResult";
+import ListeningTestResult from "@/features/ExamExercise/ListeningTest/components/ListeningResult";
 
 export const privateRoutes = [
   {
@@ -50,11 +53,23 @@ export const privateRoutes = [
     path: `${Route.ExamListening}/:id`,
   },
   {
+    element: <ListeningTestResult />,
+    path: `${Route.ExamListeningResult}/:id/:idResult`,
+  },
+  {
     element: <MicrophoneTest />,
     path: `${Route.ExamSpeaking}/:id`,
   },
   {
     element: <SpeakingTest />,
     path: `${Route.ExamSpeakingStart}/:id`,
+  },
+  {
+    element: <WritingTest />,
+    path: `${Route.ExamWriting}/:id`,
+  },
+  {
+    element: <WritingTestResult />,
+    path: `${Route.ExamWriting}/:id`,
   }
 ];

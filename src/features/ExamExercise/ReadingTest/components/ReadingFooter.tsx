@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import React, { memo, useState } from "react";
 import { ExamPassage, ReadingQuestion } from "@/types/readingExam";
 import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
+import { Route } from "@/constant/route";
 interface IProps {
   passages: ExamPassage[];
   answers: Record<string, string>;
@@ -11,7 +12,7 @@ interface IProps {
   setCurrentPassage: React.Dispatch<React.SetStateAction<number>>;
   setCurrentQuestionPage: React.Dispatch<React.SetStateAction<number>>;
   questions: ReadingQuestion[];
-  id: string | undefined
+  id: string | undefined;
 }
 const ReadingFooter = ({
   passages,
@@ -21,7 +22,7 @@ const ReadingFooter = ({
   setCurrentQuestionPage,
   questions,
   answers,
-  id
+  id,
 }: IProps) => {
   const [openDia, setOpenDia] = useState<boolean>(false);
   const answeredQuestionsCount = (passageId: string) => {
@@ -39,6 +40,7 @@ const ReadingFooter = ({
         totalQuestion={totalQuestion}
         answers={answers}
         id={id}
+        route={Route.ExamReadingResult}
       />
       <div className="flex h-full items-center justify-between gap-20">
         <div className="grid grid-cols-5 gap-10 min-w-1/3">
@@ -55,7 +57,7 @@ const ReadingFooter = ({
                     "border-2 border-[#188F09] text-[#188F09]"
                 )}
               >
-                Passage {idx +1}
+                Passage {idx + 1}
               </Button>
               <span>
                 {answeredQuestionsCount(passage.id)}/{passage.questions.length}

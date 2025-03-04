@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { memo } from "react";
-const SpeakingFooter = () => {
+
+const WritingTestFooter = () => {
   return (
     <div className="h-20 px-6 flex justify-between items-center">
       {/* <DialogSubmitConfirm
-      openDia={openDia}
-      setOpenDia={setOpenDia}
-      totalQuestion={totalQuestion}
-      answers={answers}
-      id={id}
-    /> */}
+        openDia={openDia}
+        setOpenDia={setOpenDia}
+        totalQuestion={totalQuestion}
+        answers={answers}
+        id={id}
+      /> */}
       <div className="flex h-full items-center justify-between gap-20">
         <div className="grid grid-cols-5 gap-10 min-w-1/3">
           <div className="flex flex-col items-center gap-3">
@@ -44,4 +44,4 @@ const SpeakingFooter = () => {
   );
 };
 
-export default memo(SpeakingFooter);
+export default WritingTestFooter;

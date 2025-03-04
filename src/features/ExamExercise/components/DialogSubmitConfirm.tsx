@@ -10,6 +10,7 @@ interface IProps {
   answers: Record<string, string>;
   totalQuestion: number | undefined;
   id: string | undefined;
+  route: string
 }
 const DialogSubmitConfirm = ({
   openDia,
@@ -17,6 +18,7 @@ const DialogSubmitConfirm = ({
   answers,
   totalQuestion,
   id,
+  route
 }: IProps) => {
   const { mutateAsync: submit } = useExamReadingSubmit(id ?? "");
   const nav = useNavigate();
@@ -34,7 +36,7 @@ const DialogSubmitConfirm = ({
 
     try {
       const res = await submit(formattedAnswers);
-      nav(`${Route.ExamReadingResult}/${id}/${res}`);
+      nav(`${route}/${id}/${res}`);
     } catch (error) {
       console.error("Failed to submit answers:", error);
     }

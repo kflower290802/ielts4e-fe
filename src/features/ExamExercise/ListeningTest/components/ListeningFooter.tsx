@@ -4,6 +4,7 @@ import AudioPlayer from "./AudioPlayer";
 import { ExamSection } from "@/types/listeningExam";
 import { cn } from "@/lib/utils";
 import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
+import { Route } from "@/constant/route";
 interface IProps {
   audio: string | undefined;
   section: ExamSection[];
@@ -38,12 +39,14 @@ const ListeningFooter = ({
         totalQuestion={totalQuestion}
         answers={answers}
         id={id}
+        route={Route.ExamListeningResult}
       />
       {audio && (
         <div className="absolute -top-5 left-0 right-0 w-full px-6">
           <AudioPlayer
             src={audio ?? ""}
             title="ARE YOU READY TO START THE LISTENING TEST?"
+            idResult= ""
           />
         </div>
       )}

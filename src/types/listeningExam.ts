@@ -18,6 +18,7 @@ export interface ListeningQuestion {
   createdAt: string;
   updatedAt: string;
   answers: ListeningAnswer[];
+  answer: string;
 }
 export interface ListeningAnswer {
   id: string;

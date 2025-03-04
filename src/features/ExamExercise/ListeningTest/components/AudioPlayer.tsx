@@ -2,10 +2,11 @@ import { useRef, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import DialogConfirm from "./DialogConfirm";
 interface IProps {
-  title: string
-  src: string
+  title: string;
+  src: string;
+  idResult: string;
 }
-const AudioPlayer = ({ src,  title }: IProps) => {
+const AudioPlayer = ({ src, title, idResult }: IProps) => {
   const [openDia, setOpenDia] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -54,15 +55,17 @@ const AudioPlayer = ({ src,  title }: IProps) => {
       setProgress(parseFloat(e.target.value));
     }
   };
-  
+
   return (
     <div className="w-full rounded-xl flex items-center gap-4">
-      <DialogConfirm
-        openDia={openDia}
-        setOpenDia={setOpenDia}
-        setIsPlaying={setIsPlaying}
-        title= {title}
-      />
+      {idResult === "" && (
+        <DialogConfirm
+          openDia={openDia}
+          setOpenDia={setOpenDia}
+          setIsPlaying={setIsPlaying}
+          title={title}
+        />
+      )}
       <Input
         type="range"
         min="0"
