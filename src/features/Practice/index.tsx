@@ -17,6 +17,7 @@ interface LearningCard {
   questionCount: number;
   description: string;
   status?: "new" | "continue" | "retry";
+  type: 'reading' | 'writing' | 'listening' | 'speaking' | 'grammar' | 'vocabulary'
 }
 
 const learningCards: LearningCard[] = [
@@ -25,64 +26,54 @@ const learningCards: LearningCard[] = [
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-KzywVbn51vSQTOKuok5e67zLJOxKcJ.png",
     questionCount: 15,
-    description: "Journey to one of the most beautiful lake",
+    description: "reading",
     status: "new",
+    type: "reading",
   },
   {
     id: "1",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-KzywVbn51vSQTOKuok5e67zLJOxKcJ.png",
     questionCount: 15,
-    description: "Journey to one of the most beautiful lake",
+    description: "Writing",
     status: "new",
+    type: "writing",
   },
   {
     id: "1",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-KzywVbn51vSQTOKuok5e67zLJOxKcJ.png",
     questionCount: 15,
-    description: "Journey to one of the most beautiful lake",
+    description: "Listening",
     status: "new",
+    type: "listening",
   },
   {
     id: "1",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-KzywVbn51vSQTOKuok5e67zLJOxKcJ.png",
     questionCount: 15,
-    description: "Journey to one of the most beautiful lake",
-    status: "new",
+    description: "Speaking",
+    status: "new",  
+    type: "speaking",
   },
   {
     id: "1",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-KzywVbn51vSQTOKuok5e67zLJOxKcJ.png",
     questionCount: 15,
-    description: "Journey to one of the most beautiful lake",
+    description: "Grammar",
     status: "new",
+    type: "grammar",
   },
   {
     id: "1",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-KzywVbn51vSQTOKuok5e67zLJOxKcJ.png",
     questionCount: 15,
-    description: "Journey to one of the most beautiful lake",
-    status: "new",
-  },
-  {
-    id: "1",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-KzywVbn51vSQTOKuok5e67zLJOxKcJ.png",
-    questionCount: 15,
-    description: "Journey to one of the most beautiful lake",
-    status: "new",
-  },
-  {
-    id: "1",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-KzywVbn51vSQTOKuok5e67zLJOxKcJ.png",
-    questionCount: 15,
-    description: "Journey to one of the most beautiful lake",
-    status: "new",
+    description: "Vocabulary",
+    status: 'new',
+    type: "vocabulary",
   },
   // Add more cards here...
 ];
@@ -97,9 +88,11 @@ import {
 } from "@/constant/filter";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/constant/route";
+import { useState } from "react";
 
 export function Practice() {
   const nav = useNavigate()
+  const [activeTab, setActiveTab] = useState<string>("reading");
   return (
     <div className="flex h-full p-8 gap-14">
       <div className="w-64 border bg-white rounded-lg p-6">
@@ -146,7 +139,7 @@ export function Practice() {
         </div>
       </div>
       <div className="flex-1 flex justify-between flex-col items-center">
-        <Tabs defaultValue="reading" className="w-full grid-cols-4 gap-6">
+        <Tabs defaultValue="reading" onValueChange={setActiveTab} className="w-full grid-cols-4 gap-6">
           <TabsList className="w-full justify-between">
             {practiceTabs.map((tab) => (
               <TabsTrigger
@@ -162,7 +155,7 @@ export function Practice() {
           {practiceTabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id} className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-                {learningCards.map((card) => (
+                {learningCards.filter((card) => card.type === activeTab).map((card) => (
                   <Card key={card.id} className="overflow-hidden">
                     <CardContent className="p-0 relative">
                       <img
@@ -184,7 +177,7 @@ export function Practice() {
                             ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
                             : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
                         )}
-                        onClick={() => nav(Route.PracticeReading)}
+                        onClick={() => nav(`${Route.Practice}/${card.type}/${card.id}`)}
                       >
                         {card.status === "retry"
                           ? "RETRY"

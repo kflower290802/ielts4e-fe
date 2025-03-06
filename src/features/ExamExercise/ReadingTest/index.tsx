@@ -9,12 +9,16 @@ import { cn } from "@/lib/utils";
 import ReadingFooter from "./components/ReadingFooter";
 import { useExamAnswers } from "./hooks/useExamAnswer";
 import { useReadingExamPassage } from "./hooks/useReadingExamPassage";
+import DialogConfirm from "../ListeningTest/components/DialogConfirm";
 const ReadingTest = () => {
   const { id } = useParams<{ id: string }>();
+  const [openDia, setOpenDia] = useState(false);
   const { data, refetch, isLoading } = useReadingExamPassage(id ?? "");
   const { mutateAsync: examAnswers } = useExamAnswers();
   const [answers, setAnswers] = useState<Record<string, string>>({});
-
+  useEffect(() => {
+    setOpenDia(true);
+  }, []);
   useEffect(() => {
     if (data?.exam) {
       const initialAnswers: Record<string, string> = {};
@@ -117,6 +121,12 @@ const ReadingTest = () => {
         timeLeft={timeLeft}
         title="Reading Test"
         isLoading={isLoading}
+        id={id}
+      />
+      <DialogConfirm
+        openDia={openDia}
+        setOpenDia={setOpenDia}
+        title={"ARE YOU READY TO START THE READING TEST?"}
         id={id}
       />
       <div className="flex-1 my-24 h-full overflow-y-hidden">

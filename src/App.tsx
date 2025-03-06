@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
 import AuthMiddleware from "./middleware/auth-middleware";
 import { RoutesComponent } from "./routes";
+import { AudioRecorderProvider } from "./context/record";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -14,10 +15,12 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-          <AuthMiddleware>
-            <RoutesComponent />
-          </AuthMiddleware>
-          <Toaster />
+      <AuthMiddleware>
+        <AudioRecorderProvider>
+          <RoutesComponent />
+        </AudioRecorderProvider>
+      </AuthMiddleware>
+      <Toaster />
     </QueryClientProvider>
   );
 }

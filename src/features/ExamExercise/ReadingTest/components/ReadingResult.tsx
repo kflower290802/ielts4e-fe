@@ -54,12 +54,7 @@ const ReadingResult = () => {
   };
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
-      <div
-        className="px-6 flex items-center gap-4 text-lg font-semibold cursor-pointer"
-        onClick={() => nav(Route.Exam)}
-      >
-        <ArrowLeft className="h-8 w-8" /> Back To Exam
-      </div>
+      
       <div className="flex-1 h-full overflow-y-hidden">
         <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
           <Card className="p-6 overflow-y-auto">

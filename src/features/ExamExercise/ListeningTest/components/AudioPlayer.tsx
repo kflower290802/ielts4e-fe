@@ -5,12 +5,15 @@ interface IProps {
   title: string;
   src: string;
   idResult: string;
+  id: string | undefined
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>
+  isPlaying: boolean
+  progress: number
+  setProgress: React.Dispatch<React.SetStateAction<number>>
 }
-const AudioPlayer = ({ src, title, idResult }: IProps) => {
+const AudioPlayer = ({ src, title, idResult, id, setIsPlaying, isPlaying, progress, setProgress}: IProps) => {
   const [openDia, setOpenDia] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [remainingTime, setRemainingTime] = useState("0:00");
 
   useEffect(() => {
@@ -64,6 +67,7 @@ const AudioPlayer = ({ src, title, idResult }: IProps) => {
           setOpenDia={setOpenDia}
           setIsPlaying={setIsPlaying}
           title={title}
+          id = {id}
         />
       )}
       <Input

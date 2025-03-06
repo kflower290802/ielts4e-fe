@@ -3,6 +3,8 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DialogPracticeConfirm from "./components/DialogPracticeConfirm";
+import { Route } from "@/constant/route";
+import { useNavigate } from "react-router-dom";
 
 interface QuizQuestion {
   id: number;
@@ -32,12 +34,12 @@ const questions: QuizQuestion[] = [
 ];
 
 export default function PracticeReading() {
-  const [answers, setAnswers] = React.useState<Record<number, string>>({});
   const [openDia, setOpenDia] = React.useState<boolean>(false);
+  const nav = useNavigate()
   return (
     <div className="h-full p-4 flex justify-between">
       <DialogPracticeConfirm openDia={openDia} setOpenDia={setOpenDia} />
-      <Button variant="ghost" className="mb-4 w-fit" size="sm">
+      <Button variant="ghost" className="mb-4 w-fit hover:bg-[#F1FFEF] hover:border-0" size="sm" onClick={() => nav(Route.Practice)}>
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
       <div className="flex flex-col gap-4">

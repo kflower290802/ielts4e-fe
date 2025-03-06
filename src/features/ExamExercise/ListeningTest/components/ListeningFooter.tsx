@@ -23,7 +23,9 @@ const ListeningFooter = ({
   sectionParam,
   id,
 }: IProps) => {
+  const [progress, setProgress] = useState(0);
   const [openDia, setOpenDia] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const answeredQuestionsCount = (sectionId: string) => {
     return (
       section
@@ -44,9 +46,14 @@ const ListeningFooter = ({
       {audio && (
         <div className="absolute -top-5 left-0 right-0 w-full px-6">
           <AudioPlayer
+            id={id}
             src={audio ?? ""}
+            setIsPlaying={setIsPlaying}
+            isPlaying={isPlaying}
             title="ARE YOU READY TO START THE LISTENING TEST?"
-            idResult= ""
+            idResult=""
+            progress={progress}
+            setProgress={setProgress}
           />
         </div>
       )}

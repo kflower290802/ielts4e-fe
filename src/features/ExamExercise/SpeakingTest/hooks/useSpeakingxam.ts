@@ -1,15 +1,15 @@
-import { getListeningExamById } from "@/api/listeningExam";
+import { getSpeakingExamById } from "@/api/speakingExam";
 import { IExam } from "@/types/exam";
-import { ExamSection } from "@/types/listeningExam";
+import { ExamQuestion } from "@/types/speakingExam";
 import { useQuery } from "@tanstack/react-query";
 
-export const useListeningExamSection = (id: string) => {
+export const useSpeakingExam = (id: string) => {
   const { data, error, isLoading, refetch } = useQuery<
-    IExam<ExamSection>,
+    IExam<ExamQuestion>,
     Error
   >({
     queryKey: ["examSection"],
-    queryFn: () => getListeningExamById(id),
+    queryFn: () => getSpeakingExamById(id),
     enabled: !!id,
   });
   return { data, error, isLoading, refetch };

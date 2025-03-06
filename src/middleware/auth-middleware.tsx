@@ -13,7 +13,6 @@ interface AuthMiddlewareProps {
 
 const AuthMiddleware = ({ children }: AuthMiddlewareProps) => {
   const { isAuthenticated } = useAuthStore()
-  console.log(isAuthenticated);
   
   const location = useLocation()
 

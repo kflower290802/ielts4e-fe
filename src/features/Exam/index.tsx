@@ -24,7 +24,6 @@ import { useGetYear } from "../hooks/useGetYear";
 import { examFilters, examTabs, statusFilters } from "@/constant/filter";
 import { Link, useSearchParams } from "react-router-dom";
 import { Route } from "@/constant/route";
-import { startExam } from "@/api/exam";
 
 export function Exam() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -39,9 +38,6 @@ export function Exam() {
     };
   });
   const { data, refetch } = useGetExcercise(params);
-  const handleStart = (id: string) => {
-    startExam(id);
-  };
   useEffect(() => {
     const newSearchParams = new URLSearchParams();
     if (params.status) newSearchParams.set("status", params.status);
@@ -174,7 +170,6 @@ export function Exam() {
                               ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
                               : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
                           )}
-                          onClick={() => handleStart(card.id)}
                         >
                           {card.status === StatusExcercise.Completed
                             ? "RETRY"

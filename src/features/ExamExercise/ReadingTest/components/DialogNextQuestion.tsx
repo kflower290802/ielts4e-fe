@@ -3,31 +3,21 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/constant/route";
-import { startExam } from "@/api/exam";
 interface IProps {
-  setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
-  openDia: boolean;
-  setIsPlaying?: React.Dispatch<React.SetStateAction<boolean>>;
-  title: string;
-  id: string | undefined;
+  setOpenDiaCon: React.Dispatch<React.SetStateAction<boolean>>;
+  openDiaCon: boolean;
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  title: string
 }
-const DialogConfirm = ({
-  openDia,
-  setOpenDia,
+const DialogNextQuestion = ({
+  openDiaCon,
+  setOpenDiaCon,
   setIsPlaying,
-  id,
-  title,
+  title
 }: IProps) => {
   const nav = useNavigate();
-  const handStart = () => {
-    setOpenDia(false);
-    if (setIsPlaying) {
-      setIsPlaying(true);
-    }
-    startExam(id ?? "");
-  };
   return (
-    <Dialog open={openDia} onOpenChange={setOpenDia}>
+    <Dialog open={openDiaCon} onOpenChange={setOpenDiaCon}>
       <DialogContent
         onInteractOutside={(e) => {
           e.preventDefault();
@@ -43,10 +33,10 @@ const DialogConfirm = ({
             Back to Exam
           </Button>
           <Button
-            onClick={handStart}
+            onClick={() => {setIsPlaying(true); setOpenDiaCon(false)}}
             className="bg-[#66B032] hover:bg-[#66B032]/80 text-white font-bold rounded-xl"
           >
-            Start
+            Continute
           </Button>
         </div>
       </DialogContent>
@@ -54,4 +44,4 @@ const DialogConfirm = ({
   );
 };
 
-export default DialogConfirm;
+export default DialogNextQuestion;
