@@ -7,16 +7,15 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import ReadingFooterResult from "./ReadingFooterResult";
 import { useExamResult } from "../hooks/useExamResult";
 import { Badge } from "@/components/ui/badge";
-import { Route } from "@/constant/route";
 import { useReadingExamPassage } from "../hooks/useReadingExamPassage";
+import { Route } from "@/constant/route";
 
 const ReadingResult = () => {
-  const nav = useNavigate();
   const { idResult } = useParams<{ idResult: string }>();
   const { id } = useParams<{ id: string }>();
   const { data } = useReadingExamPassage(id ?? "");
   const { data: result } = useExamResult(idResult ?? "");
-
+  const nav = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const passageParam = searchParams.get("passage") ?? "1";
   const [currentPassage, setCurrentPassage] = useState(
@@ -54,7 +53,12 @@ const ReadingResult = () => {
   };
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
-      
+      <div
+        className="px-6 flex items-center gap-4 text-lg font-semibold cursor-pointer"
+        onClick={() => nav(Route.Exam)}
+      >
+        <ArrowLeft className="h-8 w-8" /> Back To Exam
+      </div>
       <div className="flex-1 h-full overflow-y-hidden">
         <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
           <Card className="p-6 overflow-y-auto">
@@ -82,35 +86,41 @@ const ReadingResult = () => {
             </div>
 
             <div className="space-y-6">
-              {visibleQuestions.map((question, index) => (
-                <div
-                  key={question.id}
-                  className={cn(
-                    "space-y-2 flex border py-2 px-5 rounded-xl",
-                    question.question.length > 50
-                      ? "flex-col items-start gap-2"
-                      : "gap-5 items-center"
-                  )}
-                >
-                  <p className="text-sm">
-                    {startQuestion + index + 1}. {question.question}
-                  </p>
-                  <Badge
+              {visibleQuestions.map((question, index) => {
+                const questionId = question.id;
+                const answerData = result?.summary.find(
+                  (item) => item.questionId === questionId
+                );
+                return (
+                  <div
+                    key={question.id}
                     className={cn(
-                      "w-32 h-10 border-b-4 rounded-xl",
-                      result?.summary[startQuestion + index].userAnswer === ""
-                        ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
-                        : result?.summary[startQuestion + index].isCorrect
-                        ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
-                        : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                      "space-y-2 flex border py-2 px-5 rounded-xl",
+                      question.question.length > 50
+                        ? "flex-col items-start gap-2"
+                        : "gap-5 items-center"
                     )}
                   >
-                    {result?.summary[startQuestion + index].userAnswer === ""
-                      ? "Not answered"
-                      : result?.summary[startQuestion + index].userAnswer}
-                  </Badge>
-                </div>
-              ))}
+                    <p className="text-sm">
+                      {startQuestion + index + 1}. {question.question}
+                    </p>
+                    <Badge
+                      className={cn(
+                        "w-32 h-10 border-b-4 rounded-xl",
+                        answerData?.userAnswer === ""
+                          ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
+                          : answerData?.isCorrect
+                          ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
+                          : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                      )}
+                    >
+                      {answerData?.userAnswer === ""
+                        ? "Not answered"
+                        : answerData?.userAnswer}
+                    </Badge>
+                  </div>
+                );
+              })}
             </div>
             {endQuestion < questions.length ? (
               <div

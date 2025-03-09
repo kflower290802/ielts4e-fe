@@ -23,9 +23,9 @@ const ReadingFooterResult = ({
   return (
     <div className="fixed bottom-0 left-0 right-0 border-t bg-white h-28 px-6">
       <div className="flex h-full items-center justify-between gap-20">
-        <div className="grid grid-cols-5 gap-10 min-w-1/3">
+        <div className="flex gap-10 w-1/3 overflow-x-auto">
           {passages?.map((passage, idx) => (
-            <div className="flex flex-col items-center gap-3" key={passage.id}>
+            <div className="flex flex-col items-center gap-3 py-3" key={passage.id}>
               <Button
                 key={passage.id}
                 onClick={() => setCurrentPassage(idx + 1)}

@@ -3,14 +3,14 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useExamReadingSubmit } from "../ReadingTest/hooks/useExamReadingSubmit";
 import { useNavigate } from "react-router-dom";
-import { Route } from "@/constant/route";
+import { setStorage } from "@/utils/storage";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
   answers: Record<string, string>;
   totalQuestion: number | undefined;
   id: string | undefined;
-  route: string
+  route: string;
 }
 const DialogSubmitConfirm = ({
   openDia,
@@ -18,7 +18,7 @@ const DialogSubmitConfirm = ({
   answers,
   totalQuestion,
   id,
-  route
+  route,
 }: IProps) => {
   const { mutateAsync: submit } = useExamReadingSubmit(id ?? "");
   const nav = useNavigate();
@@ -36,6 +36,7 @@ const DialogSubmitConfirm = ({
 
     try {
       const res = await submit(formattedAnswers);
+      setStorage("isTesting", "false");
       nav(`${route}/${id}/${res}`);
     } catch (error) {
       console.error("Failed to submit answers:", error);

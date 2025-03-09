@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/constant/route";
 import { startExam } from "@/api/exam";
+import { setStorage } from "@/utils/storage";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
   setIsPlaying?: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
   id: string | undefined;
+  type: string
 }
 const DialogConfirm = ({
   openDia,
@@ -17,14 +19,17 @@ const DialogConfirm = ({
   setIsPlaying,
   id,
   title,
+  type
 }: IProps) => {
   const nav = useNavigate();
-  const handStart = () => {
+  const handStart = async() => {
+    await startExam(id ?? "");
     setOpenDia(false);
+    setStorage('isTesting', 'true');
     if (setIsPlaying) {
       setIsPlaying(true);
     }
-    startExam(id ?? "");
+    nav(`${Route.Exam}/${type}/${id}`)
   };
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
@@ -38,7 +43,7 @@ const DialogConfirm = ({
         <div className="flex justify-between items-center w-2/3">
           <Button
             className="bg-[#66B032] hover:bg-[#66B032]/80 text-white font-bold rounded-xl"
-            onClick={() => nav(Route.Exam)}
+            onClick={() => setOpenDia(false)}
           >
             Back to Exam
           </Button>

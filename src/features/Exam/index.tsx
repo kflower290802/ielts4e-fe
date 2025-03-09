@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format } from "date-fns";
 import {
   Pagination,
   PaginationContent,
@@ -22,10 +21,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useGetYear } from "../hooks/useGetYear";
 import { examFilters, examTabs, statusFilters } from "@/constant/filter";
-import { Link, useSearchParams } from "react-router-dom";
-import { Route } from "@/constant/route";
+import { useSearchParams } from "react-router-dom";
+import DialogConfirm from "./components/DialogConfirm";
+import { formatMillisecondsToMMSS } from "@/utils/time";
 
 export function Exam() {
+  const [openDia, setOpenDia] = useState(false);
+  const [id, setId] = useState("");
+  const [type, setType] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = useState<IRequestExcercise>(() => {
     return {
@@ -52,8 +55,20 @@ export function Exam() {
   useEffect(() => {
     refetch();
   }, [params]);
+  const handleStartExam = (id: string, type: string) => {
+    setId(id);
+    setType(type);
+    setOpenDia(true);
+  };
   return (
     <div className="flex h-full p-8 gap-14">
+      <DialogConfirm
+        openDia={openDia}
+        setOpenDia={setOpenDia}
+        title={`ARE YOU READY TO START THE ${type.toUpperCase()} TEST?`}
+        id={id}
+        type={type}
+      />
       <div className="w-64 border bg-white rounded-lg p-6">
         <div className="space-y-6">
           <section>
@@ -147,21 +162,21 @@ export function Exam() {
           {examTabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id} className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-                {data?.data?.map((card) => (
-                  <Card key={card.id} className="overflow-hidden">
-                    <CardContent className="p-0 relative">
-                      <img
-                        src={card.image || "/placeholder.svg"}
-                        alt={card.name}
-                        className="w-full h-24 object-cover"
-                      />
-                      <div className="absolute top-2 left-2 bg-white/90 px-2 py-1 rounded-md text-sm">
-                        {format(card.time, 'mm:ss')}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex flex-col items-center gap-2 p-3">
-                      <p className="text-sm text-center">{card.name}</p>
-                      <Link to={`${Route.Exam}/${card.type}/${card.id}`}>
+                {data?.data?.map((card) => {
+                  return (
+                    <Card key={card.id} className="overflow-hidden">
+                      <CardContent className="p-0 relative">
+                        <img
+                          src={card.image || "/placeholder.svg"}
+                          alt={card.name}
+                          className="w-full h-24 object-cover"
+                        />
+                        <div className="absolute top-2 left-2 bg-white/90 px-2 py-1 rounded-md text-sm">
+                          {formatMillisecondsToMMSS(card.time)}
+                        </div>
+                      </CardContent>
+                      <CardFooter className="flex flex-col items-center gap-2 p-3">
+                        <p className="text-sm text-center">{card.name}</p>
                         <Button
                           className={cn(
                             card.status === StatusExcercise.NotStarted
@@ -170,6 +185,7 @@ export function Exam() {
                               ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
                               : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
                           )}
+                          onClick={() => handleStartExam(card.id, card.type)}
                         >
                           {card.status === StatusExcercise.Completed
                             ? "RETRY"
@@ -177,10 +193,10 @@ export function Exam() {
                             ? "CONTINUTE"
                             : "START"}
                         </Button>
-                      </Link>
-                    </CardFooter>
-                  </Card>
-                ))}
+                      </CardFooter>
+                    </Card>
+                  );
+                })}
               </div>
             </TabsContent>
           ))}

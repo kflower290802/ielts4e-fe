@@ -88,35 +88,41 @@ const ListeningTestResult = () => {
             </div>
 
             <div className="space-y-6">
-              {visibleQuestions.map((question, index) => (
-                <div
-                  key={question.id}
-                  className={cn(
-                    "space-y-2 flex border py-2 px-5 rounded-xl",
-                    question.question.length > 50
-                      ? "flex-col items-start gap-2"
-                      : "gap-5 items-center"
-                  )}
-                >
-                  <p className="text-sm">
-                    {startQuestion + index + 1}. {question.question}
-                  </p>
-                  <Badge
+              {visibleQuestions.map((question, index) => {
+                const questionId = question.id;
+                const answerData = result?.summary.find(
+                  (item) => item.questionId === questionId
+                );
+                return (
+                  <div
+                    key={question.id}
                     className={cn(
-                      "w-32 h-10 border-b-4 rounded-xl",
-                      result?.summary[startQuestion + index].userAnswer === ""
-                        ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
-                        : result?.summary[startQuestion + index].isCorrect
-                        ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
-                        : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                      "space-y-2 flex border py-2 px-5 rounded-xl",
+                      question.question.length > 50
+                        ? "flex-col items-start gap-2"
+                        : "gap-5 items-center"
                     )}
                   >
-                    {result?.summary[startQuestion + index].userAnswer === ""
-                      ? "Not answered"
-                      : result?.summary[startQuestion + index].userAnswer}
-                  </Badge>
-                </div>
-              ))}
+                    <p className="text-sm">
+                      {startQuestion + index + 1}. {question.question}
+                    </p>
+                    <Badge
+                      className={cn(
+                        "w-32 h-10 border-b-4 rounded-xl",
+                        answerData?.userAnswer === ""
+                          ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
+                          : answerData?.isCorrect
+                          ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
+                          : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                      )}
+                    >
+                      {answerData?.userAnswer === ""
+                        ? "Not answered"
+                        : answerData?.userAnswer}
+                    </Badge>
+                  </div>
+                );
+              })}
             </div>
             {endQuestion < questions.length ? (
               <div
@@ -179,9 +185,9 @@ const ListeningTestResult = () => {
         setCurrentSection={setCurrentSection}
         totalQuestion={totalQuestion}
         sectionParam={sectionParam}
-        result = {result}
+        result={result}
         setCurrentQuestionPage={setCurrentQuestionPage}
-        idResult = {idResult}
+        idResult={idResult}
       />
     </div>
   );

@@ -7,6 +7,7 @@ import Header from "../components/Header";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useSpeakingExam } from "./hooks/useSpeakingxam";
 import Recording from "./components/Recording";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const SpeakingTest = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,7 +16,7 @@ const SpeakingTest = () => {
   const [currentQuestion, setCurrentQuestion] = useState(
     questionParam ? parseInt(questionParam) : 1
   );
-  const { data, refetch } = useSpeakingExam(id ?? "");
+  const { data, refetch, isLoading } = useSpeakingExam(id ?? "");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -52,10 +53,23 @@ const SpeakingTest = () => {
       refetch();
     }
   }, [id]);
+  const timeLeft = data?.remainingTime;
   const [showQuestion, setShowQuestion] = useState<boolean>(false);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F1FFEF]">
-      <Header timeLeft={3058} title="Speaking Test" isLoading={false} id={id} />
+      {timeLeft !== undefined && timeLeft !== null ? (
+        <Header
+          timeLeft={timeLeft}
+          title="Speaking Test"
+          isLoading={isLoading}
+          id={id}
+        />
+      ) : (
+        <div className="h-20 fixed top-0 w-full border-b bg-white shadow-lg flex justify-between p-4">
+          <Skeleton className="h-12 w-56" />
+          <Skeleton className="h-12 w-32" />
+        </div>
+      )}
       <div className="flex-1 w-2/3 h-full p-6 bg-[#F5F5F5] mt-24 rounded-lg shadow-sm">
         <div className="mb-6 bg-[#164C7E] h-20 text-white flex gap-10 items-center justify-center rounded-lg">
           <h1 className="text-xl font-semibold">SPEAKING TEST</h1>
@@ -71,10 +85,7 @@ const SpeakingTest = () => {
             </div>
             <div className="w-2/3">
               <AudioPlayer
-                id={id}
-                idResult=""
                 src={data?.exam[currentQuestion - 1]?.audio ?? ""}
-                title="ARE YOU READY TO START THE SPEAKING TEST?"
                 isPlaying={isPlaying}
                 setIsPlaying={setIsPlaying}
                 progress={progress}
@@ -98,7 +109,11 @@ const SpeakingTest = () => {
               <span>{data?.exam[currentQuestion - 1].questions}</span>
             )}
           </div>
-          <Recording data={data} currentQuestion={currentQuestion} />
+          <Recording
+            data={data}
+            currentQuestion={currentQuestion}
+            refetch={refetch}
+          />
         </div>
       </div>
       <SpeakingFooter
@@ -109,6 +124,8 @@ const SpeakingTest = () => {
         answers={answers}
         setIsPlaying={setIsPlaying}
         setProgress={setProgress}
+        id={id}
+        isLoading={isLoading}
       />
     </div>
   );

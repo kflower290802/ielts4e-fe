@@ -3,15 +3,14 @@ import { Textarea } from "@/components/ui/textarea";
 import WritingTestFooter from "./components/WritingTestFooter";
 import Header from "../components/Header";
 import { useParams, useSearchParams } from "react-router-dom";
-import DialogConfirm from "../ListeningTest/components/DialogConfirm";
 import { useWritingExamById } from "./hooks/useWritingExamById";
 import { useWritingExamAnswers } from "./hooks/useWritingExamAnswer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function WritingTest() {
   const { id } = useParams<{ id: string }>();
   const { mutateAsync: writingAnswers } = useWritingExamAnswers();
-  const [openDia, setOpenDia] = useState(false);
-  const { data, refetch } = useWritingExamById(id ?? "");
+  const { data, refetch, isLoading } = useWritingExamById(id ?? "");
   const [searchParams, setSearchParams] = useSearchParams();
   const taskParam = searchParams.get("task") ?? "1";
   const [currentTask, setCurrentTask] = useState(
@@ -69,10 +68,6 @@ export default function WritingTest() {
       refetch();
     }
   }, [id]);
-
-  useEffect(() => {
-    setOpenDia(true);
-  }, []);
   const handleInput =
     (taskId: string) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const text = e.target.value;
@@ -83,15 +78,22 @@ export default function WritingTest() {
 
       setWordCount(text.length);
     };
+    const timeLeft = data?.remainingTime;
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-green-50">
-      <Header timeLeft={3528} title="Writing Test" isLoading={false} id={id} />
-      <DialogConfirm
-        openDia={openDia}
-        setOpenDia={setOpenDia}
-        title={"ARE YOU READY TO START THE WRITING TEST?"}
-        id={id}
-      />
+      {timeLeft !== undefined && timeLeft !== null ? (
+        <Header
+          timeLeft={timeLeft}
+          title="Listening Test"
+          isLoading={isLoading}
+          id={id}
+        />
+      ) : (
+        <div className="h-20 w-full border-b bg-white shadow-lg flex justify-between p-4">
+          <Skeleton className="h-12 w-56" />
+          <Skeleton className="h-12 w-32" />
+        </div>
+      )}
       <div className="flex-1 my-20 h-full w-11/12 overflow-y-hidden relative">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Left Panel - Task Description */}
@@ -137,6 +139,7 @@ export default function WritingTest() {
           currentTask={currentTask}
           tasks={data?.exam}
           answers={answers}
+          id = {id}
         />
       </div>
     </div>

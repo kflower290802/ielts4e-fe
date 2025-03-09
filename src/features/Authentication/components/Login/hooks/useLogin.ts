@@ -16,6 +16,7 @@ export const useLogin = () => {
       const token = data.token;
       const userName = data.user.name;
       setStorage("token", token);
+      setStorage("isTesting", "false")
       setStorage("userName", userName);
       setAuthStatus(true);
       toast.success("Login Success!");

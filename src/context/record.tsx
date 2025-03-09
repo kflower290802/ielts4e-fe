@@ -8,17 +8,16 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import toast from "react-hot-toast";
 
 interface AudioRecorderContextType {
   isRecording: boolean;
   setAudioUrl: React.Dispatch<React.SetStateAction<string | null>>;
   audioUrl: string | null;
-  startRecording: () => Promise<void>;
-  stopRecording: () => void;
+  startRecording: (examSpeakId: string, examId: string) => Promise<void>;
+  stopRecording: (examSpeakId: string, examId: string) => void;
   timeLeft: number;
-  handleSaveAnswer: (examSpeakId: string, examId: string) => void;
-  setAudioBlob: React.Dispatch<React.SetStateAction<Blob | null>>;
+  // handleSaveAnswer: (examSpeakId: string, examId: string) => void;
+  // setAudioBlob: React.Dispatch<React.SetStateAction<Blob | null>>;
 }
 
 const AudioRecorderContext = createContext<
@@ -38,8 +37,8 @@ export const AudioRecorderProvider = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const startRecording = async () => {
+  // const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const startRecording = async (examSpeakId: string, examId: string) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -58,11 +57,10 @@ export const AudioRecorderProvider = ({
         const audioBlob = new Blob(audioChunksRef.current, {
           type: "audio/wav",
         });
-        setAudioBlob(audioBlob);
+        stopRecording(examSpeakId, examId, audioBlob );
         const audioUrl = URL.createObjectURL(audioBlob);
         setAudioUrl(audioUrl);
       };
-
       setIsRecording(true);
 
       // Start the countdown
@@ -82,32 +80,36 @@ export const AudioRecorderProvider = ({
     }
   };
 
-  const stopRecording = useCallback(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
+  const stopRecording = useCallback(
+    (examSpeakId?: string, examId?: string, audioBlob?: Blob) => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
+        mediaRecorderRef.current.stop();
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      setIsRecording(false);
+      setTimeLeft(120);
 
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state !== "inactive"
-    ) {
-      mediaRecorderRef.current.stop();
-    }
-
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-    }
-
-    setIsRecording(false);
-    setTimeLeft(120)
-  }, []);
+      if (audioBlob && examSpeakId && examId) {
+        handleSaveAnswer(examSpeakId, examId, audioBlob);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     return () => {
       stopRecording();
     };
   }, [stopRecording]);
-  const handleSaveAnswer = async (examSpeakId: string, examId: string) => {
+  const handleSaveAnswer = async (examSpeakId: string, examId: string, audioBlob: Blob) => {
     if (!audioBlob) {
       console.log("No audio files were found.");
       return;
@@ -115,13 +117,11 @@ export const AudioRecorderProvider = ({
     const audioFile = new File([audioBlob], "recording.wav", {
       type: "audio/wav",
     });
-    console.log(audioFile);
     const formData = new FormData();
     formData.append("examSpeakId", examSpeakId);
     formData.append("examId", examId);
     formData.append("answer", audioFile);
     await speakAnswer(formData);
-    setAudioBlob(null);
     setAudioUrl(null);
   };
   return (
@@ -129,12 +129,11 @@ export const AudioRecorderProvider = ({
       value={{
         isRecording,
         setAudioUrl,
-        setAudioBlob,
         audioUrl,
         startRecording,
         stopRecording,
         timeLeft,
-        handleSaveAnswer,
+        // handleSaveAnswer,
       }}
     >
       {children}

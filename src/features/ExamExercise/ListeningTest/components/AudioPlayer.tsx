@@ -1,33 +1,49 @@
 import { useRef, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import DialogConfirm from "./DialogConfirm";
 interface IProps {
-  title: string;
   src: string;
-  idResult: string;
-  id: string | undefined
-  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>
-  isPlaying: boolean
-  progress: number
-  setProgress: React.Dispatch<React.SetStateAction<number>>
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  isPlaying: boolean;
+  progress: number;
+  setProgress: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentSection?: React.Dispatch<React.SetStateAction<number>>;
+  currentSection?: number;
+  section?: number;
 }
-const AudioPlayer = ({ src, title, idResult, id, setIsPlaying, isPlaying, progress, setProgress}: IProps) => {
-  const [openDia, setOpenDia] = useState(false);
+const AudioPlayer = ({
+  src,
+  setIsPlaying,
+  isPlaying,
+  progress,
+  setProgress,
+  setCurrentSection,
+  section,
+  currentSection,
+}: IProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [remainingTime, setRemainingTime] = useState("0:00");
-
-  useEffect(() => {
-    setOpenDia(true);
-  }, []);
   useEffect(() => {
     if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.play();
-      } else {
-        audioRef.current.pause();
-      }
+      audioRef.current.src = src;
+      audioRef.current.currentTime = 0;
+      setProgress(0);
+      const playAudio = async () => {
+        try {
+          await audioRef.current?.play();
+          setIsPlaying(true);
+        } catch (error) {
+          console.warn("Autoplay prevented: User interaction required", error);
+        }
+      };
+
+      playAudio();
     }
-  }, [isPlaying]);
+  }, [src]);
+  useEffect(() => {
+    if (progress === 100 && currentSection && section && setCurrentSection && currentSection < section) {
+      setCurrentSection(currentSection + 1);
+    }
+  }, [progress]);
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -61,15 +77,6 @@ const AudioPlayer = ({ src, title, idResult, id, setIsPlaying, isPlaying, progre
 
   return (
     <div className="w-full rounded-xl flex items-center gap-4">
-      {idResult === "" && (
-        <DialogConfirm
-          openDia={openDia}
-          setOpenDia={setOpenDia}
-          setIsPlaying={setIsPlaying}
-          title={title}
-          id = {id}
-        />
-      )}
       <Input
         type="range"
         min="0"

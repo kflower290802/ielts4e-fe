@@ -7,10 +7,13 @@ import { Mic } from "lucide-react";
 interface IProps {
   data: IExam<ExamQuestion> | undefined;
   currentQuestion: number;
+  refetch: () => void;
 }
-const Recording = ({ data, currentQuestion }: IProps) => {
+const Recording = ({ data, currentQuestion, refetch }: IProps) => {
   const { startRecording, isRecording, stopRecording, timeLeft, audioUrl } =
     useAudioRecorder();
+  const examSpeakId = data?.exam[currentQuestion - 1].id || "";
+  const examId = data?.exam[currentQuestion - 1].exam.id || "";
   return (
     <>
       {data?.exam[currentQuestion - 1]?.answer || audioUrl ? (
@@ -32,7 +35,7 @@ const Recording = ({ data, currentQuestion }: IProps) => {
           </p>
           <Button
             className="w-44 p-6 rounded-xl bg-[#3C64CE] text-white font-bold hover:bg-[#3C64CE]/80 transition-colors"
-            onClick={startRecording}
+            onClick={() => startRecording(examSpeakId, examId)}
           >
             START RECORD
           </Button>
@@ -50,7 +53,10 @@ const Recording = ({ data, currentQuestion }: IProps) => {
 
             <Button
               className="w-44 p-6 rounded-xl bg-[#3C64CE] text-white font-bold hover:bg-[#3C64CE]/80 transition-colors"
-              onClick={stopRecording}
+              onClick={() => {
+                stopRecording(examSpeakId, examId);
+                refetch();
+              }}
             >
               STOP RECORD
             </Button>

@@ -138,7 +138,7 @@ export default function MicrophoneTest() {
 
             <div className="flex w-full justify-center gap-16 mt-4">
               <Button
-                onClick={startRecording}
+                onClick={stopRecording}
                 className="w-44 p-6 rounded-xl bg-[#D13030] text-white font-bold hover:bg-[#D13030]/80"
               >
                 STOP RECORD

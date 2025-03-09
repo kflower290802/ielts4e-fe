@@ -43,7 +43,7 @@ const ReadingFooter = ({
         route={Route.ExamReadingResult}
       />
       <div className="flex h-full items-center justify-between gap-20">
-        <div className="grid grid-cols-5 gap-10 min-w-1/3">
+        <div className="flex items-center gap-10 w-1/3 overflow-x-auto">
           {passages?.map((passage, idx) => (
             <div className="flex flex-col items-center gap-3" key={passage.id}>
               <Button
@@ -54,10 +54,10 @@ const ReadingFooter = ({
                     : "bg-white border-2 px-8 py-5 hover:bg-[#164C7E] hover:text-white",
                   answeredQuestionsCount(passage.id) ===
                     passage.questions.length &&
-                    "border-2 border-[#188F09] text-[#188F09]"
+                    "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09]"
                 )}
               >
-                Passage {idx + 1}
+                Passage {idx + 1} 
               </Button>
               <span>
                 {answeredQuestionsCount(passage.id)}/{passage.questions.length}

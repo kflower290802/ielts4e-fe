@@ -6,10 +6,13 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useListeningExamSection } from "./hooks/useListeningExamSection";
 import { useListeningExamAnswers } from "./hooks/useListeningExamAnswer";
+import { getStorage, setStorage } from "@/utils/storage";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ListeningTest = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [openDia, setOpenDia] = useState(false);
   const sectionParam = searchParams.get("section") ?? "1";
   const { mutateAsync: examListenAnswers } = useListeningExamAnswers();
   const [currentSection, setCurrentSection] = useState(
@@ -17,6 +20,13 @@ const ListeningTest = () => {
   );
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const { data, refetch, isLoading } = useListeningExamSection(id ?? "");
+  useEffect(() => {
+    const isTesting = getStorage("isTesting");
+    if (isTesting === "false") {
+      setOpenDia(true);
+      setStorage("isTesting", "true");
+    }
+  }, []);
   useEffect(() => {
     if (data?.exam) {
       const initialAnswers: Record<string, string> = {};
@@ -77,7 +87,7 @@ const ListeningTest = () => {
         [questionId]: e.target.value,
       }));
     };
-
+  const timeLeft = data?.remainingTime;
   // const handleAnswerChange = (id: number, value: string) => {
   //   setQuestions(
   //     questions.map((question) =>
@@ -92,12 +102,19 @@ const ListeningTest = () => {
   // }, [id]);
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
-      <Header
-        timeLeft={3528}
-        title="Listening Test"
-        isLoading={isLoading}
-        id={id}
-      />
+      {timeLeft !== undefined && timeLeft !== null ? (
+        <Header
+          timeLeft={timeLeft}
+          title="Listening Test"
+          isLoading={isLoading}
+          id={id}
+        />
+      ) : (
+        <div className="h-20 w-full border-b bg-white shadow-lg flex justify-between p-4">
+          <Skeleton className="h-12 w-56" />
+          <Skeleton className="h-12 w-32" />
+        </div>
+      )}
       <div className="flex-1 my-20 h-full overflow-y-hidden relative">
         <div className="grid grid-cols-1 gap-6 p-6">
           <div className="p-6 overflow-y-auto">
@@ -133,13 +150,14 @@ const ListeningTest = () => {
         </div>
       </div>
       <ListeningFooter
-        audio={data?.exam[currentSection]?.audio}
+        audio={data?.exam[currentSection - 1]?.audio}
         section={data?.exam ?? []}
         setCurrentSection={setCurrentSection}
         totalQuestion={totalQuestion}
         answers={answers}
         sectionParam={sectionParam}
         id={id}
+        currentSection={currentSection}
       />
     </div>
   );

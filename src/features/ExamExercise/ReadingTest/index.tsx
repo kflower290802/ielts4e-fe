@@ -9,16 +9,12 @@ import { cn } from "@/lib/utils";
 import ReadingFooter from "./components/ReadingFooter";
 import { useExamAnswers } from "./hooks/useExamAnswer";
 import { useReadingExamPassage } from "./hooks/useReadingExamPassage";
-import DialogConfirm from "../ListeningTest/components/DialogConfirm";
+import { Skeleton } from "@/components/ui/skeleton";
 const ReadingTest = () => {
   const { id } = useParams<{ id: string }>();
-  const [openDia, setOpenDia] = useState(false);
   const { data, refetch, isLoading } = useReadingExamPassage(id ?? "");
   const { mutateAsync: examAnswers } = useExamAnswers();
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  useEffect(() => {
-    setOpenDia(true);
-  }, []);
   useEffect(() => {
     if (data?.exam) {
       const initialAnswers: Record<string, string> = {};
@@ -65,7 +61,6 @@ const ReadingTest = () => {
   }, [answers, id, examAnswers]);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [timeLeft, setTimeLeft] = useState(3528);
   const passageParam = searchParams.get("passage") ?? "1";
   const [currentPassage, setCurrentPassage] = useState(
     passageParam ? parseInt(passageParam) : 1
@@ -81,7 +76,7 @@ const ReadingTest = () => {
 
   const questionsPerPage = 4;
   const questions = data?.exam[currentPassage - 1]?.questions || [];
-
+  const timeLeft = data?.remainingTime;
   const startQuestion = (currentQuestionPage - 1) * questionsPerPage;
 
   const endQuestion = Math.min(
@@ -117,18 +112,19 @@ const ReadingTest = () => {
 
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
-      <Header
-        timeLeft={timeLeft}
-        title="Reading Test"
-        isLoading={isLoading}
-        id={id}
-      />
-      <DialogConfirm
-        openDia={openDia}
-        setOpenDia={setOpenDia}
-        title={"ARE YOU READY TO START THE READING TEST?"}
-        id={id}
-      />
+      {timeLeft !== undefined && timeLeft !== null ? (
+        <Header
+          timeLeft={timeLeft}
+          title="Reading Test"
+          isLoading={isLoading}
+          id={id}
+        />
+      ) : (
+        <div className="h-20 w-full border-b bg-white shadow-lg flex justify-between p-4">
+          <Skeleton className="h-12 w-56" />
+          <Skeleton className="h-12 w-32" />
+        </div>
+      )}
       <div className="flex-1 my-24 h-full overflow-y-hidden">
         <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
           <Card className="p-6 overflow-y-auto">

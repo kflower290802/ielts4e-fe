@@ -21,19 +21,9 @@ const ListeningFooterResult = ({
   setCurrentSection,
   sectionParam,
   result,
-  idResult,
 }: IProps) => {
   return (
     <div className="fixed bottom-0 left-0 right-0 border-t bg-white h-32 px-6">
-      {audio && (
-        <div className="absolute -top-5 left-0 right-0 w-full px-6">
-          <AudioPlayer
-            idResult={idResult ?? ""}
-            src={audio ?? ""}
-            title="ARE YOU READY TO START THE LISTENING TEST?"
-          />
-        </div>
-      )}
       <div className="flex h-full items-center pt-5 justify-between gap-20">
         <div className="grid grid-cols-5 gap-10 min-w-1/3">
           {section.map((sectionitem, idx) => (

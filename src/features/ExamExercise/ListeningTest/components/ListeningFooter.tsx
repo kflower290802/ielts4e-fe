@@ -13,6 +13,7 @@ interface IProps {
   answers: Record<string, string>;
   sectionParam: string;
   id: string | undefined;
+  currentSection: number;
 }
 const ListeningFooter = ({
   audio,
@@ -22,6 +23,7 @@ const ListeningFooter = ({
   answers,
   sectionParam,
   id,
+  currentSection,
 }: IProps) => {
   const [progress, setProgress] = useState(0);
   const [openDia, setOpenDia] = useState<boolean>(false);
@@ -46,14 +48,14 @@ const ListeningFooter = ({
       {audio && (
         <div className="absolute -top-5 left-0 right-0 w-full px-6">
           <AudioPlayer
-            id={id}
             src={audio ?? ""}
             setIsPlaying={setIsPlaying}
             isPlaying={isPlaying}
-            title="ARE YOU READY TO START THE LISTENING TEST?"
-            idResult=""
             progress={progress}
+            setCurrentSection={setCurrentSection}
             setProgress={setProgress}
+            currentSection={currentSection}
+            section={section.length}
           />
         </div>
       )}
@@ -65,7 +67,6 @@ const ListeningFooter = ({
               key={sectionitem.id}
             >
               <Button
-                onClick={() => setCurrentSection(idx + 1)}
                 className={cn(
                   Number(sectionParam) === idx + 1
                     ? "bg-white border-2 border-[#164C7E] text-[#164C7E] font-bold px-8 py-5 hover:bg-[#164C7E] hover:text-white"
