@@ -22,8 +22,9 @@ const DialogSubmitConfirm = ({
 }: IProps) => {
   const { mutateAsync: submit } = useExamReadingSubmit(id ?? "");
   const nav = useNavigate();
+  console.log({ answers });
   const totalAnswered = Object.values(answers).filter(
-    (answer) => answer.trim() !== ""
+    (answer) => answer?.trim() !== ""
   ).length;
   const handleSubmit = async () => {
     // Chuyển đổi dữ liệu từ state `answers` sang định dạng mong muốn

@@ -5,11 +5,13 @@ export interface IExam<T> {
   remainingTime: number;
 }
 export interface IExamResult {
-  summary: [{
-    questionId: string;
-    isCorrect: boolean;
-    userAnswer: string;
-  }]
+  summary: [
+    {
+      questionId: string;
+      isCorrect: boolean;
+      userAnswer: string;
+    }
+  ];
   score: number;
 }
 export interface IUserAnswer {
@@ -29,4 +31,14 @@ export interface IExamResponse<T> {
   answer: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export enum EQuestionType {
+  TextBox = "textbox",
+  MultipleChoice = "multiple-choice",
+  SingleChoice = "single-choice",
+  TexBoxPosition = "textbox-position",
+  HeadingPosition = "heading-position",
+  BlankPassageDrag = "blank-passage-drag",
+  BlankPassageTextbox = "blank-passage-textbox",
 }

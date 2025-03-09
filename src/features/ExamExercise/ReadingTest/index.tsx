@@ -4,17 +4,29 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Header from "../components/Header";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import ReadingFooter from "./components/ReadingFooter";
 import { useExamAnswers } from "./hooks/useExamAnswer";
 import { useReadingExamPassage } from "./hooks/useReadingExamPassage";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import BlankSpace from "./components/BlankSpace";
+import Word from "./components/Word";
+import { EQuestionType } from "@/types/exam";
+import SingleChoice from "./components/SingleChoice";
+
 const ReadingTest = () => {
   const { id } = useParams<{ id: string }>();
   const { data, refetch, isLoading } = useReadingExamPassage(id ?? "");
   const { mutateAsync: examAnswers } = useExamAnswers();
   const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  const [filledWordsByPassage, setFilledWordsByPassage] = useState<string[][]>(
+    []
+  );
+
   useEffect(() => {
     if (data?.exam) {
       const initialAnswers: Record<string, string> = {};
@@ -23,16 +35,27 @@ const ReadingTest = () => {
           initialAnswers[question.id] = question.answer || "";
         });
       });
-
       setAnswers(initialAnswers);
     }
   }, [data]);
+
+  // Khởi tạo filledWordsByPassage khi data.exam tải xong
+  useEffect(() => {
+    if (data?.exam && filledWordsByPassage.length === 0) {
+      const initialFilledWords = data.exam.map((passage) =>
+        Array(passage.questions.length).fill("")
+      );
+      setFilledWordsByPassage(initialFilledWords);
+    }
+  }, [data?.exam]);
+
   useEffect(() => {
     if (id) {
       refetch();
     }
-  }, [id]);
+  }, [id, refetch]);
 
+  // Gửi answers định kỳ
   useEffect(() => {
     const sendAnswers = async () => {
       if (Object.keys(answers).length === 0) return;
@@ -55,9 +78,9 @@ const ReadingTest = () => {
 
     const interval = setInterval(() => {
       sendAnswers();
-    }, 20000); // Gửi mỗi 20 giây
+    }, 20000);
 
-    return () => clearInterval(interval); // Xóa interval khi component unmount
+    return () => clearInterval(interval);
   }, [answers, id, examAnswers]);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -78,19 +101,13 @@ const ReadingTest = () => {
   const questions = data?.exam[currentPassage - 1]?.questions || [];
   const timeLeft = data?.remainingTime;
   const startQuestion = (currentQuestionPage - 1) * questionsPerPage;
-
   const endQuestion = Math.min(
     startQuestion + questionsPerPage,
     questions.length
   );
   const totalQuestion = data?.exam.map((p) => p.questions).flat().length;
   const visibleQuestions = questions.slice(startQuestion, endQuestion);
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-  //   }, 1000);
-  //   return () => clearInterval(timer);
-  // }, []);
+
   const handleInput =
     (questionId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
       setAnswers((prev) => ({
@@ -110,6 +127,119 @@ const ReadingTest = () => {
     }
   };
 
+  const blankLength = useMemo(
+    () =>
+      (data?.exam[currentPassage - 1].passage ?? "").split("{blank}").length,
+    [currentPassage, data?.exam]
+  );
+
+  // Lấy filledWords của passage hiện tại
+  const filledWords = filledWordsByPassage[currentPassage - 1] || [];
+
+  const handleDrop = useCallback(
+    (index: number, word: string) => {
+      setFilledWordsByPassage((prev) => {
+        const newFilledWordsByPassage = [...prev];
+        const currentFilledWords = [
+          ...(newFilledWordsByPassage[currentPassage - 1] || []),
+        ];
+        currentFilledWords[index] = word;
+        newFilledWordsByPassage[currentPassage - 1] = currentFilledWords;
+        return newFilledWordsByPassage;
+      });
+      console.log({ visibleQuestions, index });
+      setAnswers((prev) => ({
+        ...prev,
+        [visibleQuestions[index]?.id]: word,
+      }));
+    },
+    [currentPassage, visibleQuestions]
+  );
+
+  // Cập nhật filledWords từ question.answer khi cần
+  useEffect(() => {
+    if (filledWordsByPassage.length > 0) {
+      setFilledWordsByPassage((prev) => {
+        const newFilledWordsByPassage = [...prev];
+        const currentFilledWords = [
+          ...(newFilledWordsByPassage[currentPassage - 1] || []),
+        ];
+        visibleQuestions.forEach((question, index) => {
+          if (!currentFilledWords[index]) {
+            currentFilledWords[index] = question.answer || "";
+          }
+        });
+        newFilledWordsByPassage[currentPassage - 1] = currentFilledWords;
+        return newFilledWordsByPassage;
+      });
+    }
+  }, [
+    JSON.stringify(visibleQuestions),
+    currentPassage,
+    filledWordsByPassage.length,
+  ]);
+
+  const passageType = useMemo(
+    () => data?.exam[currentPassage - 1].type,
+    [currentPassage, data?.exam]
+  );
+
+  const passageContent = (data?.exam[currentPassage - 1].passage ?? "")
+    .split("{blank}")
+    .map((part, index) => (
+      <span key={index}>
+        {part}{" "}
+        {index < blankLength - 1 && (
+          <BlankSpace
+            index={index}
+            onDrop={handleDrop}
+            word={filledWords[index]}
+          />
+        )}
+      </span>
+    ));
+
+  const isHeadingQuestion = passageType === EQuestionType.HeadingPosition;
+  const isSingleChoiceQuestion = passageType === EQuestionType.SingleChoice;
+  const isBlankPassageDrag = passageType === EQuestionType.BlankPassageDrag;
+  const isBlankPassageTextbox =
+    passageType === EQuestionType.BlankPassageTextbox;
+
+  const questionPassageContent = data?.exam[currentPassage - 1].blankPassage
+    ?.split("{blank}")
+    .map((part, index) => (
+      <span key={index}>
+        {part}{" "}
+        {index < blankLength &&
+          (isBlankPassageDrag || isBlankPassageTextbox) &&
+          (isBlankPassageDrag ? (
+            <BlankSpace
+              index={index}
+              onDrop={handleDrop}
+              word={filledWords[index]}
+            />
+          ) : (
+            <Input
+              id={visibleQuestions[index].id}
+              value={answers[visibleQuestions[index].id] || ""}
+              onChange={handleInput(visibleQuestions[index].id)}
+              className="w-[1/3] border-b-4 rounded-xl text-[#164C7E] border-[#164C7E]"
+            />
+          ))}
+      </span>
+    ));
+
+  const visibleAnswers =
+    isHeadingQuestion || isBlankPassageDrag
+      ? visibleQuestions
+          .flatMap((question) => question.answers)
+          .filter((answer) => !filledWords.includes(answer.answer as never))
+      : [];
+
+  const handleSelectSingleAnswer = (questionId: string, answer: string) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: answer }));
+  };
+
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
       {timeLeft !== undefined && timeLeft !== null ? (
@@ -125,6 +255,7 @@ const ReadingTest = () => {
           <Skeleton className="h-12 w-32" />
         </div>
       )}
+      <DndProvider backend={HTML5Backend}>
       <div className="flex-1 my-24 h-full overflow-y-hidden">
         <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
           <Card className="p-6 overflow-y-auto">
@@ -134,7 +265,7 @@ const ReadingTest = () => {
                   {data.exam[currentPassage - 1].title ?? ""}
                 </h2>
                 <p className="mb-4">
-                  {data.exam[currentPassage - 1].passage ?? ""}
+                <p className="mb-4">{passageContent}</p>
                 </p>
               </>
             ) : (
@@ -142,46 +273,101 @@ const ReadingTest = () => {
             )}
           </Card>
 
-          <Card className="p-6 overflow-y-auto">
-            <div className="mb-6 rounded-lg bg-blue-900 p-4 text-white">
-              <h3 className="text-lg font-semibold">
-                QUESTION {startQuestion + 1}
-                {endQuestion === startQuestion + 1 ? "" : `- ${endQuestion}`}
-              </h3>
-              <p>Choose ONE WORD ONLY from the passage for each question</p>
-            </div>
+            <Card className="p-6 overflow-y-auto">
+              <div className="mb-6 rounded-lg bg-blue-900 p-4 text-white">
+                <h3 className="text-lg font-semibold">
+                  QUESTION {startQuestion + 1}
+                  {endQuestion === startQuestion + 1 ? "" : `- ${endQuestion}`}
+                </h3>
+                <p>Choose ONE WORD ONLY from the passage for each question</p>
+              </div>
 
-            <div className="space-y-6">
-              {visibleQuestions.map((question, index) => (
+              <div className="space-y-6">
+                {isSingleChoiceQuestion && (
+                  <div className="space-y-4">
+                    {visibleQuestions.map((question, index) => (
+                      <SingleChoice
+                        question={question}
+                        index={index}
+                        onClick={handleSelectSingleAnswer}
+                        currentAnswer={answers[question.id]}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {(isBlankPassageDrag || isBlankPassageTextbox) && (
+                  <div>{questionPassageContent}</div>
+                )}
+
+                {(isHeadingQuestion || isBlankPassageDrag) && (
+                  <div>
+                    {isHeadingQuestion && (
+                      <p className="text-lg font-bold ">List of Headings</p>
+                    )}
+                    {visibleAnswers.flatMap((answer, index) => (
+                      <Word key={index} answer={answer} />
+                    ))}
+                  </div>
+                )}
+
+                {!isHeadingQuestion &&
+                  !isSingleChoiceQuestion &&
+                  !isBlankPassageDrag &&
+                  !isBlankPassageTextbox &&
+                  visibleQuestions.map((question, index) => (
+                    <div
+                      key={question.id}
+                      className={cn(
+                        "space-y-2 flex border py-2 px-5 rounded-xl",
+                        question.question.length > 50
+                          ? "flex-col items-start gap-2"
+                          : "gap-5 items-center"
+                      )}
+                    >
+                      <p className="text-sm">
+                        {startQuestion + index + 1}. {question.question}
+                      </p>
+                      <Input
+                        id={question.id}
+                        value={answers[question.id] || ""}
+                        onChange={handleInput(question.id)}
+                        className="w-[1/3] border-b-4 rounded-xl text-[#164C7E] border-[#164C7E]"
+                      />
+                    </div>
+                  ))}
+              </div>
+              {endQuestion < questions.length ? (
                 <div
-                  key={question.id}
                   className={cn(
-                    "space-y-2 flex border py-2 px-5 rounded-xl",
-                    question.question.length > 50
-                      ? "flex-col items-start gap-2"
-                      : "gap-5 items-center"
+                    currentQuestionPage > 1 ? "justify-between" : "justify-end",
+                    "mt-4 flex items-center"
                   )}
                 >
-                  <p className="text-sm">
-                    {startQuestion + index + 1}. {question.question}
-                  </p>
-                  <Input
-                    id={question.id}
-                    value={answers[question.id] || ""}
-                    onChange={handleInput(question.id)}
-                    className="w-[1/3] border-b-4 rounded-xl text-[#164C7E] border-[#164C7E]"
-                  />
+                  {currentQuestionPage > 1 ? (
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2"
+                      onClick={handlePrevPage}
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      {startQuestion - questionsPerPage + 1} - {startQuestion}
+                    </Button>
+                  ) : (
+                    ""
+                  )}
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    onClick={handleNextPage}
+                  >
+                    {endQuestion + 1}-
+                    {Math.min(endQuestion + questionsPerPage, questions.length)}
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
                 </div>
-              ))}
-            </div>
-            {endQuestion < questions.length ? (
-              <div
-                className={cn(
-                  currentQuestionPage > 1 ? "justify-between" : "justify-end",
-                  "mt-4 flex items-center"
-                )}
-              >
-                {currentQuestionPage > 1 ? (
+              ) : currentQuestionPage > 1 ? (
+                <div className="mt-4 flex justify-start">
                   <Button
                     variant="outline"
                     className="flex items-center gap-2"
@@ -190,45 +376,15 @@ const ReadingTest = () => {
                     <ArrowLeft className="h-4 w-4" />
                     {startQuestion - questionsPerPage + 1} - {startQuestion}
                   </Button>
-                ) : (
-                  ""
-                )}
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={handleNextPage}
-                >
-                  {endQuestion + 1}
-                  {Math.min(
-                    endQuestion + questionsPerPage,
-                    questions.length
-                  ) ===
-                  endQuestion + 1
-                    ? ""
-                    : -Math.min(
-                        endQuestion + questionsPerPage,
-                        questions.length
-                      )}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : currentQuestionPage > 1 ? (
-              <div className="mt-4 flex justify-start">
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={handlePrevPage}
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  {startQuestion - questionsPerPage + 1} - {startQuestion}
-                </Button>
-              </div>
-            ) : (
-              ""
-            )}
-          </Card>
+                </div>
+              ) : (
+                ""
+              )}
+            </Card>
+          </div>
         </div>
-      </div>
+      </DndProvider>
+
       <ReadingFooter
         setCurrentPassage={setCurrentPassage}
         passages={data?.exam ?? []}
