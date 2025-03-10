@@ -16,12 +16,13 @@ import BlankSpace from "./components/BlankSpace";
 import Word from "./components/Word";
 import { EQuestionType } from "@/types/exam";
 import SingleChoice from "./components/SingleChoice";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const ReadingTest = () => {
   const { id } = useParams<{ id: string }>();
   const { data, refetch, isLoading } = useReadingExamPassage(id ?? "");
   const { mutateAsync: examAnswers } = useExamAnswers();
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
 
   const [filledWordsByPassage, setFilledWordsByPassage] = useState<string[][]>(
     []
@@ -39,7 +40,6 @@ const ReadingTest = () => {
     }
   }, [data]);
 
-  // Khởi tạo filledWordsByPassage khi data.exam tải xong
   useEffect(() => {
     if (data?.exam && filledWordsByPassage.length === 0) {
       const initialFilledWords = data.exam.map((passage) =>
@@ -55,7 +55,6 @@ const ReadingTest = () => {
     }
   }, [id, refetch]);
 
-  // Gửi answers định kỳ
   useEffect(() => {
     const sendAnswers = async () => {
       if (Object.keys(answers).length === 0) return;
@@ -133,7 +132,6 @@ const ReadingTest = () => {
     [currentPassage, data?.exam]
   );
 
-  // Lấy filledWords của passage hiện tại
   const filledWords = filledWordsByPassage[currentPassage - 1] || [];
 
   const handleDrop = useCallback(
@@ -204,6 +202,7 @@ const ReadingTest = () => {
   const isBlankPassageDrag = passageType === EQuestionType.BlankPassageDrag;
   const isBlankPassageTextbox =
     passageType === EQuestionType.BlankPassageTextbox;
+  const isMultipleChoiceQuestion = passageType === EQuestionType.MultipleChoice;
 
   const questionPassageContent = data?.exam[currentPassage - 1].blankPassage
     ?.split("{blank}")
@@ -240,6 +239,17 @@ const ReadingTest = () => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
 
+  const handleCheckedChange = (questionId: string, answer: string) => {
+    setAnswers((prev) => {
+      return {
+        ...prev,
+        [questionId]: prev[questionId].includes(answer)
+          ? ((prev[questionId] as string[]) || []).filter((a) => a !== answer)
+          : [...prev[questionId], answer],
+      };
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
       {timeLeft !== undefined && timeLeft !== null ? (
@@ -256,22 +266,22 @@ const ReadingTest = () => {
         </div>
       )}
       <DndProvider backend={HTML5Backend}>
-      <div className="flex-1 my-24 h-full overflow-y-hidden">
-        <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
-          <Card className="p-6 overflow-y-auto">
-            {data?.exam && data.exam.length > 0 ? (
-              <>
-                <h2 className="mb-4 text-2xl font-bold">
-                  {data.exam[currentPassage - 1].title ?? ""}
-                </h2>
-                <p className="mb-4">
-                <p className="mb-4">{passageContent}</p>
-                </p>
-              </>
-            ) : (
-              <p>Loading passage...</p>
-            )}
-          </Card>
+        <div className="flex-1 my-24 h-full overflow-y-hidden">
+          <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
+            <Card className="p-6 overflow-y-auto">
+              {data?.exam && data.exam.length > 0 ? (
+                <>
+                  <h2 className="mb-4 text-2xl font-bold">
+                    {data.exam[currentPassage - 1].title ?? ""}
+                  </h2>
+                  <p className="mb-4">
+                    <p className="mb-4">{passageContent}</p>
+                  </p>
+                </>
+              ) : (
+                <p>Loading passage...</p>
+              )}
+            </Card>
 
             <Card className="p-6 overflow-y-auto">
               <div className="mb-6 rounded-lg bg-blue-900 p-4 text-white">
@@ -290,8 +300,43 @@ const ReadingTest = () => {
                         question={question}
                         index={index}
                         onClick={handleSelectSingleAnswer}
-                        currentAnswer={answers[question.id]}
+                        currentAnswer={answers[question.id] as string}
                       />
+                    ))}
+                  </div>
+                )}
+
+                {isMultipleChoiceQuestion && (
+                  <div className="space-y-4">
+                    {visibleQuestions.map((question, index) => (
+                      <div className="border rounded-md p-2">
+                        <div className="flex flex-col space-y-2">
+                          <p>
+                            {index + 1}, {question.question}
+                          </p>
+                          <div className="grid grid-cols-2 gap-2">
+                            {question.answers.map((answer) => (
+                              <div
+                                key={answer.id}
+                                className="flex space-x-2 items-center"
+                              >
+                                <Checkbox
+                                  checked={answers[question.id]?.includes(
+                                    answer.answer
+                                  )}
+                                  onCheckedChange={() =>
+                                    handleCheckedChange(
+                                      question.id,
+                                      answer.answer
+                                    )
+                                  }
+                                />
+                                <span>{answer.answer}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -313,6 +358,7 @@ const ReadingTest = () => {
 
                 {!isHeadingQuestion &&
                   !isSingleChoiceQuestion &&
+                  !isMultipleChoiceQuestion &&
                   !isBlankPassageDrag &&
                   !isBlankPassageTextbox &&
                   visibleQuestions.map((question, index) => (
@@ -389,7 +435,7 @@ const ReadingTest = () => {
         setCurrentPassage={setCurrentPassage}
         passages={data?.exam ?? []}
         questions={questions}
-        answers={answers}
+        answers={answers as Record<string, string>}
         passageParam={passageParam}
         setCurrentQuestionPage={setCurrentQuestionPage}
         totalQuestion={totalQuestion}

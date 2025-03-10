@@ -17,7 +17,7 @@ export interface IExamResult {
 export interface IUserAnswer {
   examId: string;
   examPassageQuestionId: string;
-  answer: string;
+  answer: string | string[];
 }
 export interface IExamAnswerSubmit {
   questionId: string;

@@ -7,7 +7,7 @@ import { setStorage } from "@/utils/storage";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
-  answers: Record<string, string>;
+  answers: Record<string, string | string[]>;
   totalQuestion: number | undefined;
   id: string | undefined;
   route: string;
@@ -22,9 +22,8 @@ const DialogSubmitConfirm = ({
 }: IProps) => {
   const { mutateAsync: submit } = useExamReadingSubmit(id ?? "");
   const nav = useNavigate();
-  console.log({ answers });
-  const totalAnswered = Object.values(answers).filter(
-    (answer) => answer?.trim() !== ""
+  const totalAnswered = Object.values(answers).filter((answer) =>
+    Array.isArray(answer) ? answer.length : answer?.trim() !== ""
   ).length;
   const handleSubmit = async () => {
     // Chuyển đổi dữ liệu từ state `answers` sang định dạng mong muốn

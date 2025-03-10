@@ -1,3 +1,5 @@
+import { EQuestionType } from "./exam";
+
 export interface ExamSection {
   id: string;
   audio: string;
@@ -7,6 +9,7 @@ export interface ExamSection {
   createdAt: string;
   updatedAt: string;
   questions: ListeningQuestion[];
+  type: EQuestionType;
 }
 export interface ListeningQuestion {
   id: string;

@@ -10,7 +10,7 @@ interface IProps {
   section: ExamSection[];
   setCurrentSection: React.Dispatch<React.SetStateAction<number>>;
   totalQuestion: number | undefined;
-  answers: Record<string, string>;
+  answers: Record<string, string | string[]>;
   sectionParam: string;
   id: string | undefined;
   currentSection: number;

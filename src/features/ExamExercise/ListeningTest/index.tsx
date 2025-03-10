@@ -1,6 +1,6 @@
 import Header from "../components/Header";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ListeningFooter from "./components/ListeningFooter";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -8,6 +8,9 @@ import { useListeningExamSection } from "./hooks/useListeningExamSection";
 import { useListeningExamAnswers } from "./hooks/useListeningExamAnswer";
 import { getStorage, setStorage } from "@/utils/storage";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EQuestionType } from "@/types/exam";
+import SingleChoice from "./components/SingleChoice";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const ListeningTest = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,8 +21,9 @@ const ListeningTest = () => {
   const [currentSection, setCurrentSection] = useState(
     sectionParam ? parseInt(sectionParam) : 1
   );
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const { data, refetch, isLoading } = useListeningExamSection(id ?? "");
+
   useEffect(() => {
     const isTesting = getStorage("isTesting");
     if (isTesting === "false") {
@@ -79,6 +83,16 @@ const ListeningTest = () => {
     }
   }, [id]);
   const questions = data?.exam[currentSection - 1]?.questions || [];
+
+  const sectionType = useMemo(
+    () => data?.exam[currentSection - 1]?.type,
+    [currentSection, data?.exam]
+  );
+
+  const isSingleChoiceQuestion = sectionType === EQuestionType.SingleChoice;
+
+  const isMultipleChoiceQuestion = sectionType === EQuestionType.MultipleChoice;
+
   const totalQuestion = data?.exam.map((p) => p.questions).flat().length;
   const handleInput =
     (questionId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,6 +102,18 @@ const ListeningTest = () => {
       }));
     };
   const timeLeft = data?.remainingTime;
+
+  const handleCheckedChange = (questionId: string, answer: string) => {
+    setAnswers((prev) => {
+      return {
+        ...prev,
+        [questionId]: prev[questionId].includes(answer)
+          ? ((prev[questionId] as string[]) || []).filter((a) => a !== answer)
+          : [...prev[questionId], answer],
+      };
+    });
+  };
+
   // const handleAnswerChange = (id: number, value: string) => {
   //   setQuestions(
   //     questions.map((question) =>
@@ -100,6 +126,11 @@ const ListeningTest = () => {
   //     refetch();
   //   }
   // }, [id]);
+
+  const handleSelectSingleAnswer = (questionId: string, answer: string) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: answer }));
+  };
+
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
       {timeLeft !== undefined && timeLeft !== null ? (
@@ -123,28 +154,68 @@ const ListeningTest = () => {
               <p>Choose ONE WORD ONLY from the passage for each question</p>
             </div>
             <div className="space-y-4">
-              {questions.map((question, index) => (
-                <div
-                  key={question.id}
-                  className={cn(
-                    "space-y-2 flex border py-2 px-5 rounded-xl",
-                    question.question.length > 150
-                      ? "flex-col items-start gap-2"
-                      : "gap-5 items-center"
-                  )}
-                >
-                  <p className="text-sm">
-                    <span className="font-bold">{index + 1}, </span>
-                    {question.question}
-                  </p>
-                  <Input
-                    id={question.id}
-                    value={answers[question.id] || ""}
-                    onChange={handleInput(question.id)}
-                    className="w-[1/3] border-b-4 rounded-xl text-[#164C7E] border-[#164C7E]"
+              {isSingleChoiceQuestion &&
+                questions.map((question, index) => (
+                  <SingleChoice
+                    index={index}
+                    key={question.id}
+                    question={question}
+                    currentAnswer={answers[question.id] as string}
+                    onClick={handleSelectSingleAnswer}
                   />
-                </div>
-              ))}
+                ))}
+              {isMultipleChoiceQuestion &&
+                questions.map((question, index) => (
+                  <div className="border rounded-md p-2">
+                    <div className="flex flex-col space-y-2">
+                      <p>
+                        {index + 1}, {question.question}
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {question.answers.map((answer) => (
+                          <div
+                            key={answer.id}
+                            className="flex space-x-2 items-center"
+                          >
+                            <Checkbox
+                              checked={answers[question.id]?.includes(
+                                answer.answer
+                              )}
+                              onCheckedChange={() =>
+                                handleCheckedChange(question.id, answer.answer)
+                              }
+                            />
+                            <span>{answer.answer}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              {!isSingleChoiceQuestion &&
+                !isMultipleChoiceQuestion &&
+                questions.map((question, index) => (
+                  <div
+                    key={question.id}
+                    className={cn(
+                      "space-y-2 flex border py-2 px-5 rounded-xl",
+                      question.question.length > 150
+                        ? "flex-col items-start gap-2"
+                        : "gap-5 items-center"
+                    )}
+                  >
+                    <p className="text-sm">
+                      <span className="font-bold">{index + 1}, </span>
+                      {question.question}
+                    </p>
+                    <Input
+                      id={question.id}
+                      value={answers[question.id] || ""}
+                      onChange={handleInput(question.id)}
+                      className="w-[1/3] border-b-4 rounded-xl text-[#164C7E] border-[#164C7E]"
+                    />
+                  </div>
+                ))}
             </div>
           </div>
         </div>
