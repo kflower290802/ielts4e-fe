@@ -10,6 +10,7 @@ export interface IExamResult {
       questionId: string;
       isCorrect: boolean;
       userAnswer: string;
+      correctAnswer: string;
     }
   ];
   score: number;

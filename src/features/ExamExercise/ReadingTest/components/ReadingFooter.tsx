@@ -47,7 +47,10 @@ const ReadingFooter = ({
           {passages?.map((passage, idx) => (
             <div className="flex flex-col items-center gap-3" key={passage.id}>
               <Button
-                onClick={() => setCurrentPassage(idx + 1)}
+                onClick={() => {
+                  setCurrentPassage(idx + 1);
+                  setCurrentQuestionPage(1);
+                }}
                 className={cn(
                   Number(passageParam) === idx + 1
                     ? "bg-white border-2 border-[#164C7E] text-[#164C7E] font-bold px-8 py-5 hover:bg-[#164C7E] hover:text-white"
@@ -57,7 +60,7 @@ const ReadingFooter = ({
                     "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09]"
                 )}
               >
-                Passage {idx + 1} 
+                Passage {idx + 1}
               </Button>
               <span>
                 {answeredQuestionsCount(passage.id)}/{passage.questions.length}

@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { useExamResult } from "../hooks/useExamResult";
 import { Badge } from "@/components/ui/badge";
 import { useReadingExamPassage } from "../hooks/useReadingExamPassage";
 import { Route } from "@/constant/route";
+import { EQuestionType } from "@/types/exam";
+import SingleChoiceResult from "./SingleChoiceResult";
 
 const ReadingResult = () => {
   const { idResult } = useParams<{ idResult: string }>();
@@ -39,7 +41,84 @@ const ReadingResult = () => {
     startQuestion + questionsPerPage,
     questions.length
   );
+  const passageType = useMemo(
+    () => data?.exam[currentPassage - 1].type,
+    [currentPassage, data?.exam]
+  );
   const visibleQuestions = questions.slice(startQuestion, endQuestion);
+  const isSingleChoiceQuestion = passageType === EQuestionType.SingleChoice;
+  const isHeadingQuestion = passageType === EQuestionType.HeadingPosition;
+  const isBlankPassageDrag = passageType === EQuestionType.BlankPassageDrag;
+  const blankLength = useMemo(
+    () =>
+      (data?.exam[currentPassage - 1]?.passage ?? "").split("{blank}").length,
+    [currentPassage, data?.exam]
+  );
+  const isBlankPassageTextbox =
+    passageType === EQuestionType.BlankPassageTextbox;
+  const questionPassageContent = data?.exam[currentPassage - 1].blankPassage
+    ?.split("{blank}")
+    .map((part, index) => {
+      const questionId = visibleQuestions[index]?.id;
+      const questionSummary = result?.summary.find(
+        (q) => q.questionId === questionId
+      );
+
+      return (
+        <span key={index}>
+          {part}{" "}
+          {index < blankLength &&
+            (isBlankPassageDrag || isBlankPassageTextbox) &&
+            (isBlankPassageDrag ? (
+              questionSummary?.isCorrect ? (
+                <Badge
+                  id={questionId}
+                  className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-[#66B032]/80 border-[#66B032]"
+                >
+                  {questionSummary?.userAnswer}
+                </Badge>
+              ) : (
+                <div className="flex items-center gap-5">
+                  <Badge
+                    id={questionId}
+                    className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-red-300 border-red-500"
+                  >
+                    {questionSummary?.userAnswer}
+                  </Badge>
+                  <Badge
+                    id={questionId}
+                    className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-[#66B032]/70 border-[#66B032]"
+                  >
+                    {questionSummary?.correctAnswer}
+                  </Badge>
+                </div>
+              )
+            ) : questionSummary?.isCorrect ? (
+              <Badge
+                id={questionId}
+                className="w-32 h-8 text-center border-b-4 rounded-xl text-[#164C7E] bg-[#66B032] border-[#164C7E]"
+              >
+                {questionSummary?.userAnswer}
+              </Badge>
+            ) : (
+              <div className="flex items-center gap-5">
+                <Badge
+                  id={questionId}
+                  className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-red-300 border-red-500"
+                >
+                  {questionSummary?.userAnswer}
+                </Badge>
+                <Badge
+                  id={questionId}
+                  className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-[#66B032]/70 border-[#66B032]"
+                >
+                  {questionSummary?.correctAnswer}
+                </Badge>
+              </div>
+            ))}
+        </span>
+      );
+    });
 
   const handleNextPage = () => {
     if (endQuestion < questions.length) {
@@ -86,41 +165,67 @@ const ReadingResult = () => {
             </div>
 
             <div className="space-y-6">
-              {visibleQuestions.map((question, index) => {
-                const questionId = question.id;
-                const answerData = result?.summary.find(
-                  (item) => item.questionId === questionId
-                );
-                return (
-                  <div
-                    key={question.id}
-                    className={cn(
-                      "space-y-2 flex border py-2 px-5 rounded-xl",
-                      question.question.length > 50
-                        ? "flex-col items-start gap-2"
-                        : "gap-5 items-center"
-                    )}
-                  >
-                    <p className="text-sm">
-                      {startQuestion + index + 1}. {question.question}
-                    </p>
-                    <Badge
+              {isSingleChoiceQuestion && (
+                <div className="space-y-4">
+                  {visibleQuestions.map((question, index) => {
+                    const questionId = question.id;
+                    const answerData = result?.summary.find(
+                      (item) => item.questionId === questionId
+                    );
+                    return (
+                      <SingleChoiceResult
+                        question={question}
+                        index={index}
+                        userAnswer={answerData?.userAnswer}
+                        correctAnswer={answerData?.correctAnswer}
+                        isCorrect = {answerData?.isCorrect}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+              {(isBlankPassageDrag || isBlankPassageTextbox) && (
+                <div>{questionPassageContent}</div>
+              )}
+              {!isHeadingQuestion &&
+                !isSingleChoiceQuestion &&
+                !isBlankPassageDrag &&
+                !isBlankPassageTextbox &&
+                visibleQuestions.map((question, index) => {
+                  const questionId = question.id;
+                  const answerData = result?.summary.find(
+                    (item) => item.questionId === questionId
+                  );
+                  return (
+                    <div
+                      key={question.id}
                       className={cn(
-                        "w-32 h-10 border-b-4 rounded-xl",
-                        answerData?.userAnswer === ""
-                          ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
-                          : answerData?.isCorrect
-                          ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
-                          : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                        "space-y-2 flex border py-2 px-5 rounded-xl",
+                        question.question.length > 50
+                          ? "flex-col items-start gap-2"
+                          : "gap-5 items-center"
                       )}
                     >
-                      {answerData?.userAnswer === ""
-                        ? "Not answered"
-                        : answerData?.userAnswer}
-                    </Badge>
-                  </div>
-                );
-              })}
+                      <p className="text-sm">
+                        {startQuestion + index + 1}. {question.question}
+                      </p>
+                      <Badge
+                        className={cn(
+                          "w-32 h-10 border-b-4 rounded-xl",
+                          answerData?.userAnswer === ""
+                            ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
+                            : answerData?.isCorrect
+                            ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
+                            : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                        )}
+                      >
+                        {answerData?.userAnswer === ""
+                          ? "Not answered"
+                          : answerData?.userAnswer}
+                      </Badge>
+                    </div>
+                  );
+                })}
             </div>
             {endQuestion < questions.length ? (
               <div
