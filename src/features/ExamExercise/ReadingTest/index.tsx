@@ -96,7 +96,7 @@ const ReadingTest = () => {
     setSearchParams(newSearchParams);
   }, [currentPassage, setSearchParams]);
 
-  const questionsPerPage = 4;
+  const questionsPerPage = 20;
   const questions = data?.exam[currentPassage - 1]?.questions || [];
   const timeLeft = data?.remainingTime;
   const startQuestion = (currentQuestionPage - 1) * questionsPerPage;
@@ -204,12 +204,15 @@ const ReadingTest = () => {
     passageType === EQuestionType.BlankPassageTextbox;
   const isMultipleChoiceQuestion = passageType === EQuestionType.MultipleChoice;
 
+  const blankPassageLength =
+    data?.exam[currentPassage - 1].blankPassage?.split("{blank}").length || 0;
+
   const questionPassageContent = data?.exam[currentPassage - 1].blankPassage
     ?.split("{blank}")
     .map((part, index) => (
       <span key={index}>
         {part}{" "}
-        {index < blankLength &&
+        {index < blankPassageLength - 1 &&
           (isBlankPassageDrag || isBlankPassageTextbox) &&
           (isBlankPassageDrag ? (
             <BlankSpace
