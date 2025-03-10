@@ -6,17 +6,19 @@ import React from "react";
 interface Props {
   index: number;
   question: ReadingQuestion;
-  onClick: (questionId: string, answer: string) => void;
-  currentAnswer: string;
+  userAnswer: string | undefined;
+  correctAnswer: string | undefined;
+  isCorrect: boolean | undefined;
 }
 
 const AnswerList = ["A", "B", "C", "D", "E"];
 
-const SingleChoice: React.FC<Props> = ({
+const SingleChoiceResult: React.FC<Props> = ({
   index,
   question,
-  onClick,
-  currentAnswer,
+  userAnswer,
+  correctAnswer,
+  isCorrect,
 }) => {
   return (
     <div className="border rounded-md p-2">
@@ -29,10 +31,14 @@ const SingleChoice: React.FC<Props> = ({
             <div key={answer.id} className="flex space-x-2 items-center">
               <Button
                 className={cn(
-                  "rounded-full bg-[#D9D9D9] font-bold hover:bg-[#3C64CE]/70",
-                  currentAnswer === answer.answer && "bg-[#3C64CE] text-white"
+                  "rounded-full bg-[#D9D9D9] font-bold",
+                  answer.answer === userAnswer && isCorrect
+                    ? "bg-[#66B032] text-white"
+                    : !isCorrect && answer.answer === userAnswer
+                    ? "bg-red-500 text-white"
+                    : !isCorrect && correctAnswer === answer.answer && "bg-[#66B032] text-white",
+                    !isCorrect && userAnswer === '' && answer.answer === correctAnswer && 'bg-yellow-500 text-white'
                 )}
-                onClick={() => onClick(question.id, answer.answer)}
               >
                 {AnswerList[index]}
               </Button>
@@ -45,4 +51,4 @@ const SingleChoice: React.FC<Props> = ({
   );
 };
 
-export default SingleChoice;
+export default SingleChoiceResult;

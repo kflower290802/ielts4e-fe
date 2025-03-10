@@ -128,7 +128,7 @@ const ReadingTest = () => {
 
   const blankLength = useMemo(
     () =>
-      (data?.exam[currentPassage - 1].passage ?? "").split("{blank}").length,
+      (data?.exam[currentPassage - 1]?.passage ?? "").split("{blank}").length,
     [currentPassage, data?.exam]
   );
 
