@@ -78,7 +78,7 @@ export default function WritingTest() {
 
       setWordCount(text.length);
     };
-    const timeLeft = data?.remainingTime;
+  const timeLeft = data?.remainingTime;
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-green-50">
       {timeLeft !== undefined && timeLeft !== null ? (
@@ -104,14 +104,17 @@ export default function WritingTest() {
               </h2>
               <span>{data?.exam[currentTask - 1].content}</span>
             </span>
-            <div className="flex justify-center mb-4">
-              <img
-                src={data?.exam[currentTask - 1].image}
-                alt="Diagram showing flood protection methods"
-                className="border border-gray-200 rounded w-11/12 h-72 object-contain
+
+            {data?.exam[currentTask - 1].image && (
+              <div className="flex justify-center mb-4">
+                <img
+                  src={data?.exam[currentTask - 1].image}
+                  alt="Diagram showing flood protection methods"
+                  className="border border-gray-200 rounded w-11/12 h-72 object-contain
                 "
-              />
-            </div>
+                />
+              </div>
+            )}
           </div>
 
           {/* Right Panel - Text Editor */}
@@ -139,7 +142,7 @@ export default function WritingTest() {
           currentTask={currentTask}
           tasks={data?.exam}
           answers={answers}
-          id = {id}
+          id={id}
         />
       </div>
     </div>

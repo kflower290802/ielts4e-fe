@@ -353,9 +353,11 @@ const ReadingTest = () => {
                     {isHeadingQuestion && (
                       <p className="text-lg font-bold ">List of Headings</p>
                     )}
-                    {visibleAnswers.flatMap((answer, index) => (
-                      <Word key={index} answer={answer} />
-                    ))}
+                    <div className="flex space-x-2">
+                      {visibleAnswers.flatMap((answer, index) => (
+                        <Word key={index} answer={answer} />
+                      ))}
+                    </div>
                   </div>
                 )}
 
