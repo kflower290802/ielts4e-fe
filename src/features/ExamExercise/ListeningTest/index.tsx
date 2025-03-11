@@ -199,7 +199,7 @@ const ListeningTest = () => {
                     key={question.id}
                     className={cn(
                       "space-y-2 flex border py-2 px-5 rounded-xl",
-                      question.question.length > 150
+                      question.question.length > 200
                         ? "flex-col items-start gap-2"
                         : "gap-5 items-center"
                     )}

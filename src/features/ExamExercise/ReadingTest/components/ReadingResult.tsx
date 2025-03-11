@@ -32,7 +32,7 @@ const ReadingResult = () => {
     setSearchParams(newSearchParams);
   }, [currentPassage, setSearchParams]);
 
-  const questionsPerPage = 4;
+  const questionsPerPage = 20;
   const questions = data?.exam[currentPassage - 1]?.questions || [];
 
   const startQuestion = (currentQuestionPage - 1) * questionsPerPage;
@@ -49,11 +49,8 @@ const ReadingResult = () => {
   const isSingleChoiceQuestion = passageType === EQuestionType.SingleChoice;
   const isHeadingQuestion = passageType === EQuestionType.HeadingPosition;
   const isBlankPassageDrag = passageType === EQuestionType.BlankPassageDrag;
-  const blankLength = useMemo(
-    () =>
-      (data?.exam[currentPassage - 1]?.passage ?? "").split("{blank}").length,
-    [currentPassage, data?.exam]
-  );
+  const blankPassageLength =
+    data?.exam[currentPassage - 1].blankPassage?.split("{blank}").length || 0;
   const isBlankPassageTextbox =
     passageType === EQuestionType.BlankPassageTextbox;
   const questionPassageContent = data?.exam[currentPassage - 1].blankPassage
@@ -66,55 +63,85 @@ const ReadingResult = () => {
 
       return (
         <span key={index}>
-          {part}{" "}
-          {index < blankLength &&
+          {part}
+          {index < blankPassageLength - 1 &&
             (isBlankPassageDrag || isBlankPassageTextbox) &&
             (isBlankPassageDrag ? (
               questionSummary?.isCorrect ? (
-                <Badge
-                  id={questionId}
-                  className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-[#66B032]/80 border-[#66B032]"
-                >
-                  {questionSummary?.userAnswer}
-                </Badge>
-              ) : (
+                <>
+                  <Badge
+                    id={questionId}
+                    className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent hover:bg-[#66B032]/70 border-[#66B032]"
+                  >
+                    {questionSummary?.userAnswer}
+                  </Badge>
+                </>
+              ) : !questionSummary?.isCorrect &&
+                questionSummary?.userAnswer !== "" ? (
                 <div className="flex items-center gap-5">
                   <Badge
                     id={questionId}
-                    className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-red-300 border-red-500"
+                    className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent border-red-500 hover:bg-red-300"
                   >
                     {questionSummary?.userAnswer}
                   </Badge>
                   <Badge
                     id={questionId}
-                    className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-[#66B032]/70 border-[#66B032]"
+                    className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent border-[#66B032] hover:bg-[#66B032]/70"
                   >
                     {questionSummary?.correctAnswer}
                   </Badge>
                 </div>
+              ) : (
+                !questionSummary?.isCorrect &&
+                questionSummary?.userAnswer === "" && (
+                  <div className="w-fit">
+                    <Badge
+                      id={questionId}
+                      className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent border-yellow-500 hover:bg-yellow-300"
+                    >
+                      {questionSummary?.correctAnswer}
+                    </Badge>
+                  </div>
+                )
               )
             ) : questionSummary?.isCorrect ? (
-              <Badge
-                id={questionId}
-                className="w-32 h-8 text-center border-b-4 rounded-xl text-[#164C7E] bg-[#66B032] border-[#164C7E]"
-              >
-                {questionSummary?.userAnswer}
-              </Badge>
-            ) : (
+              <div>
+                <Badge
+                  id={questionId}
+                  className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent hover:bg-[#66B032]/80 border-[#66B032]"
+                >
+                  {questionSummary?.userAnswer}
+                </Badge>
+              </div>
+            ) : !questionSummary?.isCorrect &&
+              questionSummary?.userAnswer !== "" ? (
               <div className="flex items-center gap-5">
                 <Badge
                   id={questionId}
-                  className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-red-300 border-red-500"
+                  className="w-32 h-8 text-center border-b-4 rounded-xl text-black bg-transparent hover:bg-red-600 hover:text-white border-red-500"
                 >
                   {questionSummary?.userAnswer}
                 </Badge>
                 <Badge
                   id={questionId}
-                  className="w-32 h-8 text-center border-b-4 rounded-xl text-white bg-[#66B032]/70 border-[#66B032]"
+                  className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent hover:bg-[#66B032]/80 border-[#66B032]"
                 >
                   {questionSummary?.correctAnswer}
                 </Badge>
               </div>
+            ) : (
+              !questionSummary?.isCorrect &&
+              questionSummary?.userAnswer === "" && (
+                <div>
+                  <Badge
+                    id={questionId}
+                    className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent border-yellow-500 hover:bg-yellow-600 hover:text-white"
+                  >
+                    {questionSummary?.correctAnswer}
+                  </Badge>
+                </div>
+              )
             ))}
         </span>
       );
@@ -178,7 +205,7 @@ const ReadingResult = () => {
                         index={index}
                         userAnswer={answerData?.userAnswer}
                         correctAnswer={answerData?.correctAnswer}
-                        isCorrect = {answerData?.isCorrect}
+                        isCorrect={answerData?.isCorrect}
                       />
                     );
                   })}

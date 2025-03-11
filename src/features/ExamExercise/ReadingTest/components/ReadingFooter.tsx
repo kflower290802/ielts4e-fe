@@ -83,7 +83,7 @@ const ReadingFooter = ({
                       : "bg-[#D9D9D9] hover:bg-[#3C64CE] hover:text-white"
                   )}
                   onClick={() => {
-                    const newPage = Math.floor(idx / 4) + 1;
+                    const newPage = Math.floor(idx / 20) + 1;
                     setCurrentQuestionPage(newPage);
                   }}
                 >

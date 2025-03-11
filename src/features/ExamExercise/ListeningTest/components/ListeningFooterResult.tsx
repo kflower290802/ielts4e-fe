@@ -1,22 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { memo } from "react";
-import AudioPlayer from "./AudioPlayer";
 import { ExamSection } from "@/types/listeningExam";
 import { cn } from "@/lib/utils";
 import { IExamResult } from "@/types/exam";
 import { Badge } from "@/components/ui/badge";
 interface IProps {
-  audio: string | undefined;
   section: ExamSection[];
   setCurrentSection: React.Dispatch<React.SetStateAction<number>>;
   totalQuestion: number | undefined;
   sectionParam: string;
   result: IExamResult | undefined;
   idResult: string | undefined;
-  setCurrentQuestionPage: React.Dispatch<React.SetStateAction<number>>;
 }
 const ListeningFooterResult = ({
-  audio,
   section,
   setCurrentSection,
   sectionParam,
@@ -46,7 +42,7 @@ const ListeningFooterResult = ({
         </div>
         <div className="w-1/6 flex justify-end">
           <Badge className="ml-4 bg-[#66B032] py-2 px-4 hover:bg-[#66B032]/80 text-base text-white font-bold rounded-xl">
-            Score: {result?.score} / 10
+            Score: {result?.score.toFixed(2)} / 10
           </Badge>
         </div>
       </div>

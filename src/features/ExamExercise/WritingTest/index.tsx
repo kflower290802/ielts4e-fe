@@ -84,7 +84,7 @@ export default function WritingTest() {
       {timeLeft !== undefined && timeLeft !== null ? (
         <Header
           timeLeft={timeLeft}
-          title="Listening Test"
+          title="Writing Test"
           isLoading={isLoading}
           id={id}
         />

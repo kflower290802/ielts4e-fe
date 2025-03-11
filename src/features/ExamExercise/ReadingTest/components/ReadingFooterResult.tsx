@@ -66,7 +66,7 @@ const ReadingFooterResult = ({
                     !questionSummary?.isCorrect && questionSummary?.userAnswer === '' && 'bg-yellow-500 text-white hover:bg-yellow-400'
                   )}
                   onClick={() => {
-                    const newPage = Math.floor(idx / 4) + 1;
+                    const newPage = Math.floor(idx / 20) + 1;
                     setCurrentQuestionPage(newPage);
                   }}
                 >

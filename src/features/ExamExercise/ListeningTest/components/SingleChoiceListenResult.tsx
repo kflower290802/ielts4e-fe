@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ReadingQuestion } from "@/types/readingExam";
+import { ListeningQuestion } from "@/types/listeningExam";
 import React from "react";
 
 interface Props {
   index: number;
-  question: ReadingQuestion;
+  question: ListeningQuestion;
   userAnswer: string | undefined;
   correctAnswer: string | undefined;
   isCorrect: boolean | undefined;
@@ -13,7 +13,7 @@ interface Props {
 
 const AnswerList = ["A", "B", "C", "D", "E"];
 
-const SingleChoiceResult: React.FC<Props> = ({
+const SingleChoiceListenResult: React.FC<Props> = ({
   index,
   question,
   userAnswer,
@@ -62,4 +62,4 @@ const SingleChoiceResult: React.FC<Props> = ({
   );
 };
 
-export default SingleChoiceResult;
+export default SingleChoiceListenResult;
