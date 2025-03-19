@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import React, { memo, useState } from "react";
-import { ExamPassage } from "@/types/readingExam";
 import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
 import { Route } from "@/constant/route";
+import { ExamPassage } from "@/types/ExamType/readingExam";
 interface IProps {
   passages: ExamPassage[];
   answers: Record<string, string>;

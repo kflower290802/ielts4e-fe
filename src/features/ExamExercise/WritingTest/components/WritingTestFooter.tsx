@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Route } from "@/constant/route";
 import { cn } from "@/lib/utils";
-import { IContent } from "@/types/writingExam";
+import { IContent } from "@/types/ExamType/writingExam";
 import { useNavigate } from "react-router-dom";
 // import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
 // import { useState } from "react";

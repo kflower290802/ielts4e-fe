@@ -1,17 +1,18 @@
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ListeningQuestion } from "@/types/ExamType/listeningExam";
+import { ReadingQuestion } from "@/types/PracticeType/readingPractice";
 import React from "react";
 
 interface Props {
   index: number;
-  question: ListeningQuestion;
+  question: ReadingQuestion;
   onClick: (questionId: string, answer: string) => void;
   currentAnswer: string;
 }
 
 const AnswerList = ["A", "B", "C", "D", "E"];
 
-const SingleChoice: React.FC<Props> = ({
+const SingleChoicePractice: React.FC<Props> = ({
   index,
   question,
   onClick,
@@ -26,15 +27,15 @@ const SingleChoice: React.FC<Props> = ({
         <div className="grid grid-cols-2 gap-2">
           {question.answers.map((answer, index) => (
             <div key={answer.id} className="flex space-x-2 items-center">
-              <button
+              <Button
                 className={cn(
-                  "size-8 rounded-full bg-[#D9D9D9]",
+                  "rounded-full bg-[#D9D9D9] font-bold hover:bg-[#3C64CE]/70",
                   currentAnswer === answer.answer && "bg-[#3C64CE] text-white"
                 )}
                 onClick={() => onClick(question.id, answer.answer)}
               >
                 {AnswerList[index]}
-              </button>
+              </Button>
               <span>{answer.answer}</span>
             </div>
           ))}
@@ -44,4 +45,4 @@ const SingleChoice: React.FC<Props> = ({
   );
 };
 
-export default SingleChoice;
+export default SingleChoicePractice;

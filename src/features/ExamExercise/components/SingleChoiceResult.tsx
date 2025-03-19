@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ReadingQuestion } from "@/types/readingExam";
-import { ListeningQuestion } from "@/types/listeningExam";
+import { ListeningQuestion } from "@/types/ExamType/listeningExam";
+import { ReadingQuestion } from "@/types/ExamType/readingExam";
 import React from "react";
 
 interface Props {

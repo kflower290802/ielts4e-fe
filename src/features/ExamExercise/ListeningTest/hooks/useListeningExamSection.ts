@@ -1,6 +1,6 @@
-import { getListeningExamById } from "@/api/listeningExam";
-import { IExam } from "@/types/exam";
-import { ExamSection } from "@/types/listeningExam";
+import { getListeningExamById } from "@/api/ExamAPI/listeningExam";
+import { IExam } from "@/types/ExamType/exam";
+import { ExamSection } from "@/types/ExamType/listeningExam";
 import { useQuery } from "@tanstack/react-query";
 
 export const useListeningExamSection = (id: string) => {

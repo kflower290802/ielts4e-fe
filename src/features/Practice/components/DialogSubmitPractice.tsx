@@ -1,9 +1,9 @@
 import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useExamReadingSubmit } from "../ReadingTest/hooks/useExamReadingSubmit";
 import { useNavigate } from "react-router-dom";
 import { setStorage } from "@/utils/storage";
+import { usePracticeReadingSubmit } from "../PracticeReading/hooks/usePracticeReadingSubmit";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
@@ -12,7 +12,7 @@ interface IProps {
   id: string | undefined;
   route: string;
 }
-const DialogSubmitConfirm = ({
+const DialogSubmitPractice = ({
   openDia,
   setOpenDia,
   answers,
@@ -20,7 +20,7 @@ const DialogSubmitConfirm = ({
   id,
   route,
 }: IProps) => {
-  const { mutateAsync: submit } = useExamReadingSubmit(id ?? "");
+  const { mutateAsync: submit } = usePracticeReadingSubmit(id ?? "");
   const nav = useNavigate();
   const totalAnswered = Object.values(answers).filter((answer) =>
     Array.isArray(answer) ? answer.length : answer?.trim() !== ""
@@ -67,4 +67,4 @@ const DialogSubmitConfirm = ({
   );
 };
 
-export default DialogSubmitConfirm;
+export default DialogSubmitPractice;

@@ -1,5 +1,5 @@
-import { getSpeakingExamById } from "@/api/speakingExam";
-import { IExam } from "@/types/exam";
+import { getSpeakingExamById } from "@/api/ExamAPI/speakingExam";
+import { IExam } from "@/types/ExamType/exam";
 import { ExamQuestion } from "@/types/speakingExam";
 import { useQuery } from "@tanstack/react-query";
 

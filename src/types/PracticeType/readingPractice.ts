@@ -1,7 +1,7 @@
-import { EQuestionType } from "./exam";
-import { IExcerciseDetail } from "./excercise";
+import { EQuestionType } from "../ExamType/exam";
+import { IExcerciseDetail } from "../excercise";
 
-export interface ExamPassage {
+export interface PractiePassage {
   id: string;
   exam: IExcerciseDetail;
   passage: string;

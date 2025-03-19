@@ -1,4 +1,4 @@
-import { ReadingAnswer } from "@/types/ExamType/readingExam";
+import { ReadingAnswer } from "@/types/PracticeType/readingPractice";
 import React from "react";
 import { useDrag } from "react-dnd";
 
@@ -6,7 +6,7 @@ interface Props {
   answer: ReadingAnswer
 }
 
-const Word: React.FC<Props> = ({ answer }) => {
+const WordPractice: React.FC<Props> = ({ answer }) => {
   const [{ isDragging }, drag] = useDrag({
     type: "WORD",
     item: { word: answer.answer },
@@ -26,4 +26,4 @@ const Word: React.FC<Props> = ({ answer }) => {
     </div>
   );
 };
-export default Word;
+export default WordPractice;

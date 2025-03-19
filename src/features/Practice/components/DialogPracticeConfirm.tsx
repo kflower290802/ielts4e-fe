@@ -3,8 +3,8 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/constant/route";
-import { startExam } from "@/api/ExamAPI/exam";
 import { setStorage } from "@/utils/storage";
+import { startPractice } from "@/api/PracticeAPI/practice";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
@@ -13,7 +13,7 @@ interface IProps {
   id: string | undefined;
   type: string;
 }
-const DialogConfirm = ({
+const DialogPracticeConfirm = ({
   openDia,
   setOpenDia,
   setIsPlaying,
@@ -23,13 +23,13 @@ const DialogConfirm = ({
 }: IProps) => {
   const nav = useNavigate();
   const handStart = async () => {
-    await startExam(id ?? "");
+    await startPractice(id ?? "");
     setOpenDia(false);
     setStorage("isTesting", "true");
     if (setIsPlaying) {
       setIsPlaying(true);
     }
-    nav(`${Route.Exam}/${type}/${id}`);
+    nav(`${Route.Practice}/${type}/${id}`);
   };
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
@@ -59,4 +59,4 @@ const DialogConfirm = ({
   );
 };
 
-export default DialogConfirm;
+export default DialogPracticeConfirm;

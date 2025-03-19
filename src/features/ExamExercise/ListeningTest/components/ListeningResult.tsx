@@ -8,9 +8,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useExamResult } from "../../ReadingTest/hooks/useExamResult";
 import ListeningFooterResult from "./ListeningFooterResult";
-import { EQuestionType } from "@/types/exam";
+import { EQuestionType } from "@/types/ExamType/exam";
 import SingleChoiceListenResult from "./SingleChoiceListenResult";
-import SingleChoiceResult from "./SingleChoiceResult";
+import SingleChoiceResult from "../../components/SingleChoiceResult";
 import QuestionHeader from "../../components/QuestionHeader";
 
 const ListeningTestResult = () => {
@@ -117,22 +117,22 @@ const ListeningTestResult = () => {
       </React.Fragment>
     );
   };
-   const calculateTotalQuestions = useCallback(() => {
-      if (!data?.exam) return 0;
-  
-      return data.exam.reduce((total, passage) => {
-        return (
-          total +
-          passage.types.reduce((typeTotal, type) => {
-            return typeTotal + type.questions.length;
-          }, 0)
-        );
-      }, 0);
-    }, [data]);
-    const totalQuestions = useMemo(
-      () => calculateTotalQuestions(),
-      [calculateTotalQuestions]
-    );
+  const calculateTotalQuestions = useCallback(() => {
+    if (!data?.exam) return 0;
+
+    return data.exam.reduce((total, passage) => {
+      return (
+        total +
+        passage.types.reduce((typeTotal, type) => {
+          return typeTotal + type.questions.length;
+        }, 0)
+      );
+    }, 0);
+  }, [data]);
+  const totalQuestions = useMemo(
+    () => calculateTotalQuestions(),
+    [calculateTotalQuestions]
+  );
   const getQuestionRange = (questionType: any[], currentIndex: number) => {
     let start = 1;
     for (let i = 0; i < currentIndex; i++) {

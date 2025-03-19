@@ -1,4 +1,4 @@
-import { EQuestionType } from "./exam";
+import { EQuestionType } from "./ExamType/exam";
 import { IExcerciseDetail } from "./excercise";
 
 export interface ExamSection {

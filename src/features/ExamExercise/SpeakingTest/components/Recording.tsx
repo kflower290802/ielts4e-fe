@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAudioRecorder } from "@/context/record";
-import { IExam } from "@/types/exam";
+import { IExam } from "@/types/ExamType/exam";
 import { ExamQuestion } from "@/types/speakingExam";
 import { Mic } from "lucide-react";
 interface IProps {

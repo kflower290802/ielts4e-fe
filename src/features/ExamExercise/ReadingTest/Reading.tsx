@@ -4,7 +4,7 @@ import { useReadingExamPassage } from "./hooks/useReadingExamPassage";
 import Header from "../components/Header";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EQuestionType } from "@/types/exam";
+import { EQuestionType } from "@/types/ExamType/exam";
 import BlankSpace from "./components/BlankSpace";
 import { DndProvider } from "react-dnd";
 import { Card } from "@/components/ui/card";

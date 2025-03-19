@@ -8,8 +8,8 @@ import { useExamResult } from "../hooks/useExamResult";
 import { Badge } from "@/components/ui/badge";
 import { useReadingExamPassage } from "../hooks/useReadingExamPassage";
 import { Route } from "@/constant/route";
-import { EQuestionType } from "@/types/exam";
-import SingleChoiceResult from "../../ListeningTest/components/SingleChoiceResult";
+import { EQuestionType } from "@/types/ExamType/exam";
+import SingleChoiceResult from "../../components/SingleChoiceResult";
 import QuestionHeader from "../../components/QuestionHeader";
 // import { Checkbox } from "@/components/ui/checkbox";
 
@@ -79,7 +79,7 @@ const ReadingResult = () => {
                         className={cn(
                           "w-32 h-9 border-b-4 rounded-xl",
                           answerData?.userAnswer === ""
-                            ? "bg-white border-yellow-700 text-yellow-400 hover:bg-yellow-400"
+                            ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
                             : answerData?.isCorrect
                             ? "bg-[#66B032] hover:bg-[#66B032]/80  border-green-800 text-white hover:border-green-800"
                             : "bg-red-500 border-red-700 text-white hover:bg-red-400"

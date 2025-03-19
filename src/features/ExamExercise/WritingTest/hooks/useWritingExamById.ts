@@ -1,6 +1,6 @@
-import { getWritingExamById } from "@/api/writingExam";
-import { IExam } from "@/types/exam";
-import { IContent } from "@/types/writingExam";
+import { getWritingExamById } from "@/api/ExamAPI/writingExam";
+import { IExam } from "@/types/ExamType/exam";
+import { IContent } from "@/types/ExamType/writingExam";
 import { useQuery } from "@tanstack/react-query";
 
 export const useWritingExamById = (id: string) => {

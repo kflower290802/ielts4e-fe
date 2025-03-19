@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { IExamResult } from "@/types/exam";
+import { IExamResult } from "@/types/ExamType/exam";
 import React, { memo } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ExamPassage } from "@/types/readingExam";
+import { ExamPassage } from "@/types/ExamType/readingExam";
 interface IProps {
   passages: ExamPassage[];
   passageParam: string;
@@ -49,7 +49,7 @@ const ReadingFooterResult = ({
 
         <div className="flex items-center justify-center gap-5 w-1/3">
           <div className="grid grid-cols-10 gap-3">
-          {Array.from({ length: totalQuestions }).map((_, idx) => {
+            {Array.from({ length: totalQuestions }).map((_, idx) => {
               // Tìm kết quả theo questionId
               const question = allQuestions[idx];
               // Tìm kết quả theo questionId
@@ -65,7 +65,9 @@ const ReadingFooterResult = ({
                     questionSummary?.isCorrect
                       ? "bg-[#66B032] hover:bg-[#66B032]/80 text-white"
                       : "bg-red-600 hover:bg-red-600/70 text-white",
-                    !questionSummary?.isCorrect && questionSummary?.userAnswer === '' && 'bg-yellow-500 text-white hover:bg-yellow-400'
+                    !questionSummary?.isCorrect &&
+                      questionSummary?.userAnswer === "" &&
+                      "bg-yellow-500 text-white hover:bg-yellow-400"
                   )}
                 >
                   {idx + 1}

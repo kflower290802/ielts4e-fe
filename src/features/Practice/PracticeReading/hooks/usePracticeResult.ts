@@ -1,10 +1,10 @@
 import { getExamReadingResult } from "@/api/ExamAPI/readingExam";
-import { IExamResult } from "@/types/ExamType/exam";
+import { IPracticeResult } from "@/types/PracticeType/practice";
 import { useQuery } from "@tanstack/react-query";
 
-export const useExamResult = (idResult: string) => {
-  const { data, error, isLoading, refetch } = useQuery<IExamResult, Error>({
-    queryKey: ["examResult"],
+export const usePracticeResult = (idResult: string) => {
+  const { data, error, isLoading, refetch } = useQuery<IPracticeResult, Error>({
+    queryKey: ["examPracticeResult"],
     queryFn: () => getExamReadingResult(idResult),
     enabled: !!idResult,
   });

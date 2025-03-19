@@ -1,4 +1,4 @@
-import { IUserExam } from "./user";
+import { IUserExam } from "../user";
 
 export interface IExam<T> {
   exam: T[];

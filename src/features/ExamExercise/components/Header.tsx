@@ -1,4 +1,4 @@
-import { exitExam } from "@/api/exam";
+import { exitExam } from "@/api/ExamAPI/exam";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Route } from "@/constant/route";
