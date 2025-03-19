@@ -1,8 +1,9 @@
+import { ReadingAnswer } from "@/types/readingExam";
 import React from "react";
 import { useDrag } from "react-dnd";
 
 interface Props {
-  answer: { id: string; answer: string; question: { id: string } };
+  answer: ReadingAnswer
 }
 
 const Word: React.FC<Props> = ({ answer }) => {
@@ -12,12 +13,12 @@ const Word: React.FC<Props> = ({ answer }) => {
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
-  });
+  });  
 
   return (
     <div
       ref={drag}
-      className={`p-2 m-2 border rounded cursor-pointer ${
+      className={`p-2 m-2 w-56 rounded-lg hover:border-[#164C7E] hover:border border cursor-pointer ${
         isDragging ? "opacity-50" : ""
       }`}
     >

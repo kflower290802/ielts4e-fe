@@ -10,7 +10,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useGetExcercise } from "../hooks/useGetExcercise";
+import { useGetExcercise } from "./hooks/useGetExcercise";
 import { useEffect, useState } from "react";
 import {
   IRequestExcercise,
@@ -19,7 +19,7 @@ import {
 } from "@/types/excercise";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { useGetYear } from "../hooks/useGetYear";
+import { useGetYear } from "./hooks/useGetYear";
 import { examFilters, examTabs, statusFilters } from "@/constant/filter";
 import { useSearchParams } from "react-router-dom";
 import DialogConfirm from "./components/DialogConfirm";

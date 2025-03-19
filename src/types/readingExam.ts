@@ -8,23 +8,34 @@ export interface ExamPassage {
   title: string;
   createdAt: string;
   updatedAt: string;
-  questions: ReadingQuestion[];
+  types: TypesReading[];
+  // blankPassage?: string;
+}
+export interface TypesReading {
+  id: string;
+  examPassage: {
+    id: string;
+  };
   type: EQuestionType;
-  blankPassage?: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  questions: ReadingQuestion[];
 }
 export interface ReadingQuestion {
   id: string;
-  examPassage: ExamPassage;
+  examReadingType: {
+    id: string;
+  };
   question: string;
-  type: EQuestionType;
   createdAt: string;
   updatedAt: string;
+  answers: ReadingAnswer[];
   answer: string;
-  answers: { id: string; answer: string; question: { id: string } }[];
 }
 export interface ReadingAnswer {
   id: string;
-  examPassageQuestion: {
+  question: {
     id: string;
   };
   answer: string;

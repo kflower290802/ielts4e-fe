@@ -3,23 +3,24 @@ import { cn } from "@/lib/utils";
 import { IExamResult } from "@/types/exam";
 import React, { memo } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ExamPassage, ReadingQuestion } from "@/types/readingExam";
+import { ExamPassage } from "@/types/readingExam";
 interface IProps {
   passages: ExamPassage[];
   passageParam: string;
   setCurrentPassage: React.Dispatch<React.SetStateAction<number>>;
-  setCurrentQuestionPage: React.Dispatch<React.SetStateAction<number>>;
-  questions: ReadingQuestion[];
   result: IExamResult | undefined;
+  totalQuestions: number;
 }
 const ReadingFooterResult = ({
   passages,
   passageParam,
   setCurrentPassage,
-  setCurrentQuestionPage,
-  questions,
+  totalQuestions,
   result,
 }: IProps) => {
+  const allQuestions = passages.flatMap((passage) =>
+    passage.types.flatMap((type) => type.questions)
+  );
   return (
     <div className="fixed bottom-0 left-0 right-0 border-t bg-white h-28 px-6">
       <div className="flex h-full items-center justify-between gap-20">
@@ -33,7 +34,6 @@ const ReadingFooterResult = ({
                 key={passage.id}
                 onClick={() => {
                   setCurrentPassage(idx + 1);
-                  setCurrentQuestionPage(1);
                 }}
                 className={cn(
                   Number(passageParam) === idx + 1
@@ -49,10 +49,12 @@ const ReadingFooterResult = ({
 
         <div className="flex items-center justify-center gap-5 w-1/3">
           <div className="grid grid-cols-10 gap-3">
-            {questions?.map((question, idx) => {
+          {Array.from({ length: totalQuestions }).map((_, idx) => {
+              // Tìm kết quả theo questionId
+              const question = allQuestions[idx];
               // Tìm kết quả theo questionId
               const questionSummary = result?.summary.find(
-                (q) => q.questionId === question.id
+                (q) => q.questionId === question?.id
               );
 
               return (
@@ -65,10 +67,6 @@ const ReadingFooterResult = ({
                       : "bg-red-600 hover:bg-red-600/70 text-white",
                     !questionSummary?.isCorrect && questionSummary?.userAnswer === '' && 'bg-yellow-500 text-white hover:bg-yellow-400'
                   )}
-                  onClick={() => {
-                    const newPage = Math.floor(idx / 20) + 1;
-                    setCurrentQuestionPage(newPage);
-                  }}
                 >
                   {idx + 1}
                 </Button>

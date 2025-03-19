@@ -3,14 +3,15 @@ import { useDrop } from "react-dnd";
 
 interface Props {
   index: number;
-  onDrop: (index: number, word: string) => void;
+  idx: number
+  onDrop: (idx: number ,word: string, index: number) => void;
   word: string;
 }
 
-const BlankSpace: React.FC<Props> = ({ index, onDrop, word }) => {
+const BlankSpace: React.FC<Props> = ({idx ,index, onDrop, word }) => {
   const [{ isOver }, drop] = useDrop({
     accept: "WORD",
-    drop: (item) => onDrop(index, item.word),
+    drop: (item) => onDrop(idx, item.word, index),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),

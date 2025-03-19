@@ -4,7 +4,6 @@ import { Exam } from "@/features/Exam";
 import { Practice } from "@/features/Practice";
 import Learn from "@/features/Learn";
 import Layout from "@/layout";
-import ReadingTest from "@/features/ExamExercise/ReadingTest";
 import ListeningTest from "@/features/ExamExercise/ListeningTest";
 import PracticeReading from "@/features/Practice/PracticeReading";
 import ReadingResult from "@/features/ExamExercise/ReadingTest/components/ReadingResult";
@@ -14,6 +13,7 @@ import WritingTest from "@/features/ExamExercise/WritingTest";
 import WritingTestResult from "@/features/ExamExercise/WritingTest/WritingTestResult";
 import ListeningTestResult from "@/features/ExamExercise/ListeningTest/components/ListeningResult";
 import ListeningPractice from "@/features/Practice/PracticeListening";
+import ReadingTest from "@/features/ExamExercise/ReadingTest/Reading";
 
 export const privateRoutes = [
   {

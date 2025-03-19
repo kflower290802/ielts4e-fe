@@ -1,9 +1,8 @@
 import { Card } from "@/components/ui/card";
-import { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import ReadingFooterResult from "./ReadingFooterResult";
 import { useExamResult } from "../hooks/useExamResult";
 import { Badge } from "@/components/ui/badge";
@@ -11,8 +10,11 @@ import { useReadingExamPassage } from "../hooks/useReadingExamPassage";
 import { Route } from "@/constant/route";
 import { EQuestionType } from "@/types/exam";
 import SingleChoiceResult from "./SingleChoiceResult";
+import QuestionHeader from "./QuestionHeader";
+// import { Checkbox } from "@/components/ui/checkbox";
 
 const ReadingResult = () => {
+  let questionNumber = 0;
   const { idResult } = useParams<{ idResult: string }>();
   const { id } = useParams<{ id: string }>();
   const { data } = useReadingExamPassage(id ?? "");
@@ -23,139 +25,117 @@ const ReadingResult = () => {
   const [currentPassage, setCurrentPassage] = useState(
     passageParam ? parseInt(passageParam) : 1
   );
-  const [currentQuestionPage, setCurrentQuestionPage] = useState(1);
 
   useEffect(() => {
-    const newSearchParams = new URLSearchParams();
-    if (currentPassage)
-      newSearchParams.set("passage", currentPassage.toString());
-    setSearchParams(newSearchParams);
+    setSearchParams({ passage: currentPassage.toString() });
   }, [currentPassage, setSearchParams]);
 
-  const questionsPerPage = 20;
-  const questions = data?.exam[currentPassage - 1]?.questions || [];
-
-  const startQuestion = (currentQuestionPage - 1) * questionsPerPage;
-
-  const endQuestion = Math.min(
-    startQuestion + questionsPerPage,
-    questions.length
-  );
-  const passageType = useMemo(
-    () => data?.exam[currentPassage - 1].type,
+  const questionType = useMemo(
+    () => data?.exam[currentPassage - 1]?.types,
     [currentPassage, data?.exam]
   );
-  const visibleQuestions = questions.slice(startQuestion, endQuestion);
-  const isSingleChoiceQuestion = passageType === EQuestionType.SingleChoice;
-  const isHeadingQuestion = passageType === EQuestionType.HeadingPosition;
-  const isBlankPassageDrag = passageType === EQuestionType.BlankPassageDrag;
-  const blankPassageLength =
-    data?.exam[currentPassage - 1].blankPassage?.split("{blank}").length || 0;
-  const isBlankPassageTextbox =
-    passageType === EQuestionType.BlankPassageTextbox;
-  const questionPassageContent = data?.exam[currentPassage - 1].blankPassage
-    ?.split("{blank}")
-    .map((part, index) => {
-      const questionId = visibleQuestions[index]?.id;
-      const questionSummary = result?.summary.find(
-        (q) => q.questionId === questionId
-      );
+  const calculateTotalQuestions = useCallback(() => {
+    if (!data?.exam) return 0;
 
+    return data.exam.reduce((total, passage) => {
       return (
-        <span key={index}>
-          {part}
-          {index < blankPassageLength - 1 &&
-            (isBlankPassageDrag || isBlankPassageTextbox) &&
-            (isBlankPassageDrag ? (
-              questionSummary?.isCorrect ? (
-                <>
-                  <Badge
-                    id={questionId}
-                    className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent hover:bg-[#66B032]/70 border-[#66B032]"
-                  >
-                    {questionSummary?.userAnswer}
-                  </Badge>
-                </>
-              ) : !questionSummary?.isCorrect &&
-                questionSummary?.userAnswer !== "" ? (
-                <div className="flex items-center gap-5">
-                  <Badge
-                    id={questionId}
-                    className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent border-red-500 hover:bg-red-300"
-                  >
-                    {questionSummary?.userAnswer}
-                  </Badge>
-                  <Badge
-                    id={questionId}
-                    className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent border-[#66B032] hover:bg-[#66B032]/70"
-                  >
-                    {questionSummary?.correctAnswer}
-                  </Badge>
-                </div>
-              ) : (
-                !questionSummary?.isCorrect &&
-                questionSummary?.userAnswer === "" && (
-                  <div className="w-fit">
-                    <Badge
-                      id={questionId}
-                      className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent border-yellow-500 hover:bg-yellow-300"
-                    >
-                      {questionSummary?.correctAnswer}
-                    </Badge>
-                  </div>
-                )
-              )
-            ) : questionSummary?.isCorrect ? (
-              <div>
-                <Badge
-                  id={questionId}
-                  className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent hover:bg-[#66B032]/80 border-[#66B032]"
-                >
-                  {questionSummary?.userAnswer}
-                </Badge>
-              </div>
-            ) : !questionSummary?.isCorrect &&
-              questionSummary?.userAnswer !== "" ? (
-              <div className="flex items-center gap-5">
-                <Badge
-                  id={questionId}
-                  className="w-32 h-8 text-center border-b-4 rounded-xl text-black bg-transparent hover:bg-red-600 hover:text-white border-red-500"
-                >
-                  {questionSummary?.userAnswer}
-                </Badge>
-                <Badge
-                  id={questionId}
-                  className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent hover:bg-[#66B032]/80 border-[#66B032]"
-                >
-                  {questionSummary?.correctAnswer}
-                </Badge>
-              </div>
-            ) : (
-              !questionSummary?.isCorrect &&
-              questionSummary?.userAnswer === "" && (
-                <div>
-                  <Badge
-                    id={questionId}
-                    className="w-fit min-w-20 h-8 text-center border-b-4 rounded-xl text-black bg-transparent border-yellow-500 hover:bg-yellow-600 hover:text-white"
-                  >
-                    {questionSummary?.correctAnswer}
-                  </Badge>
-                </div>
-              )
-            ))}
-        </span>
+        total +
+        passage.types.reduce((typeTotal, type) => {
+          return typeTotal + type.questions.length;
+        }, 0)
       );
-    });
+    }, 0);
+  }, [data]);
+  const totalQuestions = useMemo(
+    () => calculateTotalQuestions(),
+    [calculateTotalQuestions]
+  );
+  const questionPassageContent = (index: number, isDrag: boolean) => {
+    if (!questionType || !questionType[index]) return null;
 
-  const handleNextPage = () => {
-    if (endQuestion < questions.length) {
-      setCurrentQuestionPage((prev) => prev + 1);
-    }
+    const contentParts = questionType[index].content?.split("{blank}");
+
+    const questions = questionType[index].questions || [];
+    const blankLength = contentParts?.length - 1;
+
+    return (
+      <React.Fragment>
+        <p className="mt-4 leading-loose">
+          {contentParts.map((part, idx) => {
+            if (idx >= blankLength) return <span key={idx}>{part}</span>; // Không thêm input nếu vượt quá 8
+            questionNumber++;
+            const question = questions[idx];
+            const answerData = result?.summary.find(
+              (item) => item.questionId === question?.id
+            );
+            return (
+              <React.Fragment key={idx}>
+                {isDrag ? (
+                  <div className="space-y-2">
+                    <span className="font-bold">{questionNumber}. </span>
+                    {part}
+                    <div className="flex gap-2 items-center">
+                      <Badge
+                        className={cn(
+                          "w-32 h-9 border-b-4 rounded-xl",
+                          answerData?.userAnswer === ""
+                            ? "bg-white border-yellow-700 text-yellow-400 hover:bg-yellow-400"
+                            : answerData?.isCorrect
+                            ? "bg-[#66B032] hover:bg-[#66B032]/80  border-green-800 text-white hover:border-green-800"
+                            : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                        )}
+                      >
+                        {answerData?.userAnswer === ""
+                          ? "Not answered"
+                          : answerData?.userAnswer}
+                      </Badge>
+                      {!answerData?.isCorrect && (
+                        <Badge className="w-32 h-9 border-b-4 rounded-xl hover:bg-[#66B032]/80 bg-[#66B032] border-green-800 text-white hover:border-green-800">
+                          {answerData?.correctAnswer}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {part}
+                    <span className="font-bold">{questionNumber}. </span>
+                    <Badge
+                      className={cn(
+                        "w-32 h-9 border-b-4 rounded-xl",
+                        answerData?.userAnswer === ""
+                          ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
+                          : answerData?.isCorrect
+                          ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
+                          : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                      )}
+                    >
+                      {answerData?.userAnswer === ""
+                        ? "Not answered"
+                        : answerData?.userAnswer}
+                    </Badge>
+                    {!answerData?.isCorrect && (
+                      <Badge className="w-32 ml-2 h-9  border-b-4 rounded-xl hover:bg-[#66B032]/80 bg-[#66B032] border-green-800 text-white hover:border-green-800">
+                        {answerData?.correctAnswer}
+                      </Badge>
+                    )}
+                  </>
+                )}{" "}
+              </React.Fragment>
+            );
+          })}
+        </p>
+      </React.Fragment>
+    );
   };
-  const handlePrevPage = () => {
-    if (currentQuestionPage > 1) {
-      setCurrentQuestionPage((prev) => prev - 1);
+  const getQuestionRange = (questionType: any[], currentIndex: number) => {
+    let start = 1;
+    for (let i = 0; i < currentIndex; i++) {
+      start += questionType[i]?.questions?.length || 0;
     }
+    const end =
+      start + (questionType[currentIndex]?.questions?.length || 0) - 1;
+    return { start, end };
   };
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
@@ -167,7 +147,7 @@ const ReadingResult = () => {
       </div>
       <div className="flex-1 h-full overflow-y-hidden">
         <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
-          <Card className="p-6 overflow-y-auto">
+          <Card className="p-6 h-[75vh] overflow-y-auto">
             {data?.exam && data.exam.length > 0 ? (
               <>
                 <h2 className="mb-4 text-2xl font-bold">
@@ -182,7 +162,7 @@ const ReadingResult = () => {
             )}
           </Card>
 
-          <Card className="p-6 overflow-y-auto">
+          {/* <Card className="p-6 overflow-y-auto">
             <div className="mb-6 rounded-lg bg-blue-900 p-4 text-white">
               <h3 className="text-lg font-semibold">
                 QUESTION {startQuestion + 1}
@@ -306,6 +286,107 @@ const ReadingResult = () => {
             ) : (
               ""
             )}
+          </Card> */}
+          <Card className="p-6 h-[75vh] overflow-y-auto">
+            {questionType?.map((types, index) => {
+              const { start, end } = getQuestionRange(questionType, index);
+              const isHeadingQuestion =
+                types.type === EQuestionType.HeadingPosition;
+              const isSingleChoiceQuestion =
+                types.type === EQuestionType.SingleChoice;
+              const isBlankPassageDrag =
+                types.type === EQuestionType.BlankPassageDrag;
+              const isBlankPassageTextbox =
+                types.type === EQuestionType.BlankPassageTextbox;
+              const isMultipleChoiceQuestion =
+                types.type === EQuestionType.MultipleChoice;
+              if (isBlankPassageDrag || isBlankPassageTextbox) {
+                return (
+                  <div key={index}>
+                    {isBlankPassageDrag ? (
+                      <QuestionHeader
+                        start={start}
+                        end={end}
+                        instruction="Drag in the CORRECT position"
+                      />
+                    ) : (
+                      <QuestionHeader
+                        start={start}
+                        end={end}
+                        instruction="Write the CORRECT answer"
+                      />
+                    )}
+                    <div className="flex justify-between">
+                      {questionPassageContent(index, isBlankPassageDrag)}
+                    </div>
+                  </div>
+                );
+              } else if (isSingleChoiceQuestion) {
+                return (
+                  <div className="space-y-4">
+                    {questionType[index].questions.map((question, index) => {
+                      const answerData = result?.summary.find(
+                        (item) => item.questionId === question.id
+                      );
+                      return (
+                        <SingleChoiceResult
+                          question={question}
+                          index={index}
+                          userAnswer={answerData?.userAnswer}
+                          correctAnswer={answerData?.correctAnswer}
+                          isCorrect={answerData?.isCorrect}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              } else if (isMultipleChoiceQuestion) {
+                <div className="space-y-4">
+                  {questionType[index].questions.map((question, index) => {
+                    questionNumber++;
+                    return (
+                      <div className="border rounded-md p-2">
+                        <div className="flex flex-col space-y-2">
+                          <p>
+                            {index + 1}, {question.question}
+                          </p>
+                          <div className="grid grid-cols-2 gap-2">
+                            {question.answers.map((answer) => (
+                              <div
+                                key={answer.id}
+                                className="flex space-x-2 items-center"
+                              >
+                                {/* <Checkbox
+                                  checked={answers[question.id]?.includes(
+                                    answer.answer
+                                  )}
+
+                                /> */}
+                                <span>{answer.answer}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>;
+              }
+              // else if (isHeadingQuestion) {
+              //   <div>
+              //     {isHeadingQuestion && (
+              //       <p className="text-lg font-bold ">List of Headings</p>
+              //     )}
+              //     <div className="flex space-x-2">
+              //       {questionType[index].questions.map((question) =>
+              //         question.answers.map((answer, idx) => (
+              //           <Word key={idx} answer={answer} />
+              //         ))
+              //       )}
+              //     </div>
+              //   </div>;
+              // }
+            })}
           </Card>
         </div>
       </div>
@@ -313,9 +394,8 @@ const ReadingResult = () => {
         result={result}
         setCurrentPassage={setCurrentPassage}
         passages={data?.exam ?? []}
-        questions={questions}
+        totalQuestions={totalQuestions}
         passageParam={passageParam}
-        setCurrentQuestionPage={setCurrentQuestionPage}
       />
     </div>
   );
