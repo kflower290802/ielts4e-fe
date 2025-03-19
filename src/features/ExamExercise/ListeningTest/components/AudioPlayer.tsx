@@ -6,8 +6,6 @@ interface IProps {
   isPlaying: boolean;
   progress: number;
   setProgress: React.Dispatch<React.SetStateAction<number>>;
-  setCurrentSection?: React.Dispatch<React.SetStateAction<number>>;
-  currentSection?: number;
   section?: number;
 }
 const AudioPlayer = ({
@@ -16,9 +14,6 @@ const AudioPlayer = ({
   isPlaying,
   progress,
   setProgress,
-  setCurrentSection,
-  section,
-  currentSection,
 }: IProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [remainingTime, setRemainingTime] = useState("0:00");
@@ -39,12 +34,6 @@ const AudioPlayer = ({
       playAudio();
     }
   }, [src]);
-  useEffect(() => {
-    if (progress === 100 && currentSection && section && setCurrentSection && currentSection < section) {
-      setCurrentSection(currentSection + 1);
-    }
-  }, [progress]);
-
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);

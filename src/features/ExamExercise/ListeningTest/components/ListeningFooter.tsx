@@ -9,7 +9,7 @@ interface IProps {
   audio: string | undefined;
   section: ExamSection[];
   setCurrentSection: React.Dispatch<React.SetStateAction<number>>;
-  totalQuestion: number | undefined;
+  totalQuestions: number | undefined;
   answers: Record<string, string | string[]>;
   sectionParam: string;
   id: string | undefined;
@@ -19,7 +19,7 @@ const ListeningFooter = ({
   audio,
   section,
   setCurrentSection,
-  totalQuestion,
+  totalQuestions,
   answers,
   sectionParam,
   id,
@@ -29,10 +29,20 @@ const ListeningFooter = ({
   const [openDia, setOpenDia] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const answeredQuestionsCount = (sectionId: string) => {
-    return (
-      section
-        .find((p) => p.id === sectionId)
-        ?.questions.filter((q) => answers[q.id])?.length || 0
+    const sections = section.find((p) => p.id === sectionId);
+    if (!sections) return 0;
+
+    return sections.types.reduce((total, type) => {
+      return total + type.questions.filter((q) => answers[q.id])?.length;
+    }, 0);
+  };
+  const countQuestionsInPassage = (sectionId: string) => {
+    const sections = section.find((p) => p.id === sectionId);
+    if (!sections) return 0;
+
+    return sections.types.reduce(
+      (total, type) => total + type.questions.length,
+      0
     );
   };
   return (
@@ -40,7 +50,7 @@ const ListeningFooter = ({
       <DialogSubmitConfirm
         openDia={openDia}
         setOpenDia={setOpenDia}
-        totalQuestion={totalQuestion}
+        totalQuestion={totalQuestions}
         answers={answers}
         id={id}
         route={Route.ExamListeningResult}
@@ -52,9 +62,7 @@ const ListeningFooter = ({
             setIsPlaying={setIsPlaying}
             isPlaying={isPlaying}
             progress={progress}
-            setCurrentSection={setCurrentSection}
             setProgress={setProgress}
-            currentSection={currentSection}
             section={section.length}
           />
         </div>
@@ -72,7 +80,7 @@ const ListeningFooter = ({
                     ? "bg-white border-2 border-[#164C7E] text-[#164C7E] font-bold px-8 py-5 hover:bg-[#164C7E] hover:text-white"
                     : "bg-white border-2 font-bold px-8 py-5 hover:bg-[#164C7E] hover:text-white",
                   answeredQuestionsCount(sectionitem.id) ===
-                    sectionitem.questions.length &&
+                    countQuestionsInPassage(sectionitem.id) &&
                     "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09]"
                 )}
               >
@@ -80,7 +88,7 @@ const ListeningFooter = ({
               </Button>
               <span>
                 {answeredQuestionsCount(sectionitem.id)}/
-                {sectionitem.questions.length}
+                {countQuestionsInPassage(sectionitem.id)}
               </span>
             </div>
           ))}

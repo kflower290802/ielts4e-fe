@@ -9,11 +9,11 @@ import BlankSpace from "./components/BlankSpace";
 import { DndProvider } from "react-dnd";
 import { Card } from "@/components/ui/card";
 import ReadingFooter from "./components/ReadingFooter";
-import SingleChoice from "./components/SingleChoice";
+import SingleChoice from "../components/SingleChoice";
 import { useExamAnswers } from "./hooks/useExamAnswer";
 import { Checkbox } from "@/components/ui/checkbox";
-import Word from "./components/Word";
-import QuestionHeader from "./components/QuestionHeader";
+import Word from "../components/Word";
+import QuestionHeader from "../components/QuestionHeader";
 
 const ReadingTest = () => {
   let questionNumber = 0;
@@ -107,7 +107,6 @@ const ReadingTest = () => {
 
   const handleDrop = useCallback(
     (blankIndex: number, word: string, questionTypeIndex: number) => {
-
       setFilledWordsByQuestion((prev) => {
         const newFilledWordsByPassage = [...prev];
         const currentFilledWords = [
@@ -132,21 +131,26 @@ const ReadingTest = () => {
   useEffect(() => {
     // Chỉ chạy khi có questionType và filledWordsByQuestion đã được khởi tạo
     if (!questionType || !data?.exam) return;
-  
+
     setFilledWordsByQuestion((prev) => {
       // Khởi tạo mảng mới dựa trên prev
-      const newFilledWordsByPassage = prev.length > 0 ? [...prev] : 
-        Array(data.exam.length).fill([]).map(() => []);
-  
+      const newFilledWordsByPassage =
+        prev.length > 0
+          ? [...prev]
+          : Array(data.exam.length)
+              .fill([])
+              .map(() => []);
+
       // Lấy danh sách từ đã điền cho passage hiện tại
-      const currentFilledWords = newFilledWordsByPassage[currentPassage - 1]?.length > 0
-        ? [...newFilledWordsByPassage[currentPassage - 1]]
-        : [];
-  
+      const currentFilledWords =
+        newFilledWordsByPassage[currentPassage - 1]?.length > 0
+          ? [...newFilledWordsByPassage[currentPassage - 1]]
+          : [];
+
       // Cập nhật answers cho từng question
       questionType.forEach((type, typeIndex) => {
         const answers = type.questions?.map((q) => q.answer || "") || [];
-        
+
         answers.forEach((answer, answerIndex) => {
           // Chỉ cập nhật nếu chưa có giá trị tại vị trí này
           if (!currentFilledWords[answerIndex]) {
@@ -154,7 +158,7 @@ const ReadingTest = () => {
           }
         });
       });
-  
+
       newFilledWordsByPassage[currentPassage - 1] = currentFilledWords;
       return newFilledWordsByPassage;
     });
@@ -199,7 +203,7 @@ const ReadingTest = () => {
                     <span className="font-bold">{questionNumber}. </span>
                     {part}
                     <BlankSpace
-                      idx= {idx}
+                      idx={idx}
                       index={index}
                       onDrop={handleDrop}
                       word={filledWords[idx]}

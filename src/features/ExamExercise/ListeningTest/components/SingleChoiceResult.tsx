@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ReadingQuestion } from "@/types/readingExam";
+import { ListeningQuestion } from "@/types/listeningExam";
 import React from "react";
 
 interface Props {
   index: number;
-  question: ReadingQuestion;
+  question: ReadingQuestion | ListeningQuestion;
   userAnswer: string | undefined;
   correctAnswer: string | undefined;
   isCorrect: boolean | undefined;

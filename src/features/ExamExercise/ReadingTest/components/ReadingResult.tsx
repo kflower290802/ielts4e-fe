@@ -9,8 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { useReadingExamPassage } from "../hooks/useReadingExamPassage";
 import { Route } from "@/constant/route";
 import { EQuestionType } from "@/types/exam";
-import SingleChoiceResult from "./SingleChoiceResult";
-import QuestionHeader from "./QuestionHeader";
+import SingleChoiceResult from "../../ListeningTest/components/SingleChoiceResult";
+import QuestionHeader from "../../components/QuestionHeader";
 // import { Checkbox } from "@/components/ui/checkbox";
 
 const ReadingResult = () => {

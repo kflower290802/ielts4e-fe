@@ -3,6 +3,7 @@ import { IUserExam } from "./user";
 export interface IExam<T> {
   exam: T[];
   remainingTime: number;
+  audio: string;
 }
 export interface IExamResult {
   summary: [
