@@ -7,7 +7,6 @@ import { useListeningExamAnswers } from "./hooks/useListeningExamAnswer";
 import { getStorage, setStorage } from "@/utils/storage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EQuestionType } from "@/types/ExamType/exam";
-import SingleChoice from "./components/SingleChoice";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -15,9 +14,9 @@ import { Card } from "@/components/ui/card";
 import QuestionHeader from "../components/QuestionHeader";
 import Word from "../components/Word";
 import BlankSpace from "../ReadingTest/components/BlankSpace";
+import SingleChoice from "../components/SingleChoice";
 
 const ListeningTest = () => {
-  let questionNumber = 0;
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDia, setOpenDia] = useState(false);
@@ -31,7 +30,19 @@ const ListeningTest = () => {
   const [filledWordsByQuestion, setFilledWordsByQuestion] = useState<
     string[][]
   >([]);
-
+  const questionNumberMap = useMemo(() => {
+    if (!data?.exam) return {};
+    const map: Record<string, number> = {};
+    let currentNumber = 1;
+    data.exam.forEach((passage) => {
+      passage.types.forEach((type) => {
+        type.questions.forEach((question) => {
+          map[question.id] = currentNumber++;
+        });
+      });
+    });
+    return map;
+  }, [data?.exam]);
   useEffect(() => {
     const isTesting = getStorage("isTesting");
     if (isTesting === "false") {
@@ -165,7 +176,8 @@ const ListeningTest = () => {
         <p className="mt-4 leading-loose">
           {contentParts.map((part, idx) => {
             if (idx >= blankLength) return <span key={idx}>{part}</span>; // Không thêm input nếu vượt quá 8
-            questionNumber++;
+            const questionId = questions[idx]?.id;
+            const questionNumber = questionNumberMap[questionId] || 0;
             return (
               <React.Fragment key={idx}>
                 {isDrag ? (
@@ -252,6 +264,8 @@ const ListeningTest = () => {
                 types.type === EQuestionType.BlankPassageDrag;
               const isBlankPassageTextbox =
                 types.type === EQuestionType.BlankPassageTextbox;
+              const isBlankPassageImageTextbox =
+                types.type === EQuestionType.BlankPassageImageTextbox;
               const isMultipleChoiceQuestion =
                 types.type === EQuestionType.MultipleChoice;
               if (isBlankPassageDrag || isBlankPassageTextbox) {
@@ -292,25 +306,30 @@ const ListeningTest = () => {
               } else if (isSingleChoiceQuestion) {
                 return (
                   <div className="space-y-4">
-                    {questionType[index].questions.map((question, index) => (
-                      <SingleChoice
-                        question={question}
-                        index={index}
-                        onClick={handleSelectSingleAnswer}
-                        currentAnswer={answers[question.id] as string}
-                      />
-                    ))}
+                    {questionType[index].questions.map((question, index) => {
+                      const questionNumber =
+                        questionNumberMap[question.id] || index + 1;
+                      return (
+                        <SingleChoice
+                          question={question}
+                          questionNumber={questionNumber}
+                          onClick={handleSelectSingleAnswer}
+                          currentAnswer={answers[question.id] as string}
+                        />
+                      );
+                    })}
                   </div>
                 );
               } else if (isMultipleChoiceQuestion) {
                 <div className="space-y-4">
                   {questionType[index].questions.map((question, index) => {
-                    questionNumber++;
+                    const questionNumber =
+                      questionNumberMap[question.id] || index + 1;
                     return (
                       <div className="border rounded-md p-2">
                         <div className="flex flex-col space-y-2">
                           <p>
-                            {index + 1}, {question.question}
+                            {questionNumber}, {question.question}
                           </p>
                           <div className="grid grid-cols-2 gap-2">
                             {question.answers.map((answer) => (
@@ -356,6 +375,42 @@ const ListeningTest = () => {
                     )}
                   </div>
                 </div>;
+              } else if (isBlankPassageImageTextbox) {
+                return (
+                  <>
+                    <QuestionHeader
+                      start={start}
+                      end={end}
+                      instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
+                    />
+                    <div className="flex gap-5">
+                      <img
+                        src={questionType[index].image}
+                        alt="image type"
+                        className="w-2/3"
+                      />
+                      <div className="flex flex-col gap-4 items-center">
+                        {questionType[index].questions.map((question) => {
+                          const questionNumber =
+                            questionNumberMap[question.id] || index + 1;
+                          return (
+                            <div className="flex gap-2 items-center">
+                              <span className="font-bold">
+                                {questionNumber}
+                              </span>
+                              <input
+                                id={question.id}
+                                value={answers[question.id] || ""}
+                                onChange={handleInput(question.id)}
+                                className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                );
               }
             })}
           </Card>

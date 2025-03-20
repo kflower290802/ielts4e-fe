@@ -7,7 +7,7 @@ import { usePracticeReadingSubmit } from "../PracticeReading/hooks/usePracticeRe
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
-  answers: Record<string, string>;
+  answers: Record<string, string | string[]>;
   totalQuestion: number | undefined;
   id: string | undefined;
   route: string;
@@ -30,7 +30,7 @@ const DialogSubmitPractice = ({
     const formattedAnswers = Object.entries(answers).map(
       ([questionId, answer]) => ({
         questionId,
-        answer,
+        answer: answer as string,
       })
     );
 

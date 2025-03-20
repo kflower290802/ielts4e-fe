@@ -1,28 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ListeningQuestion } from "@/types/ExamType/listeningExam";
 import { ReadingQuestion } from "@/types/ExamType/readingExam";
 import React from "react";
 
 interface Props {
-  index: number;
-  question: ReadingQuestion;
+  question: ReadingQuestion | ListeningQuestion;
   onClick: (questionId: string, answer: string) => void;
   currentAnswer: string;
+  questionNumber: number
 }
 
 const AnswerList = ["A", "B", "C", "D", "E"];
 
 const SingleChoice: React.FC<Props> = ({
-  index,
   question,
   onClick,
   currentAnswer,
+  questionNumber
 }) => {
   return (
     <div className="border rounded-md p-2">
       <div className="flex flex-col space-y-2">
         <p>
-          {index + 1}, {question.question}
+          <span className="font-bold">{questionNumber}</span>, {question.question}
         </p>
         <div className="grid grid-cols-2 gap-2">
           {question.answers.map((answer, index) => (

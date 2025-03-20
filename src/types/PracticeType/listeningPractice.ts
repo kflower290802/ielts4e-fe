@@ -1,7 +1,7 @@
+import { EQuestionType } from "../ExamType/exam";
 import { IExcerciseDetail } from "../excercise";
-import { EQuestionType } from "./exam";
 
-export interface ExamSection {
+export interface PracticeSection {
   id: string;
   exam: IExcerciseDetail;
   createdAt: string;
@@ -12,7 +12,7 @@ export interface TypesListening {
   id: string;
   type: EQuestionType;
   content: string;
-  image: string;
+  image: string
   questions: ListeningQuestion[];
 }
 export interface ListeningQuestion {

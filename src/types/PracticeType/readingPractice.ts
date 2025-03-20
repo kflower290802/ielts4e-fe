@@ -18,6 +18,7 @@ export interface TypesReading {
   };
   type: EQuestionType;
   content: string;
+  image: string
   createdAt: string;
   updatedAt: string;
   questions: ReadingQuestion[];

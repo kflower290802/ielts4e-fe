@@ -10,6 +10,7 @@ interface Props {
   userAnswer: string | undefined;
   correctAnswer: string | undefined;
   isCorrect: boolean | undefined;
+  questionNumber: number
 }
 
 const AnswerList = ["A", "B", "C", "D", "E"];
@@ -18,6 +19,7 @@ const SingleChoiceResult: React.FC<Props> = ({
   index,
   question,
   userAnswer,
+  questionNumber,
   correctAnswer,
   isCorrect,
 }) => {
@@ -27,7 +29,7 @@ const SingleChoiceResult: React.FC<Props> = ({
     <div className="border rounded-md p-2">
       <div className="flex flex-col space-y-2">
         <p>
-          {index + 1}, {question.question}
+          <span className="font-bold">{questionNumber}</span>, {question.question}
         </p>
         <div className="grid grid-cols-2 gap-2">
           {question.answers.map((answer, index) => (

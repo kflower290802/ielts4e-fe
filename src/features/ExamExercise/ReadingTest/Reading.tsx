@@ -16,7 +16,6 @@ import Word from "../components/Word";
 import QuestionHeader from "../components/QuestionHeader";
 
 const ReadingTest = () => {
-  let questionNumber = 0;
   const { id } = useParams<{ id: string }>();
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const { mutateAsync: examAnswers } = useExamAnswers();
@@ -26,6 +25,20 @@ const ReadingTest = () => {
       refetch();
     }
   }, [id, refetch]);
+  const questionNumberMap = useMemo(() => {
+    if (!data?.exam) return {};
+    const map: Record<string, number> = {};
+    let currentNumber = 1;
+    data.exam.forEach((passage) => {
+      passage.types.forEach((type) => {
+        type.questions.forEach((question) => {
+          map[question.id] = currentNumber++;
+        });
+      });
+    });
+    return map;
+  }, [data?.exam]);
+
   const [filledWordsByQuestion, setFilledWordsByQuestion] = useState<
     string[][]
   >([]);
@@ -148,7 +161,7 @@ const ReadingTest = () => {
           : [];
 
       // Cập nhật answers cho từng question
-      questionType.forEach((type, typeIndex) => {
+      questionType.forEach((type) => {
         const answers = type.questions?.map((q) => q.answer || "") || [];
 
         answers.forEach((answer, answerIndex) => {
@@ -195,7 +208,8 @@ const ReadingTest = () => {
         <p className="mt-4 leading-loose">
           {contentParts.map((part, idx) => {
             if (idx >= blankLength) return <span key={idx}>{part}</span>; // Không thêm input nếu vượt quá 8
-            questionNumber++;
+            const questionId = questions[idx]?.id;
+            const questionNumber = questionNumberMap[questionId] || 0;
             return (
               <React.Fragment key={idx}>
                 {isDrag ? (
@@ -232,12 +246,15 @@ const ReadingTest = () => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
   const getQuestionRange = (questionType: any[], currentIndex: number) => {
-    let start = 1;
-    for (let i = 0; i < currentIndex; i++) {
-      start += questionType[i]?.questions?.length || 0;
-    }
-    const end =
-      start + (questionType[currentIndex]?.questions?.length || 0) - 1;
+    if (!questionType || !questionType[currentIndex]) return { start: 1, end: 1 };
+  
+    const questions = questionType[currentIndex].questions || [];
+    if (questions.length === 0) return { start: 1, end: 1 };
+  
+    // Lấy số thứ tự của câu hỏi đầu tiên và cuối cùng trong type hiện tại
+    const start = questionNumberMap[questions[0].id] || 1;
+    const end = questionNumberMap[questions[questions.length - 1].id] || start;
+  
     return { start, end };
   };
   return (
@@ -285,6 +302,8 @@ const ReadingTest = () => {
                   types.type === EQuestionType.BlankPassageDrag;
                 const isBlankPassageTextbox =
                   types.type === EQuestionType.BlankPassageTextbox;
+                const isBlankPassageImageTextbox =
+                  types.type === EQuestionType.BlankPassageImageTextbox;
                 const isMultipleChoiceQuestion =
                   types.type === EQuestionType.MultipleChoice;
                 if (isBlankPassageDrag || isBlankPassageTextbox) {
@@ -320,25 +339,35 @@ const ReadingTest = () => {
                 } else if (isSingleChoiceQuestion) {
                   return (
                     <div className="space-y-4">
-                      {questionType[index].questions.map((question, index) => (
-                        <SingleChoice
-                          question={question}
-                          index={index}
-                          onClick={handleSelectSingleAnswer}
-                          currentAnswer={answers[question.id] as string}
-                        />
-                      ))}
+                      <QuestionHeader
+                        start={start}
+                        end={end}
+                        instruction="Choose the CORRECT answer"
+                      />
+                      {questionType[index].questions.map((question, index) => {
+                        const questionNumber =
+                          questionNumberMap[question.id] || index + 1;
+                        return (
+                          <SingleChoice
+                            question={question}
+                            questionNumber={questionNumber}
+                            onClick={handleSelectSingleAnswer}
+                            currentAnswer={answers[question.id] as string}
+                          />
+                        );
+                      })}
                     </div>
                   );
                 } else if (isMultipleChoiceQuestion) {
                   <div className="space-y-4">
                     {questionType[index].questions.map((question, index) => {
-                      questionNumber++;
+                      const questionNumber =
+                        questionNumberMap[question.id] || index + 1;
                       return (
                         <div className="border rounded-md p-2">
                           <div className="flex flex-col space-y-2">
                             <p>
-                              {index + 1}, {question.question}
+                              {questionNumber}, {question.question}
                             </p>
                             <div className="grid grid-cols-2 gap-2">
                               {question.answers.map((answer) => (
@@ -379,6 +408,42 @@ const ReadingTest = () => {
                       )}
                     </div>
                   </div>;
+                } else if (isBlankPassageImageTextbox) {
+                  return (
+                    <>
+                      <QuestionHeader
+                        start={start}
+                        end={end}
+                        instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
+                      />
+                      <div className="flex gap-5">
+                        <img
+                          src={questionType[index].image}
+                          alt="image type"
+                          className="w-2/3"
+                        />
+                        <div className="flex flex-col gap-4 items-center">
+                          {questionType[index].questions.map((question) => {
+                            const questionNumber =
+                              questionNumberMap[question.id] || index + 1;
+                            return (
+                              <div className="flex gap-2 items-center">
+                                <span className="font-bold">
+                                  {questionNumber}
+                                </span>
+                                <input
+                                  id={question.id}
+                                  value={answers[question.id] || ""}
+                                  onChange={handleInput(question.id)}
+                                  className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </>
+                  );
                 }
               })}
             </Card>

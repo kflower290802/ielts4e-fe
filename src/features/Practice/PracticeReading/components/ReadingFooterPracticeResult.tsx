@@ -6,13 +6,11 @@ import { ExamPassage } from "@/types/ExamType/readingExam";
 import { IPracticeResult } from "@/types/PracticeType/practice";
 interface IProps {
   passages: ExamPassage[];
-  passageParam: string;
   result: IPracticeResult | undefined;
   totalQuestions: number;
 }
 const ReadingFooterPracticeResult = ({
   passages,
-  passageParam,
   totalQuestions,
   result,
 }: IProps) => {
@@ -35,7 +33,7 @@ const ReadingFooterPracticeResult = ({
               <Button
                 key={question.id}
                 className={cn(
-                  "h-8 w-8 rounded-full p-0 font-bold transition-colors",
+                  "h-8 w-8 rounded-full p-3 font-bold transition-colors",
                   questionSummary?.isCorrect
                     ? "bg-[#66B032] hover:bg-[#66B032]/80 text-white"
                     : "bg-red-600 hover:bg-red-600/70 text-white",

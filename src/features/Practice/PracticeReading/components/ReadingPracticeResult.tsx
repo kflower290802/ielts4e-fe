@@ -296,7 +296,6 @@ export default function PracticeReadingResult() {
         result={result}
         passages={data?.exam ?? []}
         totalQuestions={totalQuestions}
-        passageParam={passageParam}
       />
     </div>
   );

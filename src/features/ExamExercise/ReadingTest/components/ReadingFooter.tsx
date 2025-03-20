@@ -42,7 +42,9 @@ const ReadingFooter = ({
       0
     );
   };
-
+  const allQuestions = passages.flatMap((passage) =>
+    passage.types.flatMap((type) => type.questions)
+  );
   return (
     <div className="fixed bottom-0 left-0 right-0 border-t bg-white h-28 px-6">
       <DialogSubmitConfirm
@@ -80,33 +82,18 @@ const ReadingFooter = ({
           ))}
         </div>
 
-        <div className="flex items-center justify-center gap-5 w-1/3">
-          <div className="grid grid-cols-10 gap-3">
+        <div className="flex items-center justify-center w-1/3">
+          <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 py-2">
             {Array.from({ length: totalQuestions }).map((_, idx) => {
-              // Tìm passage và question tương ứng với index hiện tại
-              let questionId = "";
-              let currentIndex = idx;
-              let found = false;
-
-              for (const passage of passages) {
-                for (const type of passage.types) {
-                  if (currentIndex < type.questions.length) {
-                    questionId = type.questions[currentIndex].id;
-                    found = true;
-                    break;
-                  }
-                  currentIndex -= type.questions.length;
-                }
-                if (found) break;
-              }
-
+              const question = allQuestions[idx];
+              const questionId = question ? question.id : "";
               const isAnswered = !!answers[questionId];
 
               return (
                 <Button
-                  key={questionId}
+                  key={questionId || idx}
                   className={cn(
-                    "h-8 w-8 rounded-full p-0 font-bold transition-colors",
+                    "h-8 w-8 rounded-full p-0 font-bold transition-colors flex-shrink-0",
                     isAnswered
                       ? "bg-[#3C64CE] text-white"
                       : "bg-[#D9D9D9] hover:bg-[#3C64CE] hover:text-white"
