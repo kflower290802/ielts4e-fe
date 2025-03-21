@@ -238,9 +238,9 @@ const ListeningPractice = () => {
   };
 
   return (
-    <div className="h-full relative p-4 flex flex-col justify-center items-center overflow-y-hidden">
+    <div className="h-full relative pt-10 flex flex-col items-center overflow-y-hidden">
       <DndProvider backend={HTML5Backend}>
-        <div className="w-11/12 bg-white border border-black rounded-lg h-5/6 overflow-y-hidden">
+        <div className="w-11/12 bg-white border border-black rounded-lg h-5/6 overflow-y-auto">
           <div className="grid grid-cols-1 gap-6 p-6">
             <div className="overflow-y-auto">
               {questionType?.map((types, index) => {

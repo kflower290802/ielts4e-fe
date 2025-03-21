@@ -21,6 +21,8 @@ export const Route = {
   PracticeListeningResult: '/practice/listening/result',
   PracticeSpeaking: '/practice/speaking',
   PracticeSpeakingResult: '/practice/speaking/result',
+  PracticeWriting: '/practice/writing',
+  PracticeWritingResult: '/practice/writing/result',
 }
 
 export const authRoutes = [Route.Login, Route.SignUp]

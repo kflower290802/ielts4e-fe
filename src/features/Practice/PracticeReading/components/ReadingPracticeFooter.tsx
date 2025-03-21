@@ -30,7 +30,7 @@ const ReadingPracticeFooter = ({
         route={Route.PracticeReadingResult}
       />
       <div className="flex h-full items-center justify-between gap-20">
-        <div className="flex items-center gap-5 w-2/3 overflow-x-auto ">
+        <div className="flex items-center gap-5 w-2/3 p-2 overflow-x-auto ">
           {Array.from({ length: totalQuestions }).map((_, idx) => {
             // Tìm passage và question tương ứng với index hiện tại
             let questionId = "";
@@ -55,7 +55,7 @@ const ReadingPracticeFooter = ({
               <Button
                 key={questionId}
                 className={cn(
-                  "h-10 w-10 rounded-full p-5 font-bold transition-colors",
+                  "h-8 w-8 rounded-full p-4 font-bold transition-colors",
                   isAnswered
                     ? "bg-[#3C64CE] text-white"
                     : "bg-[#D9D9D9] hover:bg-[#3C64CE] hover:text-white"

@@ -22,7 +22,7 @@ const ListeningPracticeFooter = ({
 }: IProps) => {
   const [openDia, setOpenDia] = useState<boolean>(false);
   return (
-    <div className="absolute bottom-0 left-10 right-0 h-20 px-6">
+    <div className="absolute bottom-0 left-10 right-0 h-28 px-6">
       <DialogSubmitPractice
         openDia={openDia}
         setOpenDia={setOpenDia}
@@ -37,7 +37,7 @@ const ListeningPracticeFooter = ({
             <AudioPlayer src={audio ?? ""} />
           </div>
         )}
-        <div className="flex items-center gap-5 w-1/3 overflow-x-auto ">
+        <div className="flex items-center gap-5 w-1/3 py-2 overflow-x-auto ">
           {Array.from({ length: totalQuestions }).map((_, idx) => {
             // Tìm passage và question tương ứng với index hiện tại
             let questionId = "";
@@ -62,7 +62,7 @@ const ListeningPracticeFooter = ({
               <Button
                 key={questionId}
                 className={cn(
-                  "h-10 w-10 rounded-full p-5 font-bold transition-colors",
+                  "h-8 w-8 rounded-full p-4 font-bold transition-colors",
                   isAnswered
                     ? "bg-[#3C64CE] text-white"
                     : "bg-[#D9D9D9] hover:bg-[#3C64CE] hover:text-white"
