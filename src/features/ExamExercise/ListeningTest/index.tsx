@@ -256,8 +256,6 @@ const ListeningTest = () => {
           <Card className="p-6 overflow-y-auto">
             {questionType?.map((types, index) => {
               const { start, end } = getQuestionRange(questionType, index);
-              const isHeadingQuestion =
-                types.type === EQuestionType.HeadingPosition;
               const isSingleChoiceQuestion =
                 types.type === EQuestionType.SingleChoice;
               const isBlankPassageDrag =
@@ -356,24 +354,6 @@ const ListeningTest = () => {
                       </div>
                     );
                   })}
-                </div>;
-              } else if (isHeadingQuestion) {
-                <div>
-                  {isHeadingQuestion && (
-                    <p className="text-lg font-bold ">List of Headings</p>
-                  )}
-                  <div className="flex space-x-2">
-                    {questionType[index].questions.map((question) =>
-                      question.answers.map((answer, idx) => {
-                        const answerDrag = {
-                          id: answer.id,
-                          question: answer.examListenQuestion,
-                          answer: answer.answer,
-                        };
-                        return <Word key={idx} answer={answerDrag} />;
-                      })
-                    )}
-                  </div>
                 </div>;
               } else if (isBlankPassageImageTextbox) {
                 return (

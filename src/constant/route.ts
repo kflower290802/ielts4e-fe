@@ -20,6 +20,7 @@ export const Route = {
   PracticeListening: '/practice/listening',
   PracticeListeningResult: '/practice/listening/result',
   PracticeSpeaking: '/practice/speaking',
+  PracticeSpeakingStart: '/practice/speaking/start',
   PracticeSpeakingResult: '/practice/speaking/result',
   PracticeWriting: '/practice/writing',
   PracticeWritingResult: '/practice/writing/result',

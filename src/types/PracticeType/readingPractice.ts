@@ -1,15 +1,17 @@
 import { EQuestionType } from "../ExamType/exam";
-import { IExcerciseDetail } from "../excercise";
-
-export interface PractiePassage {
-  id: string;
-  exam: IExcerciseDetail;
-  passage: string;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
+export interface PracticeReading {
+  practiceReading: {
+    id: string;
+    content: string;
+    image: string;
+    practice: {
+      id: string;
+    };
+    title: string;
+    createdAt: string;
+    updatedAt: string;
+  };
   types: TypesReading[];
-  // blankPassage?: string;
 }
 export interface TypesReading {
   id: string;
@@ -18,14 +20,14 @@ export interface TypesReading {
   };
   type: EQuestionType;
   content: string;
-  image: string
+  image: string;
   createdAt: string;
   updatedAt: string;
   questions: ReadingQuestion[];
 }
 export interface ReadingQuestion {
   id: string;
-  examReadingType: {
+  type: {
     id: string;
   };
   question: string;

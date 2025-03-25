@@ -16,6 +16,8 @@ import ListeningPractice from "@/features/Practice/PracticeListening";
 import ReadingTest from "@/features/ExamExercise/ReadingTest/Reading";
 import PracticeReadingResult from "@/features/Practice/PracticeReading/components/ReadingPracticeResult";
 import PracticeWriting from "@/features/Practice/PracticeWriting";
+import PracticeSpeakingTest from "@/features/Practice/PracticeSpeaking/SpeakingTest";
+import PracticeSpeaking from "@/features/Practice/PracticeSpeaking";
 
 export const privateRoutes = [
   {
@@ -50,8 +52,12 @@ export const privateRoutes = [
         path: `${Route.PracticeListening}/:id`,
       },
       {
-        element: <PracticeReading />,
+        element: <PracticeSpeakingTest />,
         path: `${Route.PracticeSpeaking}/:id`,
+      },
+      {
+        element: <PracticeSpeaking />,
+        path: `${Route.PracticeSpeakingStart}/:id`,
       },
       {
         element: <PracticeWriting />,

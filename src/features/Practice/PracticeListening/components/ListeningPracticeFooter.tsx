@@ -2,20 +2,19 @@ import { Button } from "@/components/ui/button";
 import { memo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Route } from "@/constant/route";
-import { PracticeSection } from "@/types/PracticeType/listeningPractice";
 import AudioPlayer from "./AudioPlayer";
 import DialogSubmitPractice from "../../components/DialogSubmitPractice";
+import { TypesListening } from "@/types/PracticeType/listeningPractice";
 interface IProps {
   audio: string | undefined;
-  section: PracticeSection[];
+  types: TypesListening[];
   totalQuestions: number;
   answers: Record<string, string | string[]>;
-  sectionParam: string;
   id: string | undefined;
 }
 const ListeningPracticeFooter = ({
   audio,
-  section,
+  types,
   totalQuestions,
   answers,
   id,
@@ -44,16 +43,13 @@ const ListeningPracticeFooter = ({
             let currentIndex = idx;
             let found = false;
 
-            for (const passage of section) {
-              for (const type of passage.types) {
-                if (currentIndex < type.questions.length) {
-                  questionId = type.questions[currentIndex].id;
-                  found = true;
-                  break;
-                }
-                currentIndex -= type.questions.length;
+            for (const type of types) {
+              if (currentIndex < type.questions.length) {
+                questionId = type.questions[currentIndex].id;
+                found = true;
+                break;
               }
-              if (found) break;
+              currentIndex -= type.questions.length;
             }
 
             const isAnswered = !!answers[questionId];

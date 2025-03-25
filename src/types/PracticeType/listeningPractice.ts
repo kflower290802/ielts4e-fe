@@ -1,12 +1,15 @@
 import { EQuestionType } from "../ExamType/exam";
-import { IExcerciseDetail } from "../excercise";
-
-export interface PracticeSection {
-  id: string;
-  exam: IExcerciseDetail;
-  createdAt: string;
-  updatedAt: string;
-  types: TypesListening[];
+export interface PracticeListening {
+   practiceListen: {
+      id: string;
+      audio: string;
+      practice: {
+        id: string;
+      };
+      createdAt: string;
+      updatedAt: string;
+    };
+    types: TypesListening[];
 }
 export interface TypesListening {
   id: string;
@@ -17,7 +20,7 @@ export interface TypesListening {
 }
 export interface ListeningQuestion {
   id: string;
-  examListenType: {
+  type: {
     id: string;
   };
   question: string;
@@ -25,10 +28,10 @@ export interface ListeningQuestion {
   updatedAt: string;
   answers: ListeningAnswer[];
   answer: string;
-}
+  }
 export interface ListeningAnswer {
   id: string;
-  examListenQuestion: {
+  question: {
     id: string;
   };
   answer: string;

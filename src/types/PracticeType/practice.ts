@@ -21,7 +21,7 @@ export interface IUserAnswer {
   examPassageQuestionId: string;
   answer: string | string[];
 }
-export interface IPractieAnswerSubmit {
+export interface IPracticeAnswerSubmit {
   questionId: string;
   answer: string;
 }

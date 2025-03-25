@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { useListeningPracticeAnswers } from "./hooks/useListeningPracticeAnswer";
+import { useParams } from "react-router-dom";
+// import { useListeningPracticeAnswers } from "./hooks/useListeningPracticeAnswer";
 import { useListeningPracticeSection } from "./hooks/useListeningPracticeSection";
 import { getStorage, setStorage } from "@/utils/storage";
 import BlankPracticeSpace from "../components/BlankPracticeSpace";
@@ -15,18 +15,13 @@ import ListeningPracticeFooter from "./components/ListeningPracticeFooter";
 
 const ListeningPractice = () => {
   const { id } = useParams<{ id: string }>();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [openDia, setOpenDia] = useState(false);
-  const sectionParam = searchParams.get("section") ?? "1";
-  const { mutateAsync: examListenAnswers } = useListeningPracticeAnswers();
-  const [currentSection, setCurrentSection] = useState(
-    sectionParam ? parseInt(sectionParam) : 1
-  );
-  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  // const { mutateAsync: examListenAnswers } = useListeningPracticeAnswers();
+  const [answers, setAnswers] = React.useState<
+    Record<string, string | string[]>
+  >({});
   const { data, refetch } = useListeningPracticeSection(id ?? "");
-  const [filledWordsByQuestion, setFilledWordsByQuestion] = useState<
-    string[][]
-  >([]);
+  const [filledWords, setFilledWords] = useState<string[]>([]);
 
   useEffect(() => {
     const isTesting = getStorage("isTesting");
@@ -36,70 +31,51 @@ const ListeningPractice = () => {
     }
   }, []);
   useEffect(() => {
-    if (data?.exam) {
+    if (data?.types) {
       const initialAnswers: Record<string, string> = {};
-
-      data.exam.forEach((passage) => {
-        passage.types.forEach((type) => {
-          type.questions.forEach((question) => {
-            initialAnswers[question.id] = question.answer || "";
-          });
+      data.types.forEach((type) => {
+        type.questions.forEach((question) => {
+          initialAnswers[question.id] = question.answer || "";
         });
       });
-
       setAnswers(initialAnswers);
     }
   }, [data]);
-  useEffect(() => {
-    const sendAnswers = async () => {
-      if (Object.keys(answers).length === 0) return;
+  // useEffect(() => {
+  //   const sendAnswers = async () => {
+  //     if (Object.keys(answers).length === 0) return;
 
-      const answerArray = Object.entries(answers).map(
-        ([questionId, answer]) => ({
-          examId: id ?? "",
-          examPassageQuestionId: questionId,
-          answer,
-        })
-      );
+  //     const answerArray = Object.entries(answers).map(([questionId, answer]) => ({
+  //       examId: id ?? "",
+  //       examPassageQuestionId: questionId,
+  //       answer,
+  //     }));
 
-      try {
-        await examListenAnswers(answerArray);
-        console.log("Answers sent successfully");
-      } catch (error) {
-        console.error("Failed to send answers:", error);
-      }
-    };
+  //     try {
+  //       await examAnswers(answerArray);
+  //       console.log("Answers sent successfully");
+  //     } catch (error) {
+  //       console.error("Failed to send answers:", error);
+  //     }
+  //   };
 
-    const interval = setInterval(() => {
-      sendAnswers();
-    }, 20000);
+  //   const interval = setInterval(() => {
+  //     sendAnswers();
+  //   }, 20000);
 
-    return () => clearInterval(interval);
-  }, [answers, id, examListenAnswers]);
-
-  useEffect(() => {
-    setSearchParams({ passage: currentSection.toString() });
-  }, [currentSection, setSearchParams]);
+  //   return () => clearInterval(interval);
+  // }, [answers, id, examAnswers]);
 
   useEffect(() => {
     if (id) {
       refetch();
     }
   }, [id]);
-  const questionType = useMemo(
-    () => data?.exam[currentSection - 1]?.types,
-    [currentSection, data?.exam]
-  );
+  const questionTypes = useMemo(() => data?.types || [], [data?.types]);
   const calculateTotalQuestions = useCallback(() => {
-    if (!data?.exam) return 0;
-
-    return data.exam.reduce((total, passage) => {
-      return (
-        total +
-        passage.types.reduce((typeTotal, type) => {
-          return typeTotal + type.questions.length;
-        }, 0)
-      );
+    if (!data?.types) return 0;
+    return data.types.reduce((total, type) => {
+      return total + type.questions.length;
     }, 0);
   }, [data]);
   const totalQuestions = useMemo(
@@ -115,18 +91,14 @@ const ListeningPractice = () => {
     };
   const handleDrop = useCallback(
     (blankIndex: number, word: string, questionTypeIndex: number) => {
-      setFilledWordsByQuestion((prev) => {
-        const newFilledWordsByPassage = [...prev];
-        const currentFilledWords = [
-          ...(newFilledWordsByPassage[currentSection - 1] || []),
-        ];
-        currentFilledWords[blankIndex] = word; // Cập nhật từ tại vị trí blankIndex
-        newFilledWordsByPassage[currentSection - 1] = currentFilledWords;
-        return newFilledWordsByPassage;
+      setFilledWords((prev) => {
+        const newFilledWords = [...prev];
+        newFilledWords[blankIndex] = word;
+        return newFilledWords;
       });
 
       const questionId =
-        questionType?.[questionTypeIndex]?.questions?.[blankIndex]?.id;
+        questionTypes[questionTypeIndex]?.questions[blankIndex]?.id;
       if (questionId) {
         setAnswers((prev) => ({
           ...prev,
@@ -134,45 +106,57 @@ const ListeningPractice = () => {
         }));
       }
     },
-    [currentSection, questionType]
+    [questionTypes]
   );
+  useEffect(() => {
+    if (!questionTypes || !data?.types) return;
+
+    setFilledWords((prev) => {
+      const newFilledWords = prev.length > 0 ? [...prev] : [];
+      questionTypes.forEach((type) => {
+        const answers = type.questions?.map((q) => q.answer || "") || [];
+        answers.forEach((answer, index) => {
+          if (!newFilledWords[index]) {
+            newFilledWords[index] = answer;
+          }
+        });
+      });
+      return newFilledWords;
+    });
+  }, [questionTypes, data?.types]);
   const questionNumberMap = useMemo(() => {
-    if (!data?.exam) return {};
+    if (!data?.types) return {};
     const map: Record<string, number> = {};
     let currentNumber = 1;
-    data.exam.forEach((passage) => {
-      passage.types.forEach((type) => {
-        type.questions.forEach((question) => {
-          map[question.id] = currentNumber++;
-        });
+    data.types.forEach((type) => {
+      type.questions.forEach((question) => {
+        map[question.id] = currentNumber++;
       });
     });
     return map;
-  }, [data?.exam]);
+  }, [data?.types]);
   const handleCheckedChange = (questionId: string, answer: string) => {
     setAnswers((prev) => {
       return {
         ...prev,
-        [questionId]: prev[questionId].includes(answer)
+        [questionId]: prev[questionId]?.includes(answer)
           ? ((prev[questionId] as string[]) || []).filter((a) => a !== answer)
-          : [...prev[questionId], answer],
+          : [...((prev[questionId] as string[]) || []), answer],
       };
     });
   };
-  const filledWords = filledWordsByQuestion[currentSection - 1] || [];
   const questionPassageContent = (index: number, isDrag: boolean) => {
-    if (!questionType || !questionType[index]) return null;
+    if (!questionTypes[index]) return null;
 
-    const contentParts = questionType[index].content?.split("{blank}");
-
-    const questions = questionType[index].questions || [];
+    const contentParts = questionTypes[index].content?.split("{blank}");
+    const questions = questionTypes[index].questions || [];
     const blankLength = contentParts?.length - 1;
 
     return (
       <React.Fragment>
         <p className="mt-4 leading-loose">
-          {contentParts.map((part, idx) => {
-            if (idx >= blankLength) return <span key={idx}>{part}</span>; // Không thêm input nếu vượt quá 8
+          {contentParts?.map((part, idx) => {
+            if (idx >= blankLength) return <span key={idx}>{part}</span>;
             const questionId = questions[idx]?.id;
             const questionNumber = questionNumberMap[questionId] || 0;
             return (
@@ -193,13 +177,13 @@ const ListeningPractice = () => {
                     {part}
                     <span className="font-bold">{questionNumber}. </span>
                     <input
-                      id={questions[idx]?.id}
-                      value={answers[questions[idx]?.id] || ""}
-                      onChange={handleInput(questions[idx]?.id)}
-                      className="w-36 h-8 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
+                      id={questionId}
+                      value={answers[questionId] || ""}
+                      onChange={handleInput(questionId)}
+                      className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
                     />
                   </>
-                )}{" "}
+                )}
               </React.Fragment>
             );
           })}
@@ -243,10 +227,8 @@ const ListeningPractice = () => {
         <div className="w-11/12 bg-white border border-black rounded-lg h-5/6 overflow-y-auto">
           <div className="grid grid-cols-1 gap-6 p-6">
             <div className="overflow-y-auto">
-              {questionType?.map((types, index) => {
-                const { start, end } = getQuestionRange(questionType, index);
-                const isHeadingQuestion =
-                  types.type === EQuestionType.HeadingPosition;
+              {questionTypes?.map((types, index) => {
+                const { start, end } = getQuestionRange(questionTypes, index);
                 const isSingleChoiceQuestion =
                   types.type === EQuestionType.SingleChoice;
                 const isBlankPassageDrag =
@@ -277,11 +259,11 @@ const ListeningPractice = () => {
                         {questionPassageContent(index, isBlankPassageDrag)}
                         {isBlankPassageDrag && (
                           <div className="flex flex-col space-x-2 h-fit rounded-lg shadow">
-                            {questionType[index].questions.map((question) =>
+                            {types.questions.map((question) =>
                               question.answers.map((answer, idx) => {
                                 const answerDrag = {
                                   id: answer.id,
-                                  question: answer.examListenQuestion,
+                                  question: answer,
                                   answer: answer.answer,
                                 };
                                 return (
@@ -297,7 +279,7 @@ const ListeningPractice = () => {
                 } else if (isSingleChoiceQuestion) {
                   return (
                     <div className="space-y-4">
-                      {questionType[index].questions.map((question, index) => {
+                      {types.questions.map((question, index) => {
                         const questionNumber =
                           questionNumberMap[question.id] || index + 1;
                         return (
@@ -313,7 +295,7 @@ const ListeningPractice = () => {
                   );
                 } else if (isMultipleChoiceQuestion) {
                   <div className="space-y-4">
-                    {questionType[index].questions.map((question, index) => {
+                    {types.questions.map((question, index) => {
                       const questionNumber =
                         questionNumberMap[question.id] || index + 1;
                       return (
@@ -348,24 +330,6 @@ const ListeningPractice = () => {
                       );
                     })}
                   </div>;
-                } else if (isHeadingQuestion) {
-                  <div>
-                    {isHeadingQuestion && (
-                      <p className="text-lg font-bold ">List of Headings</p>
-                    )}
-                    <div className="flex space-x-2">
-                      {questionType[index].questions.map((question) =>
-                        question.answers.map((answer, idx) => {
-                          const answerDrag = {
-                            id: answer.id,
-                            question: answer.examListenQuestion,
-                            answer: answer.answer,
-                          };
-                          return <WordPractice key={idx} answer={answerDrag} />;
-                        })
-                      )}
-                    </div>
-                  </div>;
                 } else if (isBlankPassageImageTextbox) {
                   return (
                     <>
@@ -376,12 +340,12 @@ const ListeningPractice = () => {
                       />
                       <div className="flex gap-5">
                         <img
-                          src={questionType[index].image}
+                          src={types.image}
                           alt="image type"
                           className="w-2/3"
                         />
                         <div className="flex flex-col gap-4 items-center">
-                          {questionType[index].questions.map((question) => {
+                          {types.questions.map((question) => {
                             const questionNumber =
                               questionNumberMap[question.id] || index + 1;
                             return (
@@ -409,11 +373,10 @@ const ListeningPractice = () => {
         </div>
       </DndProvider>
       <ListeningPracticeFooter
-        audio={data?.audio}
-        section={data?.exam ?? []}
+        audio={data?.practiceListen.audio}
+        types={data?.types ?? []}
         totalQuestions={totalQuestions}
         answers={answers}
-        sectionParam={sectionParam}
         id={id}
       />
     </div>

@@ -16,18 +16,17 @@ import {
   practiceTabs,
   questionTypeFilters,
   statusFilters,
-  topicFilters,
 } from "@/constant/filter";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
-  IRequestExcercise,
+  IRequestExcercisePractice,
   StatusExcercise,
   TypeExcercise,
 } from "@/types/excercise";
 import { formatMillisecondsToMMSS } from "@/utils/time";
 import { useGetPracticeExcercise } from "./hooks/useGetPracticeExcercise";
-import { useGetPracticeYear } from "./hooks/useGetYear";
+import { useGetTopic } from "./hooks/useGetTopic";
 import DialogPracticeConfirm from "./components/DialogPracticeConfirm";
 
 export function Practice() {
@@ -35,7 +34,7 @@ export function Practice() {
   const [id, setId] = useState("");
   const [type, setType] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-  const [params, setParams] = useState<IRequestExcercise>(() => {
+  const [params, setParams] = useState<IRequestExcercisePractice>(() => {
     return {
       status: searchParams.get("status") as StatusExcercise | undefined,
       year: searchParams.get("year") || undefined,
@@ -49,18 +48,17 @@ export function Practice() {
   useEffect(() => {
     const newSearchParams = new URLSearchParams();
     if (params.status) newSearchParams.set("status", params.status);
-    if (params.year) newSearchParams.set("year", params.year);
+    if (params.topic) newSearchParams.set("topic", params.topic);
     if (params.type) newSearchParams.set("type", params.type);
     if (params.page != undefined)
       newSearchParams.set("page", params.page.toString());
     setSearchParams(newSearchParams);
   }, [params, setSearchParams]);
-  const { data: year } = useGetPracticeYear();
-  const yearString = Array.isArray(year) ? year.map(String) : [];
+  const { data: topics } = useGetTopic();
   useEffect(() => {
     refetch();
   }, [params]);
-  const handleStartExam = (id: string, type: string) => {
+  const handleStartPractice = (id: string, type: string) => {
     setId(id);
     setType(type);
     setOpenDia(true);
@@ -98,28 +96,28 @@ export function Practice() {
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-3">Year</h3>
+            <h3 className="text-lg font-semibold mb-3">Topic</h3>
             <div className="space-y-2">
               <RadioGroup
-                value={params.year || ""}
+                value={params.topic || ""}
                 onValueChange={(value) => {
                   setParams((prev) => ({
                     ...prev,
-                    year: value,
+                    topic: value,
                   }));
                 }}
               >
-                {topicFilters.map((topic) => (
+                {topics?.map((topic) => (
                   <div key={topic.id} className="flex items-center space-x-2">
                     <RadioGroupItem value={topic.id} id={topic.id} />
-                    <Label htmlFor={topic.id}>{topic.label}</Label>
+                    <Label htmlFor={topic.id}>{topic.name}</Label>
                   </div>
                 ))}
               </RadioGroup>
             </div>
           </div>
           <section>
-            <h3 className="text-lg font-semibold mb-3">Exam</h3>
+            <h3 className="text-lg font-semibold mb-3">Type Question</h3>
             <div className="space-y-2">
               <RadioGroup>
                 {questionTypeFilters.map((type) => (
@@ -187,7 +185,7 @@ export function Practice() {
                               ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
                               : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
                           )}
-                          onClick={() => handleStartExam(card.id, card.type)}
+                          onClick={() => handleStartPractice(card.id, card.type)}
                         >
                           {card.status === StatusExcercise.Completed
                             ? "RETRY"

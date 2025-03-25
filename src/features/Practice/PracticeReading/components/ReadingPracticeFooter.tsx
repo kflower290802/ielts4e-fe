@@ -3,15 +3,15 @@ import { cn } from "@/lib/utils";
 import { memo, useState } from "react";
 import { Route } from "@/constant/route";
 import DialogSubmitPractice from "../../components/DialogSubmitPractice";
-import { PractiePassage } from "@/types/PracticeType/readingPractice";
+import { TypesReading } from "@/types/PracticeType/readingPractice";
 interface IProps {
-  passages: PractiePassage[];
+  types: TypesReading[];
   answers: Record<string, string>;
   totalQuestions: number
   id: string | undefined;
 }
 const ReadingPracticeFooter = ({
-  passages,
+  types,
   totalQuestions,
   // setCurrentQuestionPage,
   // questions,
@@ -36,17 +36,13 @@ const ReadingPracticeFooter = ({
             let questionId = "";
             let currentIndex = idx;
             let found = false;
-
-            for (const passage of passages) {
-              for (const type of passage.types) {
-                if (currentIndex < type.questions.length) {
-                  questionId = type.questions[currentIndex].id;
-                  found = true;
-                  break;
-                }
-                currentIndex -= type.questions.length;
+            for (const type of types) {
+              if (currentIndex < type.questions.length) {
+                questionId = type.questions[currentIndex].id;
+                found = true;
+                break;
               }
-              if (found) break;
+              currentIndex -= type.questions.length;
             }
 
             const isAnswered = !!answers[questionId];

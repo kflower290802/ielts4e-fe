@@ -1,14 +1,14 @@
 import { api } from "@/lib/api";
-import { IExcercise, IRequestExcercise } from "@/types/excercise";
+import { IExcercise, IPracticeTopic, IRequestExcercisePractice } from "@/types/excercise";
 import { IPractieResponse } from "@/types/PracticeType/practice";
 import { ReadingQuestion } from "@/types/PracticeType/readingPractice";
 
-export const getExcercise = (params: IRequestExcercise): Promise<IExcercise> =>
-  api.get(`/exams`, {
+export const getExcercisePractice = (params: IRequestExcercisePractice): Promise<IExcercise> =>
+  api.get(`/practices`, {
     params,
   });
-export const getYear = (): Promise<number[]> => api.get(`/exams/year`);
-export const startPractice = (id: string) => api.get(`/exams/start-exam/${id}`);
+export const getTopic = (): Promise<IPracticeTopic[]> => api.get(`/topics`);
+export const startPractice = (id: string) => api.get(`/practices/start-practice/${id}`);
 export const exitPractice = (id: string) => api.post(`/exams/exit-exam/${id}`);
 export const getPracticeAnswers = (
   id: string

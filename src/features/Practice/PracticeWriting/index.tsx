@@ -1,81 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { useWritingPracticeAnswers } from "./hooks/useWritingPracticeAnswer";
+import { useParams } from "react-router-dom";
+// import { useWritingPracticeAnswers } from "./hooks/useWritingPracticeAnswer";
 import { useWritingPracticeById } from "./hooks/useWritingPracticeById";
 import { Textarea } from "@/components/ui/textarea";
 import WritingPracticeFooter from "./components/WritingPracticeFooter";
 
 const PracticeWriting = () => {
   const { id } = useParams<{ id: string }>();
-  const { mutateAsync: writingAnswers } = useWritingPracticeAnswers();
+  // const { mutateAsync: writingAnswers } = useWritingPracticeAnswers();
   const { data, refetch, isLoading } = useWritingPracticeById(id ?? "");
-  const [searchParams, setSearchParams] = useSearchParams();
-  const taskParam = searchParams.get("task") ?? "1";
-  const [currentTask, setCurrentTask] = useState(
-    taskParam ? parseInt(taskParam) : 1
-  );
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [answers, setAnswers] = useState<string>();
   useEffect(() => {
-    if (data?.exam) {
-      const initialAnswers: Record<string, string> = {};
-      data?.exam.forEach((task) => {
-        initialAnswers[task.id] = task.answer || "";
-      });
-
-      setAnswers(initialAnswers);
+    if (data) {
+      setAnswers(data.answer);
     }
   }, [data]);
 
-  useEffect(() => {
-    const sendAnswers = async () => {
-      if (Object.keys(answers).length === 0) return;
-
-      const answerArray = Object.entries(answers).map(
-        ([questionId, answer]) => ({
-          examId: id ?? "",
-          examWritingId: questionId,
-          answer,
-        })
-      );
-
-      try {
-        await writingAnswers(answerArray);
-        console.log("Answers sent successfully");
-      } catch (error) {
-        console.error("Failed to send answers:", error);
-      }
-    };
-
-    const interval = setInterval(() => {
-      sendAnswers();
-    }, 20000); // Gửi mỗi 20 giây
-
-    return () => clearInterval(interval); // Xóa interval khi component unmount
-  }, [answers, id, writingAnswers]);
-
-  useEffect(() => {
-    const newSearchParams = new URLSearchParams();
-    if (currentTask) newSearchParams.set("task", currentTask.toString());
-    setSearchParams(newSearchParams);
-  }, [currentTask, setSearchParams]);
-
   const [wordCount, setWordCount] = useState<number>(0);
-  const task = data?.exam[currentTask - 1];
   useEffect(() => {
     if (id) {
       refetch();
     }
   }, [id]);
-  const handleInput =
-    (taskId: string) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const text = e.target.value;
-      setAnswers((prev) => ({
-        ...prev,
-        [taskId]: e.target.value,
-      }));
-
-      setWordCount(text.length);
-    };
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    setAnswers(text);
+    setWordCount(text.length);
+  };
   return (
     <div className="flex h-full flex-col pt-10 items-center">
       <div className="flex-1 h-full w-11/12 overflow-y-hidden relative">
@@ -84,15 +35,15 @@ const PracticeWriting = () => {
           <div className="border flex flex-col justify-between h-[70vh] border-black rounded-lg overflow-auto bg-white p-6 shadow-sm">
             <span>
               <h2 className="text-xl font-bold mb-4">
-                WRITING TASK {currentTask}
+                WRITING PRACTICE
               </h2>
-              <span>{data?.exam[currentTask - 1].content}</span>
+              <span>{data?.content}</span>
             </span>
 
-            {data?.exam[currentTask - 1].image && (
+            {data?.image && (
               <div className="flex justify-center mb-4">
                 <img
-                  src={data?.exam[currentTask - 1].image}
+                  src={data?.image}
                   alt="Diagram showing flood protection methods"
                   className="border border-gray-200 rounded w-11/12 h-72 object-contain
                 "
@@ -106,9 +57,8 @@ const PracticeWriting = () => {
             <div className="flex flex-col h-full w-full">
               <div className="flex-grow mb-4">
                 <Textarea
-                  id={task?.id}
-                  value={answers[task?.id ?? ""]}
-                  onChange={handleInput(task?.id ?? "")}
+                  value={answers}
+                  onChange={handleInput}
                   className="w-full h-full p-4 border border-black rounded-lg resize-none"
                   placeholder="Start writing here..."
                 />
@@ -121,9 +71,7 @@ const PracticeWriting = () => {
         </div>
 
         {/* Bottom Navigation */}
-        <WritingPracticeFooter
-          id={id}
-        />
+        <WritingPracticeFooter id={id} />
       </div>
     </div>
   );

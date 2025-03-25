@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAudioRecorder } from "@/context/record";
 import { IExam } from "@/types/ExamType/exam";
-import { ExamQuestion } from "@/types/speakingExam";
+import { ExamQuestion } from "@/types/ExamType/speakingExam";
 import { Mic } from "lucide-react";
 interface IProps {
   data: IExam<ExamQuestion> | undefined;

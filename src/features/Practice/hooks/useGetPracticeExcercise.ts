@@ -1,7 +1,7 @@
-import { getExcercise } from "@/api/ExamAPI/exam";
+import { getExcercisePractice } from "@/api/PracticeAPI/practice";
 import {
   IExcercise,
-  IRequestExcercise,
+  IRequestExcercisePractice,
   TypeExcercise,
 } from "@/types/excercise";
 import { useQuery } from "@tanstack/react-query";
@@ -11,10 +11,10 @@ export const useGetPracticeExcercise = ({
   limit = 8,
   type = TypeExcercise.Reading,
   ...rest
-}: IRequestExcercise) => {
+}: IRequestExcercisePractice) => {
   const { data, error, isLoading, refetch } = useQuery<IExcercise, Error>({
     queryKey: ["getPracticeExcercise"],
-    queryFn: () => getExcercise({ ...rest, page, limit, type }),
+    queryFn: () => getExcercisePractice({ ...rest, page, limit, type }),
   });
   return { data, error, isLoading, refetch };
 };

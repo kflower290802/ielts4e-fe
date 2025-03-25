@@ -13,6 +13,10 @@ export interface IExcerciseDetail {
   image: string;
   year: number;
   createdAt: string;
+  include: true;
+  topic: {
+    id: string;
+  };
   updatedAt: string;
   status: StatusExcercise;
 }
@@ -29,10 +33,22 @@ export enum StatusExcercise {
   InProgress = "in-progress",
   Completed = "completed",
 }
+export interface IPracticeTopic {
+  id: string;
+  name: string;
+}
 export interface IRequestExcercise {
   page?: number;
   limit?: number;
   type?: TypeExcercise;
   status?: StatusExcercise;
   year?: string;
+}
+export interface IRequestExcercisePractice {
+  page?: number;
+  limit?: number;
+  type?: TypeExcercise;
+  status?: StatusExcercise;
+  topic?: string;
+  questionType?: string;
 }

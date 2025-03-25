@@ -28,8 +28,3 @@ export const questionTypeFilters = [
   { id: "matching", label: "Matching" },
   { id: "truefalse", label: "True/False/NG" },
 ];
-export const topicFilters = [
-  { id: "travel", label: "Travel " },
-  { id: "nature", label: "Nature" },
-  { id: "work", label: "Work" },
-];

@@ -1,7 +1,7 @@
-export interface IPracticeContent {
+export interface IPracticeWriting {
     id: string,
     content: string,
-    exam: {
+    practice: {
         id: string,
     },
     image: string,

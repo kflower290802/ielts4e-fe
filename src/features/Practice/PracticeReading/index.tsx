@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 // import DialogPracticeConfirm from "./components/DialogPracticeConfirm";
 import { Route } from "@/constant/route";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { usePracticeAnswers } from "./hooks/userPracticeAnswer";
+import { useNavigate, useParams } from "react-router-dom";
+// import { usePracticeAnswers } from "./hooks/userPracticeAnswer";
 import { useReadingPracticePassage } from "./hooks/useReadingPracticePassage";
 import { exitPractice } from "@/api/PracticeAPI/practice";
 import { setStorage } from "@/utils/storage";
@@ -24,39 +24,19 @@ export default function PracticeReading() {
   const [answers, setAnswers] = React.useState<
     Record<string, string | string[]>
   >({});
-  const { mutateAsync: examAnswers } = usePracticeAnswers();
+  // const { mutateAsync: examAnswers } = usePracticeAnswers();
   const { data, refetch } = useReadingPracticePassage(id ?? "");
   useEffect(() => {
     if (id) {
       refetch();
     }
   }, [id, refetch]);
-  const [filledWordsByQuestion, setFilledWordsByQuestion] = useState<
-    string[][]
-  >([]);
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const passageParam = searchParams.get("passage") ?? "1";
-  const [currentPassage, setCurrentPassage] = useState(
-    passageParam ? parseInt(passageParam) : 1
-  );
-  useEffect(() => {
-    setSearchParams({ passage: currentPassage.toString() });
-  }, [currentPassage, setSearchParams]);
-  const questionType = useMemo(
-    () => data?.exam[currentPassage - 1]?.types,
-    [currentPassage, data?.exam]
-  );
+  const [filledWords, setFilledWords] = useState<string[]>([]);
+  const questionTypes = useMemo(() => data?.types || [], [data?.types]);
   const calculateTotalQuestions = useCallback(() => {
-    if (!data?.exam) return 0;
-
-    return data.exam.reduce((total, passage) => {
-      return (
-        total +
-        passage.types.reduce((typeTotal, type) => {
-          return typeTotal + type.questions.length;
-        }, 0)
-      );
+    if (!data?.types) return 0;
+    return data.types.reduce((total, type) => {
+      return total + type.questions.length;
     }, 0);
   }, [data]);
   const totalQuestions = useMemo(
@@ -65,62 +45,52 @@ export default function PracticeReading() {
   );
 
   useEffect(() => {
-    if (data?.exam) {
+    if (data?.types) {
       const initialAnswers: Record<string, string> = {};
-
-      data.exam.forEach((passage) => {
-        passage.types.forEach((type) => {
-          type.questions.forEach((question) => {
-            initialAnswers[question.id] = question.answer || "";
-          });
+      data.types.forEach((type) => {
+        type.questions.forEach((question) => {
+          initialAnswers[question.id] = question.answer || "";
         });
       });
-
       setAnswers(initialAnswers);
     }
   }, [data]);
 
-  useEffect(() => {
-    const sendAnswers = async () => {
-      if (Object.keys(answers).length === 0) return;
+  // useEffect(() => {
+  //   const sendAnswers = async () => {
+  //     if (Object.keys(answers).length === 0) return;
 
-      const answerArray = Object.entries(answers).map(
-        ([questionId, answer]) => ({
-          examId: id ?? "",
-          examPassageQuestionId: questionId,
-          answer,
-        })
-      );
+  //     const answerArray = Object.entries(answers).map(([questionId, answer]) => ({
+  //       examId: id ?? "",
+  //       examPassageQuestionId: questionId,
+  //       answer,
+  //     }));
 
-      try {
-        await examAnswers(answerArray);
-        console.log("Answers sent successfully");
-      } catch (error) {
-        console.error("Failed to send answers:", error);
-      }
-    };
+  //     try {
+  //       await examAnswers(answerArray);
+  //       console.log("Answers sent successfully");
+  //     } catch (error) {
+  //       console.error("Failed to send answers:", error);
+  //     }
+  //   };
 
-    const interval = setInterval(() => {
-      sendAnswers();
-    }, 20000);
+  //   const interval = setInterval(() => {
+  //     sendAnswers();
+  //   }, 20000);
 
-    return () => clearInterval(interval);
-  }, [answers, id, examAnswers]);
+  //   return () => clearInterval(interval);
+  // }, [answers, id, examAnswers]);
 
   const handleDrop = useCallback(
     (blankIndex: number, word: string, questionTypeIndex: number) => {
-      setFilledWordsByQuestion((prev) => {
-        const newFilledWordsByPassage = [...prev];
-        const currentFilledWords = [
-          ...(newFilledWordsByPassage[currentPassage - 1] || []),
-        ];
-        currentFilledWords[blankIndex] = word; // Cập nhật từ tại vị trí blankIndex
-        newFilledWordsByPassage[currentPassage - 1] = currentFilledWords;
-        return newFilledWordsByPassage;
+      setFilledWords((prev) => {
+        const newFilledWords = [...prev];
+        newFilledWords[blankIndex] = word;
+        return newFilledWords;
       });
 
       const questionId =
-        questionType?.[questionTypeIndex]?.questions?.[blankIndex]?.id;
+        questionTypes[questionTypeIndex]?.questions[blankIndex]?.id;
       if (questionId) {
         setAnswers((prev) => ({
           ...prev,
@@ -128,43 +98,24 @@ export default function PracticeReading() {
         }));
       }
     },
-    [currentPassage, questionType]
+    [questionTypes]
   );
   useEffect(() => {
-    // Chỉ chạy khi có questionType và filledWordsByQuestion đã được khởi tạo
-    if (!questionType || !data?.exam) return;
+    if (!questionTypes || !data?.types) return;
 
-    setFilledWordsByQuestion((prev) => {
-      // Khởi tạo mảng mới dựa trên prev
-      const newFilledWordsByPassage =
-        prev.length > 0
-          ? [...prev]
-          : Array(data.exam.length)
-              .fill([])
-              .map(() => []);
-
-      // Lấy danh sách từ đã điền cho passage hiện tại
-      const currentFilledWords =
-        newFilledWordsByPassage[currentPassage - 1]?.length > 0
-          ? [...newFilledWordsByPassage[currentPassage - 1]]
-          : [];
-
-      // Cập nhật answers cho từng question
-      questionType.forEach((type) => {
+    setFilledWords((prev) => {
+      const newFilledWords = prev.length > 0 ? [...prev] : [];
+      questionTypes.forEach((type) => {
         const answers = type.questions?.map((q) => q.answer || "") || [];
-
-        answers.forEach((answer, answerIndex) => {
-          // Chỉ cập nhật nếu chưa có giá trị tại vị trí này
-          if (!currentFilledWords[answerIndex]) {
-            currentFilledWords[answerIndex] = answer;
+        answers.forEach((answer, index) => {
+          if (!newFilledWords[index]) {
+            newFilledWords[index] = answer;
           }
         });
       });
-
-      newFilledWordsByPassage[currentPassage - 1] = currentFilledWords;
-      return newFilledWordsByPassage;
+      return newFilledWords;
     });
-  }, [questionType, currentPassage, data?.exam]);
+  }, [questionTypes, data?.types]);
 
   const handleInput =
     (questionId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,26 +128,24 @@ export default function PracticeReading() {
     setAnswers((prev) => {
       return {
         ...prev,
-        [questionId]: prev[questionId].includes(answer)
+        [questionId]: prev[questionId]?.includes(answer)
           ? ((prev[questionId] as string[]) || []).filter((a) => a !== answer)
-          : [...prev[questionId], answer],
+          : [...((prev[questionId] as string[]) || []), answer],
       };
     });
   };
-  const filledWords = filledWordsByQuestion[currentPassage - 1] || [];
   const questionPassageContent = (index: number, isDrag: boolean) => {
-    if (!questionType || !questionType[index]) return null;
+    if (!questionTypes[index]) return null;
 
-    const contentParts = questionType[index].content?.split("{blank}");
-
-    const questions = questionType[index].questions || [];
+    const contentParts = questionTypes[index].content?.split("{blank}");
+    const questions = questionTypes[index].questions || [];
     const blankLength = contentParts?.length - 1;
 
     return (
       <React.Fragment>
         <p className="mt-4 leading-loose">
-          {contentParts.map((part, idx) => {
-            if (idx >= blankLength) return <span key={idx}>{part}</span>; // Không thêm input nếu vượt quá 8
+          {contentParts?.map((part, idx) => {
+            if (idx >= blankLength) return <span key={idx}>{part}</span>;
             const questionId = questions[idx]?.id;
             const questionNumber = questionNumberMap[questionId] || 0;
             return (
@@ -217,13 +166,13 @@ export default function PracticeReading() {
                     {part}
                     <span className="font-bold">{questionNumber}. </span>
                     <input
-                      id={questions[idx]?.id}
-                      value={answers[questions[idx]?.id] || ""}
-                      onChange={handleInput(questions[idx]?.id)}
+                      id={questionId}
+                      value={answers[questionId] || ""}
+                      onChange={handleInput(questionId)}
                       className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
                     />
                   </>
-                )}{" "}
+                )}
               </React.Fragment>
             );
           })}
@@ -232,18 +181,16 @@ export default function PracticeReading() {
     );
   };
   const questionNumberMap = useMemo(() => {
-    if (!data?.exam) return {};
+    if (!data?.types) return {};
     const map: Record<string, number> = {};
     let currentNumber = 1;
-    data.exam.forEach((passage) => {
-      passage.types.forEach((type) => {
-        type.questions.forEach((question) => {
-          map[question.id] = currentNumber++;
-        });
+    data.types.forEach((type) => {
+      type.questions.forEach((question) => {
+        map[question.id] = currentNumber++;
       });
     });
     return map;
-  }, [data?.exam]);
+  }, [data?.types]);
   const handleExit = async (id: string) => {
     await exitPractice(id);
     nav(Route.Exam);
@@ -252,14 +199,12 @@ export default function PracticeReading() {
   const handleSelectSingleAnswer = (questionId: string, answer: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
-  const getQuestionRange = (questionType: any[], currentIndex: number) => {
-    if (!questionType || !questionType[currentIndex])
-      return { start: 1, end: 1 };
+  const getQuestionRange = (questionTypes: any[], currentIndex: number) => {
+    if (!questionTypes[currentIndex]) return { start: 1, end: 1 };
 
-    const questions = questionType[currentIndex].questions || [];
+    const questions = questionTypes[currentIndex].questions || [];
     if (questions.length === 0) return { start: 1, end: 1 };
 
-    // Lấy số thứ tự của câu hỏi đầu tiên và cuối cùng trong type hiện tại
     const start = questionNumberMap[questions[0].id] || 1;
     const end = questionNumberMap[questions[questions.length - 1].id] || start;
 
@@ -281,10 +226,10 @@ export default function PracticeReading() {
           <div className="grid gap-6 md:grid-cols-2">
             {/* Left Section */}
             <Card className="px-8 py-2 h-[74vh] overflow-y-auto">
-              {data?.exam && data.exam.length > 0 ? (
+              {data?.practiceReading ? (
                 <>
                   <h2 className="mb-4 text-2xl text-center font-bold">
-                    {data.exam[currentPassage - 1].title ?? ""}
+                    {data.practiceReading.title ?? ""}
                   </h2>
                   <img
                     src="/images/writing.png"
@@ -293,7 +238,7 @@ export default function PracticeReading() {
                   />
                   <p className="mb-4">
                     <p className="mb-4">
-                      {data.exam[currentPassage - 1].passage}
+                      {data.practiceReading.content}
                     </p>
                   </p>
                 </>
@@ -306,13 +251,8 @@ export default function PracticeReading() {
             <Card className="px-8 py-2 h-[74vh] overflow-y-auto">
               <CardContent className="pt-6 px-0">
                 <div className="space-y-8">
-                  {questionType?.map((types, index) => {
-                    const { start, end } = getQuestionRange(
-                      questionType,
-                      index
-                    );
-                    const isHeadingQuestion =
-                      types.type === EQuestionType.HeadingPosition;
+                  {questionTypes?.map((types, index) => {
+                    const { start, end } = getQuestionRange(questionTypes, index);
                     const isSingleChoiceQuestion =
                       types.type === EQuestionType.SingleChoice;
                     const isBlankPassageDrag =
@@ -343,7 +283,7 @@ export default function PracticeReading() {
                             {questionPassageContent(index, isBlankPassageDrag)}
                             {isBlankPassageDrag && (
                               <div className="flex flex-col space-x-2 h-fit rounded-lg shadow">
-                                {questionType[index].questions.map((question) =>
+                                {types.questions.map((question) =>
                                   question.answers.map((answer, idx) => (
                                     <WordPractice key={idx} answer={answer} />
                                   ))
@@ -361,7 +301,7 @@ export default function PracticeReading() {
                             end={end}
                             instruction="Choose the CORRECT answer"
                           />
-                          {questionType[index].questions.map(
+                          {types.questions.map(
                             (question, index) => {
                               const questionNumber =
                                 questionNumberMap[question.id] || index + 1;
@@ -379,12 +319,12 @@ export default function PracticeReading() {
                       );
                     } else if (isMultipleChoiceQuestion) {
                       <div className="space-y-4">
-                        {questionType[index].questions.map(
+                        {types.questions.map(
                           (question, index) => {
                             const questionNumber =
                               questionNumberMap[question.id] || index + 1;
                             return (
-                              <div className="border rounded-md p-2">
+                              <div className="border rounded-md p-2" key={question.id}>
                                 <div className="flex flex-col space-y-2">
                                   <p>
                                     {questionNumber}, {question.question}
@@ -416,19 +356,6 @@ export default function PracticeReading() {
                           }
                         )}
                       </div>;
-                    } else if (isHeadingQuestion) {
-                      <div>
-                        {isHeadingQuestion && (
-                          <p className="text-lg font-bold ">List of Headings</p>
-                        )}
-                        <div className="flex space-x-2">
-                          {questionType[index].questions.map((question) =>
-                            question.answers.map((answer, idx) => (
-                              <WordPractice key={idx} answer={answer} />
-                            ))
-                          )}
-                        </div>
-                      </div>;
                     } else if (isBlankPassageImageTextbox) {
                       return (
                         <>
@@ -439,12 +366,12 @@ export default function PracticeReading() {
                           />
                           <div className="flex gap-5">
                             <img
-                              src={questionType[index].image}
+                              src={types.image}
                               alt="image type"
                               className="w-2/3"
                             />
                             <div className="flex flex-col gap-4 items-center">
-                              {questionType[index].questions.map((question) => {
+                              {types.questions.map((question) => {
                                 const questionNumber =
                                   questionNumberMap[question.id] || index + 1;
                                 return (
@@ -476,7 +403,7 @@ export default function PracticeReading() {
         </div>
       </DndProvider>
       <ReadingPracticeFooter
-        passages={data?.exam ?? []}
+        types={data?.types || []}
         answers={answers as Record<string, string>}
         totalQuestions={totalQuestions}
         id={id}

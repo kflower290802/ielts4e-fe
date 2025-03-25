@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ChevronsLeft, ChevronsRight, Pause, Play } from "lucide-react";
 interface IProps {
   src: string;
+  disabled?: boolean;
+  onComplete?: () => void;
 }
-const AudioPlayer = ({
-  src
-}: IProps) => {
+const AudioPlayer = ({ src, disabled = false, onComplete }: IProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -17,7 +17,7 @@ const AudioPlayer = ({
       audioRef.current.src = src;
       audioRef.current.currentTime = 0;
       setProgress(0);
-      setIsPlaying(false)
+      setIsPlaying(false);
     }
   }, [src]);
   const formatTime = (time: number) => {
@@ -71,17 +71,37 @@ const AudioPlayer = ({
       audioRef.current.currentTime -= 10;
     }
   };
+  const handleEnded = () => {
+    setIsPlaying(false);
+    onComplete?.();
+  };
 
   return (
     <div className="w-full rounded-xl border px-3 py-1 flex items-center gap-2">
-      <Button onClick={seekBackward} variant="outline" className="relative rounded-full size-10 p-5 bg-white border">
-        <ChevronsLeft size={20} className="absolute text-black"/>
+      <Button
+        onClick={seekBackward}
+        className="relative rounded-full size-10 p-5 hover:bg-gray-400 bg-[#D9D9D9]"
+        disabled={disabled}
+      >
+        <ChevronsLeft size={20} className="absolute text-black" />
       </Button>
-      <Button onClick={togglePlayPause} variant="outline" className="relative rounded-full size-10 p-5 bg-white border">
-        {isPlaying ? <Pause size={20} className="absolute text-black"/> : <Play size={20} className="absolute text-black"/>}
+      <Button
+        onClick={togglePlayPause}
+        className="relative rounded-full size-10 p-5 hover:bg-gray-400 bg-[#D9D9D9]"
+        disabled={disabled}
+      >
+        {isPlaying ? (
+          <Pause size={20} className="absolute text-black" />
+        ) : (
+          <Play size={20} className="absolute text-black" />
+        )}
       </Button>
-      <Button onClick={seekForward} variant="outline" className="relative rounded-full size-10 p-5 bg-white border">
-        <ChevronsRight size={20} className="absolute text-black"/>
+      <Button
+        onClick={seekForward}
+        className="relative rounded-full size-10 p-5 hover:bg-gray-400 bg-[#D9D9D9]"
+        disabled={disabled}
+      >
+        <ChevronsRight size={20} className="absolute text-black" />
       </Button>
       <Input
         type="range"
@@ -90,6 +110,7 @@ const AudioPlayer = ({
         value={progress}
         onChange={handleSeek}
         className="w-full h-1 bg-gray-500 rounded-lg cursor-pointer"
+        disabled={disabled}
       />
       <span className="text-black text-sm w-10">{remainingTime}</span>
       <audio
@@ -97,7 +118,7 @@ const AudioPlayer = ({
         src={src}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onEnded={() => setIsPlaying(false)}
+        onEnded={handleEnded}
       />
     </div>
   );
