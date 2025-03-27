@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ListeningQuestion } from "@/types/ExamType/listeningExam";
-import { ReadingQuestion } from "@/types/ExamType/readingExam";
+import { ReadingQuestion } from "@/types/PracticeType/readingPractice";
 import React from "react";
 
 interface Props {
-  index: number;
   question: ReadingQuestion | ListeningQuestion;
   userAnswer: string | undefined;
+  questionNumber: number
   correctAnswer: string | undefined;
   isCorrect: boolean | undefined;
 }
@@ -15,9 +15,9 @@ interface Props {
 const AnswerList = ["A", "B", "C", "D", "E"];
 
 const SingleChoicePracticeResult: React.FC<Props> = ({
-  index,
   question,
   userAnswer,
+  questionNumber,
   correctAnswer,
   isCorrect,
 }) => {
@@ -27,7 +27,7 @@ const SingleChoicePracticeResult: React.FC<Props> = ({
     <div className="border rounded-md p-2">
       <div className="flex flex-col space-y-2">
         <p>
-          {index + 1}, {question.question}
+          {questionNumber}, {question.question}
         </p>
         <div className="grid grid-cols-2 gap-2">
           {question.answers.map((answer, index) => (
@@ -49,7 +49,7 @@ const SingleChoicePracticeResult: React.FC<Props> = ({
                     answer.answer.toLowerCase() ===
                       correctAnswer?.toString().toLowerCase() &&
                     userAnswer === "" &&
-                    "bg-yellow-500 text-white hover:bg-yellow-300"
+                    "bg-yellow-500 text-white hover:bg-yellow-300",
                 )}
               >
                 {AnswerList[index]}

@@ -1,12 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { validateError } from "@/utils/validate";
-import { IExamAnswerSubmit } from "@/types/ExamType/exam";
-import { practiceSubmit } from "@/api/PracticeAPI/practice";
-export const usePracticeSubmit = (id: string) => {
+import { practiceWritingSubmit } from "@/api/PracticeAPI/writingExam";
+export const usePracticeWritingSubmit = (id: string) => {
   return useMutation({
-    mutationFn: (values: IExamAnswerSubmit[]) =>
-      practiceSubmit(values, id),
+    mutationFn: (values: {answer: string},) =>
+      practiceWritingSubmit(values, id),
     onSuccess() {
       toast.success("Submit success");
     },

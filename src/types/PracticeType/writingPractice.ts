@@ -7,10 +7,14 @@ export interface IPracticeWriting {
     image: string,
     createdAt: string,
     updatedAt: string,
-    answer: string
+    answer: WritingAnswer
 }
-export interface IPracticeWritingAnswer {
-    examId: string;
-    examWritingId: string;
+export interface WritingAnswer {
+    id: string;
+    userPractice: {
+      id: string;
+    };
     answer: string;
-}
+    createdAt: string;
+    updatedAt: string;
+  }

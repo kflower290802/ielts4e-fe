@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-// import DialogPracticeConfirm from "./components/DialogPracticeConfirm";
 import { Route } from "@/constant/route";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useReadingPracticePassage } from "../hooks/useReadingPracticePassage";
 import { usePracticeResult } from "../hooks/usePracticeResult";
 import { Badge } from "@/components/ui/badge";
@@ -13,66 +12,55 @@ import { EQuestionType } from "@/types/ExamType/exam";
 import QuestionPracticeHeader from "../../components/QuestionPracticeHeader";
 import SingleChoicePracticeResult from "../../components/SingleChoicePracticeResult";
 import ReadingFooterPracticeResult from "./ReadingFooterPracticeResult";
-// import { Checkbox } from "@/components/ui/checkbox";
 export default function PracticeReadingResult() {
-  let questionNumber = 0;
   const { idResult } = useParams<{ idResult: string }>();
   const nav = useNavigate();
   const { data: result } = usePracticeResult(idResult ?? "");
   const { id } = useParams<{ id: string }>();
-  const { data, refetch, isLoading } = useReadingPracticePassage(id ?? "");
+  const { data, refetch } = useReadingPracticePassage(id ?? "");
   useEffect(() => {
     if (id) {
       refetch();
     }
   }, [id, refetch]);
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const passageParam = searchParams.get("passage") ?? "1";
-  const [currentPassage, setCurrentPassage] = useState(
-    passageParam ? parseInt(passageParam) : 1
-  );
-  useEffect(() => {
-    setSearchParams({ passage: currentPassage.toString() });
-  }, [currentPassage, setSearchParams]);
-  const questionType = useMemo(
-    () => data?.exam[currentPassage - 1]?.types,
-    [currentPassage, data?.exam]
-  );
+  const questionTypes = useMemo(() => data?.types || [], [data?.types]);
   const calculateTotalQuestions = useCallback(() => {
-    if (!data?.exam) return 0;
-
-    return data.exam.reduce((total, passage) => {
-      return (
-        total +
-        passage.types.reduce((typeTotal, type) => {
-          return typeTotal + type.questions.length;
-        }, 0)
-      );
+    if (!data?.types) return 0;
+    return data.types.reduce((total, type) => {
+      return total + type.questions.length;
     }, 0);
   }, [data]);
   const totalQuestions = useMemo(
     () => calculateTotalQuestions(),
     [calculateTotalQuestions]
   );
+  const questionNumberMap = useMemo(() => {
+    if (!data?.types) return {};
+    const map: Record<string, number> = {};
+    let currentNumber = 1;
+    data.types.forEach((type) => {
+      type.questions.forEach((question) => {
+        map[question.id] = currentNumber++;
+      });
+    });
+    return map;
+  }, [data?.types]);
   const questionPassageContent = (index: number, isDrag: boolean) => {
-    if (!questionType || !questionType[index]) return null;
+    if (!questionTypes[index]) return null;
 
-    const contentParts = questionType[index].content?.split("{blank}");
-
-    const questions = questionType[index].questions || [];
+    const contentParts = questionTypes[index].content?.split("{blank}");
+    const questions = questionTypes[index].questions || [];
     const blankLength = contentParts?.length - 1;
-
     return (
       <React.Fragment>
         <p className="mt-4 leading-loose">
           {contentParts.map((part, idx) => {
-            if (idx >= blankLength) return <span key={idx}>{part}</span>; // Không thêm input nếu vượt quá 8
-            questionNumber++;
-            const question = questions[idx];
+            if (idx >= blankLength) return <span key={idx}>{part}</span>;
+            const questionId = questions[idx]?.id;
             const answerData = result?.summary.find(
-              (item) => item.questionId === question?.id
+              (item) => item.questionId === questionId
             );
+            const questionNumber = questionNumberMap[questionId] || 0;
             return (
               <React.Fragment key={idx}>
                 {isDrag ? (
@@ -96,7 +84,7 @@ export default function PracticeReadingResult() {
                       </Badge>
                       {!answerData?.isCorrect && (
                         <Badge className="w-32 h-9 border-b-4 rounded-xl hover:bg-[#66B032]/80 bg-[#66B032] border-green-800 text-white hover:border-green-800">
-                          {answerData?.correctAnswer}
+                          {answerData?.correctAnswer[0]}
                         </Badge>
                       )}
                     </div>
@@ -121,7 +109,7 @@ export default function PracticeReadingResult() {
                     </Badge>
                     {!answerData?.isCorrect && (
                       <Badge className="w-32 ml-2 h-9  border-b-4 rounded-xl hover:bg-[#66B032]/80 bg-[#66B032] border-green-800 text-white hover:border-green-800">
-                        {answerData?.correctAnswer}
+                        {answerData?.correctAnswer[0]}
                       </Badge>
                     )}
                   </>
@@ -136,13 +124,15 @@ export default function PracticeReadingResult() {
   const handleExit = () => {
     nav(Route.Practice);
   };
-  const getQuestionRange = (questionType: any[], currentIndex: number) => {
-    let start = 1;
-    for (let i = 0; i < currentIndex; i++) {
-      start += questionType[i]?.questions?.length || 0;
-    }
-    const end =
-      start + (questionType[currentIndex]?.questions?.length || 0) - 1;
+  const getQuestionRange = (questionTypes: any[], currentIndex: number) => {
+    if (!questionTypes[currentIndex]) return { start: 1, end: 1 };
+
+    const questions = questionTypes[currentIndex].questions || [];
+    if (questions.length === 0) return { start: 1, end: 1 };
+
+    const start = questionNumberMap[questions[0].id] || 1;
+    const end = questionNumberMap[questions[questions.length - 1].id] || start;
+
     return { start, end };
   };
   return (
@@ -156,14 +146,14 @@ export default function PracticeReadingResult() {
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 w-full">
         <div className="grid gap-6 md:grid-cols-2">
           {/* Left Section */}
           <Card className="px-8 py-2 h-[74vh] overflow-y-auto">
-            {data?.exam && data.exam.length > 0 ? (
+            {data?.practiceReading ? (
               <>
                 <h2 className="mb-4 text-2xl text-center font-bold">
-                  {data.exam[currentPassage - 1].title ?? ""}
+                  {data.practiceReading.title ?? ""}
                 </h2>
                 <img
                   src="/images/writing.png"
@@ -171,9 +161,7 @@ export default function PracticeReadingResult() {
                   className="object-contain"
                 />
                 <p className="mb-4">
-                  <p className="mb-4">
-                    {data.exam[currentPassage - 1].passage}
-                  </p>
+                  <p className="mb-4">{data.practiceReading.content}</p>
                 </p>
               </>
             ) : (
@@ -185,14 +173,14 @@ export default function PracticeReadingResult() {
           <Card className="px-8 py-2 h-[74vh] overflow-y-auto">
             <CardContent className="pt-6 px-0">
               <div className="space-y-8">
-                {questionType?.map((types, index) => {
-                  const { start, end } = getQuestionRange(questionType, index);
-                  // const isHeadingQuestion =
-                  //   types.type === EQuestionType.HeadingPosition;
+                {questionTypes?.map((types, index) => {
+                  const { start, end } = getQuestionRange(questionTypes, index);
                   const isSingleChoiceQuestion =
                     types.type === EQuestionType.SingleChoice;
                   const isBlankPassageDrag =
                     types.type === EQuestionType.BlankPassageDrag;
+                  const isBlankPassageImageTextbox =
+                    types.type === EQuestionType.BlankPassageImageTextbox;
                   const isBlankPassageTextbox =
                     types.type === EQuestionType.BlankPassageTextbox;
                   const isMultipleChoiceQuestion =
@@ -221,33 +209,42 @@ export default function PracticeReadingResult() {
                   } else if (isSingleChoiceQuestion) {
                     return (
                       <div className="space-y-4">
-                        {questionType[index].questions.map(
-                          (question, index) => {
-                            const answerData = result?.summary.find(
-                              (item) => item.questionId === question.id
-                            );
-                            return (
-                              <SingleChoicePracticeResult
-                                question={question}
-                                index={index}
-                                userAnswer={answerData?.userAnswer}
-                                correctAnswer={answerData?.correctAnswer}
-                                isCorrect={answerData?.isCorrect}
-                              />
-                            );
-                          }
-                        )}
+                        <QuestionPracticeHeader
+                          start={start}
+                          end={end}
+                          instruction="Choose the CORRECT answer"
+                        />
+                        {types.questions.map((question, index) => {
+                          const questionNumber =
+                            questionNumberMap[question.id] || index + 1;
+                          const answerData = result?.summary.find(
+                            (item) => item.questionId === question.id
+                          );
+                          return (
+                            <SingleChoicePracticeResult
+                              question={question}
+                              questionNumber={questionNumber}
+                              userAnswer={answerData?.userAnswer}
+                              correctAnswer={answerData?.correctAnswer[0]}
+                              isCorrect={answerData?.isCorrect}
+                            />
+                          );
+                        })}
                       </div>
                     );
                   } else if (isMultipleChoiceQuestion) {
                     <div className="space-y-4">
-                      {questionType[index].questions.map((question, index) => {
-                        questionNumber++;
+                      {types.questions.map((question, index) => {
+                        const questionNumber =
+                          questionNumberMap[question.id] || index + 1;
                         return (
-                          <div className="border rounded-md p-2">
+                          <div
+                            className="border rounded-md p-2"
+                            key={question.id}
+                          >
                             <div className="flex flex-col space-y-2">
                               <p>
-                                {index + 1}, {question.question}
+                                {questionNumber}, {question.question}
                               </p>
                               <div className="grid grid-cols-2 gap-2">
                                 {question.answers.map((answer) => (
@@ -269,21 +266,63 @@ export default function PracticeReadingResult() {
                         );
                       })}
                     </div>;
-                  } 
-                //   else if (isHeadingQuestion) {
-                //     <div>
-                //       {isHeadingQuestion && (
-                //         <p className="text-lg font-bold ">List of Headings</p>
-                //       )}
-                //       <div className="flex space-x-2">
-                //         {questionType[index].questions.map((question) =>
-                //           question.answers.map((answer, idx) => (
-                //             <WordPractice key={idx} answer={answer} />
-                //           ))
-                //         )}
-                //       </div>
-                //     </div>;
-                //   }
+                  } else if (isBlankPassageImageTextbox) {
+                    const questions = questionTypes[index].questions || [];
+                    return (
+                      <>
+                        <QuestionPracticeHeader
+                          start={start}
+                          end={end}
+                          instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
+                        />
+                        <div className="flex gap-5">
+                          <img
+                            src={types.image}
+                            alt="image type"
+                            className="w-2/3"
+                          />
+                          <div className="flex flex-col gap-4 items-center">
+                            {types.questions.map((question, idx) => {
+                              const questionNumber =
+                                questionNumberMap[question.id] || index + 1;
+                                const questionId = questions[idx]?.id;
+                                const answerData = result?.summary.find(
+                                  (item) => item.questionId === questionId
+                                );
+                              return (
+                                <div className="flex gap-2 items-center">
+                                  <span className="font-bold">
+                                    {questionNumber}
+                                  </span>
+                                  <div className="flex gap-2 items-center">
+                                    <Badge
+                                      className={cn(
+                                        "w-32 h-9 border-b-4 rounded-xl",
+                                        answerData?.userAnswer === ""
+                                          ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
+                                          : answerData?.isCorrect
+                                          ? "bg-[#66B032] hover:bg-[#66B032]/80  border-green-800 text-white hover:border-green-800"
+                                          : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                                      )}
+                                    >
+                                      {answerData?.userAnswer === ""
+                                        ? "Not answered"
+                                        : answerData?.userAnswer}
+                                    </Badge>
+                                    {!answerData?.isCorrect && (
+                                      <Badge className="w-32 h-9 border-b-4 rounded-xl hover:bg-[#66B032]/80 bg-[#66B032] border-green-800 text-white hover:border-green-800">
+                                        {answerData?.correctAnswer[0]}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </>
+                    );
+                  }
                 })}
               </div>
             </CardContent>
@@ -294,7 +333,7 @@ export default function PracticeReadingResult() {
       </div>
       <ReadingFooterPracticeResult
         result={result}
-        passages={data?.exam ?? []}
+        types={data?.types || []}
         totalQuestions={totalQuestions}
       />
     </div>

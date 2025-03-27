@@ -6,15 +6,14 @@ export interface IPractice<T> {
   audio: string;
 }
 export interface IPracticeResult {
-  summary: [
-    {
-      questionId: string;
-      isCorrect: boolean;
-      userAnswer: string;
-      correctAnswer: string;
-    }
-  ];
   score: number;
+  summary: ISummary[];
+}
+export interface ISummary {
+  questionId: string;
+  isCorrect: boolean;
+  userAnswer: string;
+  correctAnswer: string[];
 }
 export interface IUserAnswer {
   examId: string;
@@ -25,7 +24,6 @@ export interface IPracticeAnswerSubmit {
   questionId: string;
   answer: string;
 }
-
 export interface IPractieResponse<T> {
   id: string;
   userExam: IUserExam;

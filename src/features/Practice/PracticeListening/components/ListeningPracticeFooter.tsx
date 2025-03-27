@@ -28,7 +28,7 @@ const ListeningPracticeFooter = ({
         totalQuestion={totalQuestions}
         answers={answers}
         id={id}
-        route={Route.ExamListeningResult}
+        route={Route.PracticeListeningResult}
       />
       <div className="flex h-full items-center pt-5 justify-between gap-20">
         {audio && (

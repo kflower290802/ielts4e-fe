@@ -24,7 +24,6 @@ import {
   StatusExcercise,
   TypeExcercise,
 } from "@/types/excercise";
-import { formatMillisecondsToMMSS } from "@/utils/time";
 import { useGetPracticeExcercise } from "./hooks/useGetPracticeExcercise";
 import { useGetTopic } from "./hooks/useGetTopic";
 import DialogPracticeConfirm from "./components/DialogPracticeConfirm";
@@ -171,9 +170,6 @@ export function Practice() {
                           alt={card.name}
                           className="w-full h-24 object-cover"
                         />
-                        <div className="absolute top-2 left-2 bg-white/90 px-2 py-1 rounded-md text-sm">
-                          {formatMillisecondsToMMSS(card.time)}
-                        </div>
                       </CardContent>
                       <CardFooter className="flex flex-col items-center gap-2 p-3">
                         <p className="text-sm text-center">{card.name}</p>

@@ -100,16 +100,16 @@ const Recording = ({ data, refetch, index, canRecord }: RecordingProps) => {
   }, [audioUrl]);
 
   // Hàm tải file audio
-  const downloadAudio = () => {
-    if (audioUrl) {
-      const link = document.createElement("a");
-      link.href = audioUrl;
-      link.download = `recording_question_${index + 1}.wav`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
+  // const downloadAudio = () => {
+  //   if (audioUrl) {
+  //     const link = document.createElement("a");
+  //     link.href = audioUrl;
+  //     link.download = `recording_question_${index + 1}.wav`;
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   }
+  // };
 
   return (
     <div className="flex items-center gap-4 justify-center">

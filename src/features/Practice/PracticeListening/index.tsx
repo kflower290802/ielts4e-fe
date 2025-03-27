@@ -12,6 +12,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import ListeningPracticeFooter from "./components/ListeningPracticeFooter";
+import DialogPracticeExit from "../components/DiaPracticeExit";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const ListeningPractice = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,31 +44,6 @@ const ListeningPractice = () => {
       setAnswers(initialAnswers);
     }
   }, [data]);
-  // useEffect(() => {
-  //   const sendAnswers = async () => {
-  //     if (Object.keys(answers).length === 0) return;
-
-  //     const answerArray = Object.entries(answers).map(([questionId, answer]) => ({
-  //       examId: id ?? "",
-  //       examPassageQuestionId: questionId,
-  //       answer,
-  //     }));
-
-  //     try {
-  //       await examAnswers(answerArray);
-  //       console.log("Answers sent successfully");
-  //     } catch (error) {
-  //       console.error("Failed to send answers:", error);
-  //     }
-  //   };
-
-  //   const interval = setInterval(() => {
-  //     sendAnswers();
-  //   }, 20000);
-
-  //   return () => clearInterval(interval);
-  // }, [answers, id, examAnswers]);
-
   useEffect(() => {
     if (id) {
       refetch();
@@ -112,18 +90,36 @@ const ListeningPractice = () => {
     if (!questionTypes || !data?.types) return;
 
     setFilledWords((prev) => {
-      const newFilledWords = prev.length > 0 ? [...prev] : [];
+      // Tính tổng số ô trống chỉ cho BlankPassageDrag
+      const totalDragBlanks = questionTypes.reduce((acc, type) => {
+        if (type.type === EQuestionType.BlankPassageDrag) {
+          return acc + (type.questions?.length || 0);
+        }
+        return acc;
+      }, 0);
+
+      // Khởi tạo mảng với kích thước chính xác nếu chưa có hoặc không khớp
+      const newFilledWords =
+        prev.length === totalDragBlanks
+          ? [...prev]
+          : Array(totalDragBlanks).fill("");
+
+      // Chỉ cập nhật cho BlankPassageDrag
+      let blankIndex = 0;
       questionTypes.forEach((type) => {
-        const answers = type.questions?.map((q) => q.answer || "") || [];
-        answers.forEach((answer, index) => {
-          if (!newFilledWords[index]) {
-            newFilledWords[index] = answer;
-          }
-        });
+        if (type.type === EQuestionType.BlankPassageDrag) {
+          type.questions.forEach((question) => {
+            // Ưu tiên lấy giá trị từ answers, nếu không có thì dùng question.answer
+            newFilledWords[blankIndex] =
+              answers[question.id] || question.answer || "";
+            blankIndex++;
+          });
+        }
       });
+
       return newFilledWords;
     });
-  }, [questionTypes, data?.types]);
+  }, [questionTypes, data?.types, answers]); // Thêm answers vào dependencies
   const questionNumberMap = useMemo(() => {
     if (!data?.types) return {};
     const map: Record<string, number> = {};
@@ -191,19 +187,6 @@ const ListeningPractice = () => {
       </React.Fragment>
     );
   };
-  // const handleAnswerChange = (id: number, value: string) => {
-  //   setQuestions(
-  //     questions.map((question) =>
-  //       question.id === id ? { ...question, answer: value } : question
-  //     )
-  //   );
-  // };
-  // useEffect(() => {
-  //   if (id) {
-  //     refetch();
-  //   }
-  // }, [id]);
-
   const handleSelectSingleAnswer = (questionId: string, answer: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
@@ -222,9 +205,23 @@ const ListeningPractice = () => {
   };
 
   return (
-    <div className="h-full relative pt-10 flex flex-col items-center overflow-y-hidden">
+    <div className="h-full w-full relative p-4 flex justify-between">
+      <DialogPracticeExit
+        openDia={openDia}
+        setOpenDia={setOpenDia}
+        answers={answers}
+        id={id}
+      />
+      <Button
+        variant="ghost"
+        className="mb-4 w-fit hover:bg-[#F1FFEF] hover:border-0"
+        size="sm"
+        onClick={() => setOpenDia(true)}
+      >
+        <ArrowLeft className="text-[#164C7E]" />
+      </Button>
       <DndProvider backend={HTML5Backend}>
-        <div className="w-11/12 bg-white border border-black rounded-lg h-5/6 overflow-y-auto">
+        <div className="flex-1 h-[74vh] bg-white border border-black rounded-lg overflow-y-auto">
           <div className="grid grid-cols-1 gap-6 p-6">
             <div className="overflow-y-auto">
               {questionTypes?.map((types, index) => {

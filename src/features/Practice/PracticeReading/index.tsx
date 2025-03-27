@@ -2,13 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-// import DialogPracticeConfirm from "./components/DialogPracticeConfirm";
-import { Route } from "@/constant/route";
-import { useNavigate, useParams } from "react-router-dom";
-// import { usePracticeAnswers } from "./hooks/userPracticeAnswer";
+import { useParams } from "react-router-dom";
 import { useReadingPracticePassage } from "./hooks/useReadingPracticePassage";
-import { exitPractice } from "@/api/PracticeAPI/practice";
-import { setStorage } from "@/utils/storage";
 import { Checkbox } from "@/components/ui/checkbox";
 import SingleChoicePractice from "../components/SingleChoicePractice";
 import WordPractice from "../components/WordPractice";
@@ -18,8 +13,9 @@ import BlankPracticeSpace from "../components/BlankPracticeSpace";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import ReadingPracticeFooter from "./components/ReadingPracticeFooter";
+import DialogPracticeExit from "../components/DiaPracticeExit";
 export default function PracticeReading() {
-  const nav = useNavigate();
+  const [openDia, setOpenDia] = useState(false);
   const { id } = useParams<{ id: string }>();
   const [answers, setAnswers] = React.useState<
     Record<string, string | string[]>
@@ -55,32 +51,6 @@ export default function PracticeReading() {
       setAnswers(initialAnswers);
     }
   }, [data]);
-
-  // useEffect(() => {
-  //   const sendAnswers = async () => {
-  //     if (Object.keys(answers).length === 0) return;
-
-  //     const answerArray = Object.entries(answers).map(([questionId, answer]) => ({
-  //       examId: id ?? "",
-  //       examPassageQuestionId: questionId,
-  //       answer,
-  //     }));
-
-  //     try {
-  //       await examAnswers(answerArray);
-  //       console.log("Answers sent successfully");
-  //     } catch (error) {
-  //       console.error("Failed to send answers:", error);
-  //     }
-  //   };
-
-  //   const interval = setInterval(() => {
-  //     sendAnswers();
-  //   }, 20000);
-
-  //   return () => clearInterval(interval);
-  // }, [answers, id, examAnswers]);
-
   const handleDrop = useCallback(
     (blankIndex: number, word: string, questionTypeIndex: number) => {
       setFilledWords((prev) => {
@@ -104,18 +74,36 @@ export default function PracticeReading() {
     if (!questionTypes || !data?.types) return;
 
     setFilledWords((prev) => {
-      const newFilledWords = prev.length > 0 ? [...prev] : [];
+      // Tính tổng số ô trống chỉ cho BlankPassageDrag
+      const totalDragBlanks = questionTypes.reduce((acc, type) => {
+        if (type.type === EQuestionType.BlankPassageDrag) {
+          return acc + (type.questions?.length || 0);
+        }
+        return acc;
+      }, 0);
+
+      // Khởi tạo mảng với kích thước chính xác nếu chưa có hoặc không khớp
+      const newFilledWords =
+        prev.length === totalDragBlanks
+          ? [...prev]
+          : Array(totalDragBlanks).fill("");
+
+      // Chỉ cập nhật cho BlankPassageDrag
+      let blankIndex = 0;
       questionTypes.forEach((type) => {
-        const answers = type.questions?.map((q) => q.answer || "") || [];
-        answers.forEach((answer, index) => {
-          if (!newFilledWords[index]) {
-            newFilledWords[index] = answer;
-          }
-        });
+        if (type.type === EQuestionType.BlankPassageDrag) {
+          type.questions.forEach((question) => {
+            // Ưu tiên lấy giá trị từ answers, nếu không có thì dùng question.answer
+            newFilledWords[blankIndex] =
+              answers[question.id] || question.answer || "";
+            blankIndex++;
+          });
+        }
       });
+
       return newFilledWords;
     });
-  }, [questionTypes, data?.types]);
+  }, [questionTypes, data?.types, answers]);
 
   const handleInput =
     (questionId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,7 +128,6 @@ export default function PracticeReading() {
     const contentParts = questionTypes[index].content?.split("{blank}");
     const questions = questionTypes[index].questions || [];
     const blankLength = contentParts?.length - 1;
-
     return (
       <React.Fragment>
         <p className="mt-4 leading-loose">
@@ -191,11 +178,6 @@ export default function PracticeReading() {
     });
     return map;
   }, [data?.types]);
-  const handleExit = async (id: string) => {
-    await exitPractice(id);
-    nav(Route.Exam);
-    setStorage("isTesting", false);
-  };
   const handleSelectSingleAnswer = (questionId: string, answer: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
@@ -212,12 +194,17 @@ export default function PracticeReading() {
   };
   return (
     <div className="h-full w-full relative p-4 flex justify-between">
-      {/* <DialogPracticeConfirm openDia={openDia} setOpenDia={setOpenDia} /> */}
+      <DialogPracticeExit
+        openDia={openDia}
+        setOpenDia={setOpenDia}
+        answers={answers}
+        id={id}
+      />
       <Button
         variant="ghost"
         className="mb-4 w-fit hover:bg-[#F1FFEF] hover:border-0"
         size="sm"
-        onClick={() => handleExit(id ?? "")}
+        onClick={() => setOpenDia(true)}
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
@@ -237,9 +224,7 @@ export default function PracticeReading() {
                     className="object-contain"
                   />
                   <p className="mb-4">
-                    <p className="mb-4">
-                      {data.practiceReading.content}
-                    </p>
+                    <p className="mb-4">{data.practiceReading.content}</p>
                   </p>
                 </>
               ) : (
@@ -252,7 +237,10 @@ export default function PracticeReading() {
               <CardContent className="pt-6 px-0">
                 <div className="space-y-8">
                   {questionTypes?.map((types, index) => {
-                    const { start, end } = getQuestionRange(questionTypes, index);
+                    const { start, end } = getQuestionRange(
+                      questionTypes,
+                      index
+                    );
                     const isSingleChoiceQuestion =
                       types.type === EQuestionType.SingleChoice;
                     const isBlankPassageDrag =
@@ -301,60 +289,59 @@ export default function PracticeReading() {
                             end={end}
                             instruction="Choose the CORRECT answer"
                           />
-                          {types.questions.map(
-                            (question, index) => {
-                              const questionNumber =
-                                questionNumberMap[question.id] || index + 1;
-                              return (
-                                <SingleChoicePractice
-                                  question={question}
-                                  questionNumber={questionNumber}
-                                  onClick={handleSelectSingleAnswer}
-                                  currentAnswer={answers[question.id] as string}
-                                />
-                              );
-                            }
-                          )}
+                          {types.questions.map((question, index) => {
+                            const questionNumber =
+                              questionNumberMap[question.id] || index + 1;
+                            return (
+                              <SingleChoicePractice
+                                question={question}
+                                questionNumber={questionNumber}
+                                onClick={handleSelectSingleAnswer}
+                                currentAnswer={answers[question.id] as string}
+                              />
+                            );
+                          })}
                         </div>
                       );
                     } else if (isMultipleChoiceQuestion) {
                       <div className="space-y-4">
-                        {types.questions.map(
-                          (question, index) => {
-                            const questionNumber =
-                              questionNumberMap[question.id] || index + 1;
-                            return (
-                              <div className="border rounded-md p-2" key={question.id}>
-                                <div className="flex flex-col space-y-2">
-                                  <p>
-                                    {questionNumber}, {question.question}
-                                  </p>
-                                  <div className="grid grid-cols-2 gap-2">
-                                    {question.answers.map((answer) => (
-                                      <div
-                                        key={answer.id}
-                                        className="flex space-x-2 items-center"
-                                      >
-                                        <Checkbox
-                                          checked={answers[
-                                            question.id
-                                          ]?.includes(answer.answer)}
-                                          onCheckedChange={() =>
-                                            handleCheckedChange(
-                                              question.id,
-                                              answer.answer
-                                            )
-                                          }
-                                        />
-                                        <span>{answer.answer}</span>
-                                      </div>
-                                    ))}
-                                  </div>
+                        {types.questions.map((question, index) => {
+                          const questionNumber =
+                            questionNumberMap[question.id] || index + 1;
+                          return (
+                            <div
+                              className="border rounded-md p-2"
+                              key={question.id}
+                            >
+                              <div className="flex flex-col space-y-2">
+                                <p>
+                                  {questionNumber}, {question.question}
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {question.answers.map((answer) => (
+                                    <div
+                                      key={answer.id}
+                                      className="flex space-x-2 items-center"
+                                    >
+                                      <Checkbox
+                                        checked={answers[question.id]?.includes(
+                                          answer.answer
+                                        )}
+                                        onCheckedChange={() =>
+                                          handleCheckedChange(
+                                            question.id,
+                                            answer.answer
+                                          )
+                                        }
+                                      />
+                                      <span>{answer.answer}</span>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
-                            );
-                          }
-                        )}
+                            </div>
+                          );
+                        })}
                       </div>;
                     } else if (isBlankPassageImageTextbox) {
                       return (

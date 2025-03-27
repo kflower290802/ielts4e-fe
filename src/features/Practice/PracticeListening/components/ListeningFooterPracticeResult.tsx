@@ -3,13 +3,16 @@ import { cn } from "@/lib/utils";
 import { memo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { IPracticeResult } from "@/types/PracticeType/practice";
-import { TypesReading } from "@/types/PracticeType/readingPractice";
+import { TypesListening } from "@/types/PracticeType/listeningPractice";
+import AudioPlayer from "./AudioPlayer";
 interface IProps {
-  types: TypesReading[];
+  audio: string | undefined;
+  types: TypesListening[];
   result: IPracticeResult | undefined;
   totalQuestions: number;
 }
-const ReadingFooterPracticeResult = ({
+const ListeningFooterPracticeResult = ({
+  audio,
   types,
   totalQuestions,
   result,
@@ -17,6 +20,11 @@ const ReadingFooterPracticeResult = ({
   return (
     <div className="absolute bottom-0 left-10 right-0 h-20 px-6">
       <div className="flex h-full items-center justify-between gap-20">
+        {audio && (
+          <div className="w-1/3 px-6">
+            <AudioPlayer src={audio ?? ""} />
+          </div>
+        )}
         <div className="flex items-center gap-5 w-2/3 overflow-x-auto">
           {Array.from({ length: totalQuestions }).map((_, idx) => {
             let questionId = "";
@@ -63,4 +71,4 @@ const ReadingFooterPracticeResult = ({
   );
 };
 
-export default memo(ReadingFooterPracticeResult);
+export default memo(ListeningFooterPracticeResult);
