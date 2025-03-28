@@ -20,6 +20,7 @@ import PracticeSpeakingTest from "@/features/Practice/PracticeSpeaking/SpeakingT
 import PracticeSpeaking from "@/features/Practice/PracticeSpeaking";
 import PracticeListeningResult from "@/features/Practice/PracticeListening/components/ListeningPracticeResult";
 import WritingPracticeResult from "@/features/Practice/PracticeWriting/components/WritingPracticeResult";
+import Report from "@/features/Report";
 
 export const privateRoutes = [
   {
@@ -72,6 +73,10 @@ export const privateRoutes = [
       {
         element: <WritingPracticeResult />,
         path: `${Route.PracticeWritingResult}/:id/:idResult`,
+      },
+      {
+        element: <Report />,
+        path: `${Route.Report}`,
       },
     ],
   },

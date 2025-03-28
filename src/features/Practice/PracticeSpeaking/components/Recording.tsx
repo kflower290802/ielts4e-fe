@@ -4,16 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mic, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PracticeSpeaking } from "@/types/PracticeType/speakingPractice";
+import useCloudinaryUpload from "@/features/hooks/useImageUpload";
 
 interface RecordingProps {
-  data: PracticeSpeaking[];
-  refetch: () => void;
   index: number;
   canRecord: boolean;
+  handleAudioUploaded: (index: number, url: string) => void
 }
 
-const Recording = ({ data, refetch, index, canRecord }: RecordingProps) => {
+const Recording = ({ index, canRecord, handleAudioUploaded }: RecordingProps) => {
   const [isRecording, setIsRecording] = useState(false);
   const [progress, setProgress] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -21,6 +20,13 @@ const Recording = ({ data, refetch, index, canRecord }: RecordingProps) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [remainingTime, setRemainingTime] = useState("2:00");
+  const {
+    uploadFile,
+    uploadedFileUrl,
+    isUploading,
+    setUploadedFileUrl,
+    error,
+  } = useCloudinaryUpload();
 
   const MAX_TIME = 120; // 2 phút = 120 giây
 
@@ -43,12 +49,26 @@ const Recording = ({ data, refetch, index, canRecord }: RecordingProps) => {
         audioChunksRef.current.push(event.data);
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, {
           type: "audio/wav",
         });
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
+        const file = new File([audioBlob], `recording_${index + 1}.wav`, {
+          type: "audio/wav",
+        });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        const fileList = dataTransfer.files;
+
+        // Upload lên Cloudinary ngay khi dừng
+        const uploadedUrl = await uploadFile(fileList);
+        if (uploadedUrl) {
+          setUploadedFileUrl(uploadedUrl);
+          handleAudioUploaded(index, uploadedUrl);
+        }
+
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -73,6 +93,7 @@ const Recording = ({ data, refetch, index, canRecord }: RecordingProps) => {
       console.error("Error starting recording:", error);
     }
   };
+  console.log(uploadedFileUrl);
 
   // Dừng thu âm
   const stopRecording = () => {
@@ -172,7 +193,12 @@ const Recording = ({ data, refetch, index, canRecord }: RecordingProps) => {
       )}
       {!isRecording && audioUrl && (
         <div className="flex items-center gap-4">
-          <audio controls src={audioUrl ?? ""} className="w-96" />
+          <audio controls src={uploadedFileUrl || audioUrl} className="w-96" />
+          {isUploading && <p>Đang tải lên...</p>}
+          {error && <p className="text-red-500">{error}</p>}
+          {uploadedFileUrl && (
+            <p className="text-green-500">Tải lên thành công!</p>
+          )}
         </div>
       )}
     </div>
