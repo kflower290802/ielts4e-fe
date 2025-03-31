@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { memo } from "react";
 import { cn } from "@/lib/utils";
-import { IExamResult } from "@/types/ExamType/exam";
+import { ExamPassage, IExamResult } from "@/types/ExamType/exam";
 import { Badge } from "@/components/ui/badge";
-import { ExamSection } from "@/types/ExamType/listeningExam";
 interface IProps {
-  section: ExamSection[];
+  section: ExamPassage[];
   setCurrentSection: React.Dispatch<React.SetStateAction<number>>;
   totalQuestions: number;
   sectionParam: string;

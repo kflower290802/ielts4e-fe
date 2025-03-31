@@ -1,16 +1,16 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { useListeningExamSection } from "../hooks/useListeningExamSection";
 import { ArrowLeft } from "lucide-react";
 import { Route } from "@/constant/route";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useExamResult } from "../../ReadingTest/hooks/useExamResult";
 import ListeningFooterResult from "./ListeningFooterResult";
 import { EQuestionType } from "@/types/ExamType/exam";
 import QuestionHeader from "../../components/QuestionHeader";
 import SingleChoiceResult from "../../components/SingleChoiceResult";
+import { useExamPassage } from "../../hooks/useExamPassage";
+import { useExamResult } from "../../hooks/useExamResult";
 
 const ListeningTestResult = () => {
   const nav = useNavigate();
@@ -22,12 +22,12 @@ const ListeningTestResult = () => {
     sectionParam ? parseInt(sectionParam) : 1
   );
   // const [answers, setAnswers] = useState<Record<string, string>>({});
-  const { data, refetch } = useListeningExamSection(id ?? "");
+  const { data, refetch } = useExamPassage(id ?? "");
   const questionNumberMap = useMemo(() => {
     if (!data?.exam) return {};
     const map: Record<string, number> = {};
     let currentNumber = 1;
-    data.exam.forEach((passage) => {
+    data.exam.examPassage.forEach((passage) => {
       passage.types.forEach((type) => {
         type.questions.forEach((question) => {
           map[question.id] = currentNumber++;
@@ -47,7 +47,7 @@ const ListeningTestResult = () => {
     }
   }, [id]);
   const questionType = useMemo(
-    () => data?.exam[currentSection - 1]?.types,
+    () => data?.exam.examPassage[currentSection - 1]?.types,
     [currentSection, data?.exam]
   );
   const questionPassageContent = (index: number, isDrag: boolean) => {
@@ -132,7 +132,7 @@ const ListeningTestResult = () => {
   const calculateTotalQuestions = useCallback(() => {
     if (!data?.exam) return 0;
 
-    return data.exam.reduce((total, passage) => {
+    return data.exam.examPassage.reduce((total, passage) => {
       return (
         total +
         passage.types.reduce((typeTotal, type) => {
@@ -330,7 +330,7 @@ const ListeningTestResult = () => {
         </div>
       </div>
       <ListeningFooterResult
-        section={data?.exam ?? []}
+        section={data?.exam.examPassage ?? []}
         setCurrentSection={setCurrentSection}
         totalQuestions={totalQuestions}
         sectionParam={sectionParam}

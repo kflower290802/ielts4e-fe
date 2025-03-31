@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import React, { memo, useState } from "react";
 import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
 import { Route } from "@/constant/route";
-import { ExamPassage } from "@/types/ExamType/readingExam";
+import { ExamPassage } from "@/types/ExamType/exam";
 interface IProps {
   passages: ExamPassage[];
   answers: Record<string, string>;

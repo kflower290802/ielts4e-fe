@@ -2,8 +2,6 @@ import Header from "../components/Header";
 import { useParams, useSearchParams } from "react-router-dom";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ListeningFooter from "./components/ListeningFooter";
-import { useListeningExamSection } from "./hooks/useListeningExamSection";
-import { useListeningExamAnswers } from "./hooks/useListeningExamAnswer";
 import { getStorage, setStorage } from "@/utils/storage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EQuestionType } from "@/types/ExamType/exam";
@@ -15,26 +13,26 @@ import QuestionHeader from "../components/QuestionHeader";
 import Word from "../components/Word";
 import BlankSpace from "../ReadingTest/components/BlankSpace";
 import SingleChoice from "../components/SingleChoice";
+import { useExamPassage } from "../hooks/useExamPassage";
 
 const ListeningTest = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDia, setOpenDia] = useState(false);
   const sectionParam = searchParams.get("section") ?? "1";
-  const { mutateAsync: examListenAnswers } = useListeningExamAnswers();
   const [currentSection, setCurrentSection] = useState(
     sectionParam ? parseInt(sectionParam) : 1
   );
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
-  const { data, refetch, isLoading } = useListeningExamSection(id ?? "");
+  const { data, refetch, isLoading } = useExamPassage(id ?? "");
   const [filledWordsByQuestion, setFilledWordsByQuestion] = useState<
     string[][]
   >([]);
   const questionNumberMap = useMemo(() => {
-    if (!data?.exam) return {};
+    if (!data?.exam.examPassage) return {};
     const map: Record<string, number> = {};
     let currentNumber = 1;
-    data.exam.forEach((passage) => {
+    data.exam.examPassage.forEach((passage) => {
       passage.types.forEach((type) => {
         type.questions.forEach((question) => {
           map[question.id] = currentNumber++;
@@ -54,10 +52,10 @@ const ListeningTest = () => {
     if (data?.exam) {
       const initialAnswers: Record<string, string> = {};
 
-      data.exam.forEach((passage) => {
+      data.exam.examPassage.forEach((passage) => {
         passage.types.forEach((type) => {
           type.questions.forEach((question) => {
-            initialAnswers[question.id] = question.answer || "";
+            initialAnswers[question.id] = question?.answer?.answer || "";
           });
         });
       });
@@ -65,32 +63,6 @@ const ListeningTest = () => {
       setAnswers(initialAnswers);
     }
   }, [data]);
-  useEffect(() => {
-    const sendAnswers = async () => {
-      if (Object.keys(answers).length === 0) return;
-
-      const answerArray = Object.entries(answers).map(
-        ([questionId, answer]) => ({
-          examId: id ?? "",
-          examPassageQuestionId: questionId,
-          answer,
-        })
-      );
-
-      try {
-        await examListenAnswers(answerArray);
-        console.log("Answers sent successfully");
-      } catch (error) {
-        console.error("Failed to send answers:", error);
-      }
-    };
-
-    const interval = setInterval(() => {
-      sendAnswers();
-    }, 20000);
-
-    return () => clearInterval(interval);
-  }, [answers, id, examListenAnswers]);
 
   useEffect(() => {
     setSearchParams({ passage: currentSection.toString() });
@@ -102,13 +74,13 @@ const ListeningTest = () => {
     }
   }, [id]);
   const questionType = useMemo(
-    () => data?.exam[currentSection - 1]?.types,
+    () => data?.exam.examPassage[currentSection - 1]?.types,
     [currentSection, data?.exam]
   );
   const calculateTotalQuestions = useCallback(() => {
     if (!data?.exam) return 0;
 
-    return data.exam.reduce((total, passage) => {
+    return data.exam.examPassage.reduce((total, passage) => {
       return (
         total +
         passage.types.reduce((typeTotal, type) => {
@@ -240,6 +212,7 @@ const ListeningTest = () => {
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
       {timeLeft !== undefined && timeLeft !== null ? (
         <Header
+          answers={answers as Record<string, string>}
           timeLeft={timeLeft}
           title="Listening Test"
           isLoading={isLoading}
@@ -290,7 +263,7 @@ const ListeningTest = () => {
                             question.answers.map((answer, idx) => {
                               const answerDrag = {
                                 id: answer.id,
-                                question: answer.examListenQuestion,
+                                question: answer.question,
                                 answer: answer.answer,
                               };
                               return <Word key={idx} answer={answerDrag} />;
@@ -397,11 +370,11 @@ const ListeningTest = () => {
         </div>
       </DndProvider>
       <ListeningFooter
-        audio={data?.audio}
-        section={data?.exam ?? []}
+        audio={data?.exam.audio}
+        section={data?.exam.examPassage ?? []}
         setCurrentSection={setCurrentSection}
         totalQuestions={totalQuestions}
-        answers={answers}
+        answers={answers as Record<string, string>}
         sectionParam={sectionParam}
         id={id}
         currentSection={currentSection}

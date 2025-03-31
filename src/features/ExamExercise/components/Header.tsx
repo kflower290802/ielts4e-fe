@@ -1,4 +1,4 @@
-import { exitExam } from "@/api/ExamAPI/exam";
+import { examExit } from "@/api/ExamAPI/exam";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Route } from "@/constant/route";
@@ -9,16 +9,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 interface IProps {
   timeLeft: number;
+  answers: Record<string, string>
   title: string;
   isLoading: boolean;
   id: string | undefined;
 }
-const Header = ({ timeLeft, title, isLoading, id }: IProps) => {
+const Header = ({ timeLeft, title, isLoading, id, answers }: IProps) => {
   const [remainingTime, setRemainingTime] = useState(timeLeft);
   useEffect(() => {
     if (isLoading) return;
     if (remainingTime <= 0) {
-      handleExit(id ?? "");
+      handleExit();
       return;
     }
     const timer = setInterval(() => {
@@ -28,8 +29,14 @@ const Header = ({ timeLeft, title, isLoading, id }: IProps) => {
     return () => clearInterval(timer);
   }, [remainingTime, id, isLoading]);
   const nav = useNavigate();
-  const handleExit = async (id: string) => {
-    await exitExam(id);
+  const handleExit = async () => {
+    const formattedAnswers = Object.entries(answers).map(
+      ([questionId, answer]) => ({
+        questionId,
+        answer,
+      })
+    );
+    await examExit(formattedAnswers, id ?? '');
     nav(Route.Exam);
     setStorage("isTesting", false);
   };
@@ -51,7 +58,7 @@ const Header = ({ timeLeft, title, isLoading, id }: IProps) => {
         </div>
         <Button
           className="bg-white border-2 border-[#164C7E] text-[#164C7E] font-bold px-8 py-5 hover:bg-[#164C7E] hover:text-white"
-          onClick={() => handleExit(id ?? "")}
+          onClick={() => handleExit()}
         >
           EXIT
         </Button>

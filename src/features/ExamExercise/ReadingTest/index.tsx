@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useReadingExamPassage } from "./hooks/useReadingExamPassage";
 import Header from "../components/Header";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,26 +9,25 @@ import { DndProvider } from "react-dnd";
 import { Card } from "@/components/ui/card";
 import ReadingFooter from "./components/ReadingFooter";
 import SingleChoice from "../components/SingleChoice";
-import { useExamAnswers } from "./hooks/useExamAnswer";
 import { Checkbox } from "@/components/ui/checkbox";
 import Word from "../components/Word";
 import QuestionHeader from "../components/QuestionHeader";
+import { useExamPassage } from "../hooks/useExamPassage";
 
 const ReadingTest = () => {
   const { id } = useParams<{ id: string }>();
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
-  const { mutateAsync: examAnswers } = useExamAnswers();
-  const { data, refetch, isLoading } = useReadingExamPassage(id ?? "");
+  const { data, refetch, isLoading } = useExamPassage(id ?? "");
   useEffect(() => {
     if (id) {
       refetch();
     }
   }, [id, refetch]);
   const questionNumberMap = useMemo(() => {
-    if (!data?.exam) return {};
+    if (!data?.exam.examPassage) return {};
     const map: Record<string, number> = {};
     let currentNumber = 1;
-    data.exam.forEach((passage) => {
+    data.exam.examPassage.forEach((passage) => {
       passage.types.forEach((type) => {
         type.questions.forEach((question) => {
           map[question.id] = currentNumber++;
@@ -55,13 +53,13 @@ const ReadingTest = () => {
   const timeLeft = data?.remainingTime;
 
   const questionType = useMemo(
-    () => data?.exam[currentPassage - 1]?.types,
+    () => data?.exam.examPassage[currentPassage - 1]?.types,
     [currentPassage, data?.exam]
   );
   const calculateTotalQuestions = useCallback(() => {
     if (!data?.exam) return 0;
 
-    return data.exam.reduce((total, passage) => {
+    return data.exam.examPassage.reduce((total, passage) => {
       return (
         total +
         passage.types.reduce((typeTotal, type) => {
@@ -79,10 +77,10 @@ const ReadingTest = () => {
     if (data?.exam) {
       const initialAnswers: Record<string, string> = {};
 
-      data.exam.forEach((passage) => {
+      data.exam.examPassage.forEach((passage) => {
         passage.types.forEach((type) => {
           type.questions.forEach((question) => {
-            initialAnswers[question.id] = question.answer || "";
+            initialAnswers[question.id] = question.answer.answer || "";
           });
         });
       });
@@ -90,33 +88,6 @@ const ReadingTest = () => {
       setAnswers(initialAnswers);
     }
   }, [data]);
-
-  useEffect(() => {
-    const sendAnswers = async () => {
-      if (Object.keys(answers).length === 0) return;
-
-      const answerArray = Object.entries(answers).map(
-        ([questionId, answer]) => ({
-          examId: id ?? "",
-          examPassageQuestionId: questionId,
-          answer,
-        })
-      );
-
-      try {
-        await examAnswers(answerArray);
-        console.log("Answers sent successfully");
-      } catch (error) {
-        console.error("Failed to send answers:", error);
-      }
-    };
-
-    const interval = setInterval(() => {
-      sendAnswers();
-    }, 20000);
-
-    return () => clearInterval(interval);
-  }, [answers, id, examAnswers]);
 
   const handleDrop = useCallback(
     (blankIndex: number, word: string, questionTypeIndex: number) => {
@@ -150,7 +121,7 @@ const ReadingTest = () => {
       const newFilledWordsByPassage =
         prev.length > 0
           ? [...prev]
-          : Array(data.exam.length)
+          : Array(data.exam.examPassage.length)
               .fill([])
               .map(() => []);
 
@@ -167,7 +138,7 @@ const ReadingTest = () => {
         answers.forEach((answer, answerIndex) => {
           // Chỉ cập nhật nếu chưa có giá trị tại vị trí này
           if (!currentFilledWords[answerIndex]) {
-            currentFilledWords[answerIndex] = answer;
+            currentFilledWords[answerIndex] = answer.answer;
           }
         });
       });
@@ -246,21 +217,23 @@ const ReadingTest = () => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
   const getQuestionRange = (questionType: any[], currentIndex: number) => {
-    if (!questionType || !questionType[currentIndex]) return { start: 1, end: 1 };
-  
+    if (!questionType || !questionType[currentIndex])
+      return { start: 1, end: 1 };
+
     const questions = questionType[currentIndex].questions || [];
     if (questions.length === 0) return { start: 1, end: 1 };
-  
+
     // Lấy số thứ tự của câu hỏi đầu tiên và cuối cùng trong type hiện tại
     const start = questionNumberMap[questions[0].id] || 1;
     const end = questionNumberMap[questions[questions.length - 1].id] || start;
-  
+
     return { start, end };
   };
   return (
     <div className="min-h-screen flex flex-col overflow-y-hidden bg-white">
       {timeLeft !== undefined && timeLeft !== null ? (
         <Header
+          answers={answers as Record<string, string>}
           timeLeft={timeLeft}
           title="Reading Test"
           isLoading={isLoading}
@@ -276,14 +249,14 @@ const ReadingTest = () => {
         <div className="flex-1 my-24 h-full overflow-y-hidden">
           <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
             <Card className="p-6 overflow-y-auto">
-              {data?.exam && data.exam.length > 0 ? (
+              {data?.exam && data.exam.examPassage.length > 0 ? (
                 <>
                   <h2 className="mb-4 text-2xl font-bold">
-                    {data.exam[currentPassage - 1].title ?? ""}
+                    {data.exam.examPassage[currentPassage - 1].title ?? ""}
                   </h2>
                   <p className="mb-4">
                     <p className="mb-4">
-                      {data.exam[currentPassage - 1].passage}
+                      {data.exam.examPassage[currentPassage - 1].passage}
                     </p>
                   </p>
                 </>
@@ -336,7 +309,7 @@ const ReadingTest = () => {
                   );
                 } else if (isSingleChoiceQuestion) {
                   return (
-                    <div className="space-y-4">
+                    <div className="space-y-4" key={index}>
                       <QuestionHeader
                         start={start}
                         end={end}
@@ -437,7 +410,7 @@ const ReadingTest = () => {
       </DndProvider>
       <ReadingFooter
         setCurrentPassage={setCurrentPassage}
-        passages={data?.exam ?? []}
+        passages={data?.exam.examPassage ?? []}
         answers={answers as Record<string, string>}
         passageParam={passageParam}
         totalQuestions={totalQuestions}

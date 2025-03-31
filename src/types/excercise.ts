@@ -5,10 +5,14 @@ export interface IExcercise {
   limit?: 10;
   total?: number;
 }
-export interface IExcerciseDetail {
+export interface IExcerciseDetail extends IDetailExcercise {
+  status: StatusExcercise;
+}
+export interface IDetailExcercise {
   id: string;
   name: string;
   type: string;
+  audio: string;
   time: number;
   image: string;
   year: number;
@@ -18,7 +22,6 @@ export interface IExcerciseDetail {
     id: string;
   };
   updatedAt: string;
-  status: StatusExcercise;
 }
 export enum TypeExcercise {
   Reading = "reading",

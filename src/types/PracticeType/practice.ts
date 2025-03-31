@@ -1,5 +1,3 @@
-import { IUserExam } from "../user";
-
 export interface IPractice<T> {
   exam: T[];
   remainingTime: number;
@@ -23,12 +21,4 @@ export interface IUserAnswer {
 export interface IPracticeAnswerSubmit {
   questionId: string;
   answer: string;
-}
-export interface IPractieResponse<T> {
-  id: string;
-  userExam: IUserExam;
-  examPassageQuestion: T;
-  answer: string;
-  createdAt: string;
-  updatedAt: string;
 }

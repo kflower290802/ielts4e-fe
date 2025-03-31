@@ -1,13 +1,13 @@
 import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useExamReadingSubmit } from "../ReadingTest/hooks/useExamReadingSubmit";
 import { useNavigate } from "react-router-dom";
 import { setStorage } from "@/utils/storage";
+import { useExamSubmit } from "../hooks/useExamSubmit";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
-  answers: Record<string, string>;
+  answers: Record<string, string>
   totalQuestion: number | undefined;
   id: string | undefined;
   route: string;
@@ -20,13 +20,18 @@ const DialogSubmitConfirm = ({
   id,
   route,
 }: IProps) => {
-  const { mutateAsync: submit } = useExamReadingSubmit(id ?? "");
+  const { mutateAsync: submit } = useExamSubmit(id ?? '');
   const nav = useNavigate();
-  const totalAnswered = Object.values(answers).filter((answer) =>
-    Array.isArray(answer) ? answer.length : answer?.trim() !== ""
-  ).length;
+  const totalAnswered = Object.values(answers).filter((answer) => {
+    if (Array.isArray(answer)) {
+      return answer.length > 0;
+    }
+    if (typeof answer === "string") {
+      return answer.trim() !== "";
+    }
+    return false;
+  }).length;
   const handleSubmit = async () => {
-    // Chuyển đổi dữ liệu từ state `answers` sang định dạng mong muốn
     const formattedAnswers = Object.entries(answers).map(
       ([questionId, answer]) => ({
         questionId,

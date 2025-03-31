@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ListeningQuestion } from "@/types/ExamType/listeningExam";
-import { ReadingQuestion } from "@/types/ExamType/readingExam";
+import { ReadingQuestion } from "@/types/ExamType/exam";
 import React from "react";
 
 interface Props {
-  question: ReadingQuestion | ListeningQuestion;
+  question: ReadingQuestion;
   onClick: (questionId: string, answer: string) => void;
   currentAnswer: string;
   questionNumber: number

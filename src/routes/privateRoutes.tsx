@@ -13,7 +13,7 @@ import WritingTest from "@/features/ExamExercise/WritingTest";
 import WritingTestResult from "@/features/ExamExercise/WritingTest/WritingTestResult";
 import ListeningTestResult from "@/features/ExamExercise/ListeningTest/components/ListeningResult";
 import ListeningPractice from "@/features/Practice/PracticeListening";
-import ReadingTest from "@/features/ExamExercise/ReadingTest/Reading";
+import ReadingTest from "@/features/ExamExercise/ReadingTest";
 import PracticeReadingResult from "@/features/Practice/PracticeReading/components/ReadingPracticeResult";
 import PracticeWriting from "@/features/Practice/PracticeWriting";
 import PracticeSpeakingTest from "@/features/Practice/PracticeSpeaking/SpeakingTest";

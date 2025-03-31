@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { memo, useState } from "react";
 import AudioPlayer from "./AudioPlayer";
-import { ExamSection } from "@/types/listeningExam";
 import { cn } from "@/lib/utils";
 import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
 import { Route } from "@/constant/route";
+import { ExamPassage } from "@/types/ExamType/exam";
 interface IProps {
   audio: string | undefined;
-  section: ExamSection[];
+  section: ExamPassage[];
   setCurrentSection: React.Dispatch<React.SetStateAction<number>>;
   totalQuestions: number | undefined;
-  answers: Record<string, string | string[]>;
+  answers: Record<string, string>;
   sectionParam: string;
   id: string | undefined;
   currentSection: number;

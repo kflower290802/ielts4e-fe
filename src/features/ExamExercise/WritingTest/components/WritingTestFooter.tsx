@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Route } from "@/constant/route";
 import { cn } from "@/lib/utils";
-import { IContent } from "@/types/ExamType/writingExam";
+import { ExamPassage } from "@/types/ExamType/exam";
 import { useNavigate } from "react-router-dom";
 // import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
 // import { useState } from "react";
 // import { Route } from "@/constant/route";
 interface IProps {
   setCurrentTask: React.Dispatch<React.SetStateAction<number>>;
-  tasks: IContent[] | undefined;
+  tasks: ExamPassage[] | undefined;
   currentTask: number;
   answers: Record<string, string>;
   id: string | undefined;

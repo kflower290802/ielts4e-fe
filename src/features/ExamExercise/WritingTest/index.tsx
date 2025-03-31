@@ -3,14 +3,12 @@ import { Textarea } from "@/components/ui/textarea";
 import WritingTestFooter from "./components/WritingTestFooter";
 import Header from "../components/Header";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useWritingExamById } from "./hooks/useWritingExamById";
-import { useWritingExamAnswers } from "./hooks/useWritingExamAnswer";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useExamPassage } from "../hooks/useExamPassage";
 
 export default function WritingTest() {
   const { id } = useParams<{ id: string }>();
-  const { mutateAsync: writingAnswers } = useWritingExamAnswers();
-  const { data, refetch, isLoading } = useWritingExamById(id ?? "");
+  const { data, refetch, isLoading } = useExamPassage(id ?? "");
   const [searchParams, setSearchParams] = useSearchParams();
   const taskParam = searchParams.get("task") ?? "1";
   const [currentTask, setCurrentTask] = useState(
@@ -20,40 +18,14 @@ export default function WritingTest() {
   useEffect(() => {
     if (data?.exam) {
       const initialAnswers: Record<string, string> = {};
-      data?.exam.forEach((task) => {
-        initialAnswers[task.id] = task.answer || "";
+
+      data.exam.examPassage.forEach((passage) => {
+        initialAnswers[passage.id] = passage?.answer?.answer || "";
       });
 
       setAnswers(initialAnswers);
     }
   }, [data]);
-
-  useEffect(() => {
-    const sendAnswers = async () => {
-      if (Object.keys(answers).length === 0) return;
-
-      const answerArray = Object.entries(answers).map(
-        ([questionId, answer]) => ({
-          examId: id ?? "",
-          examWritingId: questionId,
-          answer,
-        })
-      );
-
-      try {
-        await writingAnswers(answerArray);
-        console.log("Answers sent successfully");
-      } catch (error) {
-        console.error("Failed to send answers:", error);
-      }
-    };
-
-    const interval = setInterval(() => {
-      sendAnswers();
-    }, 20000); // Gửi mỗi 20 giây
-
-    return () => clearInterval(interval); // Xóa interval khi component unmount
-  }, [answers, id, writingAnswers]);
 
   useEffect(() => {
     const newSearchParams = new URLSearchParams();
@@ -62,7 +34,7 @@ export default function WritingTest() {
   }, [currentTask, setSearchParams]);
 
   const [wordCount, setWordCount] = useState<number>(0);
-  const task = data?.exam[currentTask - 1];
+  const task = data?.exam.examPassage[currentTask - 1];
   useEffect(() => {
     if (id) {
       refetch();
@@ -83,6 +55,7 @@ export default function WritingTest() {
     <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-green-50">
       {timeLeft !== undefined && timeLeft !== null ? (
         <Header
+          answers={answers}
           timeLeft={timeLeft}
           title="Writing Test"
           isLoading={isLoading}
@@ -102,13 +75,13 @@ export default function WritingTest() {
               <h2 className="text-xl font-bold mb-4">
                 WRITING TASK {currentTask}
               </h2>
-              <span>{data?.exam[currentTask - 1].content}</span>
+              <span>{data?.exam.examPassage[currentTask - 1].content}</span>
             </span>
 
-            {data?.exam[currentTask - 1].image && (
+            {data?.exam.examPassage[currentTask - 1].image && (
               <div className="flex justify-center mb-4">
                 <img
-                  src={data?.exam[currentTask - 1].image}
+                  src={data?.exam.examPassage[currentTask - 1].image}
                   alt="Diagram showing flood protection methods"
                   className="border border-gray-200 rounded w-11/12 h-72 object-contain
                 "
@@ -140,7 +113,7 @@ export default function WritingTest() {
         <WritingTestFooter
           setCurrentTask={setCurrentTask}
           currentTask={currentTask}
-          tasks={data?.exam}
+          tasks={data?.exam.examPassage}
           answers={answers}
           id={id}
         />

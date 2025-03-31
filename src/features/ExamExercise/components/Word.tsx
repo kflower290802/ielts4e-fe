@@ -1,4 +1,4 @@
-import { ReadingAnswer } from "@/types/ExamType/readingExam";
+import { ReadingAnswer } from "@/types/ExamType/exam";
 import React from "react";
 import { useDrag } from "react-dnd";
 

@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { IExamResult } from "@/types/ExamType/exam";
+import { ExamPassage, IExamResult } from "@/types/ExamType/exam";
 import React, { memo } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ExamPassage } from "@/types/ExamType/readingExam";
 interface IProps {
   passages: ExamPassage[];
   passageParam: string;

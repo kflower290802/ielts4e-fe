@@ -1,7 +1,6 @@
 import { api } from "@/lib/api";
 import { IExcercise, IPracticeTopic, IRequestExcercisePractice } from "@/types/excercise";
-import { IPracticeAnswerSubmit, IPractieResponse } from "@/types/PracticeType/practice";
-import { ReadingQuestion } from "@/types/PracticeType/readingPractice";
+import { IPracticeAnswerSubmit } from "@/types/PracticeType/practice";
 
 export const getExcercisePractice = (params: IRequestExcercisePractice): Promise<IExcercise> =>
   api.get(`/practices`, {
@@ -9,10 +8,6 @@ export const getExcercisePractice = (params: IRequestExcercisePractice): Promise
   });
 export const getTopic = (): Promise<IPracticeTopic[]> => api.get(`/topics`);
 export const startPractice = (id: string) => api.get(`/practices/start-practice/${id}`);
-export const getPracticeAnswers = (
-  id: string
-): Promise<IPractieResponse<ReadingQuestion>> =>
-  api.get(`/user-exam-answers/${id}`);
 export const practiceExit = (
   data: IPracticeAnswerSubmit[],
   id: string

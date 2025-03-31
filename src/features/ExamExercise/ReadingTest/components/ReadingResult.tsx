@@ -4,19 +4,19 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
 import ReadingFooterResult from "./ReadingFooterResult";
-import { useExamResult } from "../hooks/useExamResult";
 import { Badge } from "@/components/ui/badge";
-import { useReadingExamPassage } from "../hooks/useReadingExamPassage";
 import { Route } from "@/constant/route";
 import { EQuestionType } from "@/types/ExamType/exam";
 import SingleChoiceResult from "../../components/SingleChoiceResult";
 import QuestionHeader from "../../components/QuestionHeader";
+import { useExamPassage } from "../../hooks/useExamPassage";
+import { useExamResult } from "../../hooks/useExamResult";
 // import { Checkbox } from "@/components/ui/checkbox";
 
 const ReadingResult = () => {
   const { idResult } = useParams<{ idResult: string }>();
   const { id } = useParams<{ id: string }>();
-  const { data } = useReadingExamPassage(id ?? "");
+  const { data } = useExamPassage(id ?? "");
   const { data: result } = useExamResult(idResult ?? "");
   const nav = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,7 +28,7 @@ const ReadingResult = () => {
     if (!data?.exam) return {};
     const map: Record<string, number> = {};
     let currentNumber = 1;
-    data.exam.forEach((passage) => {
+    data.exam.examPassage.forEach((passage) => {
       passage.types.forEach((type) => {
         type.questions.forEach((question) => {
           map[question.id] = currentNumber++;
@@ -42,13 +42,13 @@ const ReadingResult = () => {
   }, [currentPassage, setSearchParams]);
 
   const questionType = useMemo(
-    () => data?.exam[currentPassage - 1]?.types,
+    () => data?.exam.examPassage[currentPassage - 1]?.types,
     [currentPassage, data?.exam]
   );
   const calculateTotalQuestions = useCallback(() => {
-    if (!data?.exam) return 0;
+    if (!data?.exam.examPassage) return 0;
 
-    return data.exam.reduce((total, passage) => {
+    return data.exam.examPassage.reduce((total, passage) => {
       return (
         total +
         passage.types.reduce((typeTotal, type) => {
@@ -164,145 +164,19 @@ const ReadingResult = () => {
       <div className="flex-1 h-full overflow-y-hidden">
         <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
           <Card className="p-6 h-[75vh] overflow-y-auto">
-            {data?.exam && data.exam.length > 0 ? (
+            {data?.exam && data.exam.examPassage.length > 0 ? (
               <>
                 <h2 className="mb-4 text-2xl font-bold">
-                  {data.exam[currentPassage - 1].title ?? ""}
+                  {data.exam.examPassage[currentPassage - 1].title ?? ""}
                 </h2>
                 <p className="mb-4">
-                  {data.exam[currentPassage - 1].passage ?? ""}
+                  {data.exam.examPassage[currentPassage - 1].passage ?? ""}
                 </p>
               </>
             ) : (
               <p>Loading passage...</p>
             )}
           </Card>
-
-          {/* <Card className="p-6 overflow-y-auto">
-            <div className="mb-6 rounded-lg bg-blue-900 p-4 text-white">
-              <h3 className="text-lg font-semibold">
-                QUESTION {startQuestion + 1}
-                {endQuestion === startQuestion + 1 ? "" : `- ${endQuestion}`}
-              </h3>
-              <p>Choose ONE WORD ONLY from the passage for each question</p>
-            </div>
-
-            <div className="space-y-6">
-              {isSingleChoiceQuestion && (
-                <div className="space-y-4">
-                  {visibleQuestions.map((question, index) => {
-                    const questionId = question.id;
-                    const answerData = result?.summary.find(
-                      (item) => item.questionId === questionId
-                    );
-                    return (
-                      <SingleChoiceResult
-                        question={question}
-                        index={index}
-                        userAnswer={answerData?.userAnswer}
-                        correctAnswer={answerData?.correctAnswer}
-                        isCorrect={answerData?.isCorrect}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-              {(isBlankPassageDrag || isBlankPassageTextbox) && (
-                <div>{questionPassageContent}</div>
-              )}
-              {!isHeadingQuestion &&
-                !isSingleChoiceQuestion &&
-                !isBlankPassageDrag &&
-                !isBlankPassageTextbox &&
-                visibleQuestions.map((question, index) => {
-                  const questionId = question.id;
-                  const answerData = result?.summary.find(
-                    (item) => item.questionId === questionId
-                  );
-                  return (
-                    <div
-                      key={question.id}
-                      className={cn(
-                        "space-y-2 flex border py-2 px-5 rounded-xl",
-                        question.question.length > 50
-                          ? "flex-col items-start gap-2"
-                          : "gap-5 items-center"
-                      )}
-                    >
-                      <p className="text-sm">
-                        {startQuestion + index + 1}. {question.question}
-                      </p>
-                      <Badge
-                        className={cn(
-                          "w-32 h-10 border-b-4 rounded-xl",
-                          answerData?.userAnswer === ""
-                            ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
-                            : answerData?.isCorrect
-                            ? "bg-[#66B032] border-green-800 text-white hover:border-green-800"
-                            : "bg-red-500 border-red-700 text-white hover:bg-red-400"
-                        )}
-                      >
-                        {answerData?.userAnswer === ""
-                          ? "Not answered"
-                          : answerData?.userAnswer}
-                      </Badge>
-                    </div>
-                  );
-                })}
-            </div>
-            {endQuestion < questions.length ? (
-              <div
-                className={cn(
-                  currentQuestionPage > 1 ? "justify-between" : "justify-end",
-                  "mt-4 flex items-center"
-                )}
-              >
-                {currentQuestionPage > 1 ? (
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    onClick={handlePrevPage}
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    {startQuestion - questionsPerPage + 1} - {startQuestion}
-                  </Button>
-                ) : (
-                  ""
-                )}
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={handleNextPage}
-                >
-                  {endQuestion + 1}
-                  {Math.min(
-                    endQuestion + questionsPerPage,
-                    questions.length
-                  ) ===
-                  endQuestion + 1
-                    ? ""
-                    : -Math.min(
-                        endQuestion + questionsPerPage,
-                        questions.length
-                      )}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : currentQuestionPage > 1 ? (
-              <div className="mt-4 flex justify-start">
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={handlePrevPage}
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  {startQuestion - questionsPerPage + 1} - {startQuestion}
-                </Button>
-              </div>
-            ) : (
-              ""
-            )}
-          </Card> */}
           <Card className="p-6 h-[75vh] overflow-y-auto">
             {questionType?.map((types, index) => {
               const { start, end } = getQuestionRange(questionType, index);
@@ -453,7 +327,7 @@ const ReadingResult = () => {
       <ReadingFooterResult
         result={result}
         setCurrentPassage={setCurrentPassage}
-        passages={data?.exam ?? []}
+        passages={data?.exam.examPassage ?? []}
         totalQuestions={totalQuestions}
         passageParam={passageParam}
       />
