@@ -80,7 +80,9 @@ const ReadingTest = () => {
       data.exam.examPassage.forEach((passage) => {
         passage.types.forEach((type) => {
           type.questions.forEach((question) => {
-            initialAnswers[question.id] = question.answer.answer || "";
+            const answer = question.answer;
+            initialAnswers[question.id] =
+              typeof answer === "string" ? answer : answer?.answer || "";
           });
         });
       });
@@ -113,11 +115,9 @@ const ReadingTest = () => {
     [currentPassage, questionType]
   );
   useEffect(() => {
-    // Chỉ chạy khi có questionType và filledWordsByQuestion đã được khởi tạo
     if (!questionType || !data?.exam) return;
 
     setFilledWordsByQuestion((prev) => {
-      // Khởi tạo mảng mới dựa trên prev
       const newFilledWordsByPassage =
         prev.length > 0
           ? [...prev]
@@ -125,22 +125,31 @@ const ReadingTest = () => {
               .fill([])
               .map(() => []);
 
-      // Lấy danh sách từ đã điền cho passage hiện tại
       const currentFilledWords =
         newFilledWordsByPassage[currentPassage - 1]?.length > 0
           ? [...newFilledWordsByPassage[currentPassage - 1]]
           : [];
 
-      // Cập nhật answers cho từng question
       questionType.forEach((type) => {
-        const answers = type.questions?.map((q) => q.answer || "") || [];
+        if (type.type === EQuestionType.BlankPassageDrag) {
+          const answers =
+            type.questions?.map((q) =>
+              typeof q.answer === "string" ? q.answer : q.answer?.answer || ""
+            ) || [];
 
-        answers.forEach((answer, answerIndex) => {
-          // Chỉ cập nhật nếu chưa có giá trị tại vị trí này
-          if (!currentFilledWords[answerIndex]) {
-            currentFilledWords[answerIndex] = answer.answer;
-          }
-        });
+          answers.forEach((answer, answerIndex) => {
+            if (!currentFilledWords[answerIndex]) {
+              currentFilledWords[answerIndex] = answer;
+              const questionId = type.questions[answerIndex]?.id;
+              if (questionId) {
+                setAnswers((prev) => ({
+                  ...prev,
+                  [questionId]: answer,
+                }));
+              }
+            }
+          });
+        }
       });
 
       newFilledWordsByPassage[currentPassage - 1] = currentFilledWords;

@@ -48,6 +48,10 @@ const ListeningTest = () => {
       setStorage("isTesting", "true");
     }
   }, []);
+  const questionType = useMemo(
+    () => data?.exam.examPassage[currentSection - 1]?.types,
+    [currentSection, data?.exam]
+  );
   useEffect(() => {
     if (data?.exam) {
       const initialAnswers: Record<string, string> = {};
@@ -55,7 +59,9 @@ const ListeningTest = () => {
       data.exam.examPassage.forEach((passage) => {
         passage.types.forEach((type) => {
           type.questions.forEach((question) => {
-            initialAnswers[question.id] = question?.answer?.answer || "";
+            const answer = question.answer;
+            initialAnswers[question.id] =
+              typeof answer === "string" ? answer : answer?.answer || "";
           });
         });
       });
@@ -63,7 +69,47 @@ const ListeningTest = () => {
       setAnswers(initialAnswers);
     }
   }, [data]);
-
+useEffect(() => {
+    if (!questionType || !data?.exam) return;
+  
+    setFilledWordsByQuestion((prev) => {
+      const newFilledWordsByPassage =
+        prev.length > 0
+          ? [...prev]
+          : Array(data.exam.examPassage.length)
+              .fill([])
+              .map(() => []);
+  
+      const currentFilledWords =
+        newFilledWordsByPassage[currentSection - 1]?.length > 0
+          ? [...newFilledWordsByPassage[currentSection - 1]]
+          : [];
+  
+      questionType.forEach((type) => {
+        if (type.type === EQuestionType.BlankPassageDrag) {
+          const answers = type.questions?.map((q) =>
+            typeof q.answer === "string" ? q.answer : q.answer?.answer || ""
+          ) || [];
+  
+          answers.forEach((answer, answerIndex) => {
+            if (!currentFilledWords[answerIndex]) {
+              currentFilledWords[answerIndex] = answer;
+              const questionId = type.questions[answerIndex]?.id;
+              if (questionId) {
+                setAnswers((prev) => ({
+                  ...prev,
+                  [questionId]: answer,
+                }));
+              }
+            }
+          });
+        }
+      });
+  
+      newFilledWordsByPassage[currentSection - 1] = currentFilledWords;
+      return newFilledWordsByPassage;
+    });
+  }, [questionType, currentSection, data?.exam]);
   useEffect(() => {
     setSearchParams({ passage: currentSection.toString() });
   }, [currentSection, setSearchParams]);
@@ -73,10 +119,7 @@ const ListeningTest = () => {
       refetch();
     }
   }, [id]);
-  const questionType = useMemo(
-    () => data?.exam.examPassage[currentSection - 1]?.types,
-    [currentSection, data?.exam]
-  );
+
   const calculateTotalQuestions = useCallback(() => {
     if (!data?.exam) return 0;
 

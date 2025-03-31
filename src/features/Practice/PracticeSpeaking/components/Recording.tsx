@@ -7,18 +7,23 @@ import { cn } from "@/lib/utils";
 import useCloudinaryUpload from "@/features/hooks/useImageUpload";
 
 interface RecordingProps {
-  index: number;
+  answers: Record<string, string>;
+  questionId: string;
   canRecord: boolean;
-  handleAudioUploaded: (index: number, url: string) => void
+  handleAudioUploaded: (questionId: string, url: string) => void;
 }
 
-const Recording = ({ index, canRecord, handleAudioUploaded }: RecordingProps) => {
+const Recording = ({
+  questionId,
+  canRecord,
+  handleAudioUploaded,
+  answers,
+}: RecordingProps) => {
   const [isRecording, setIsRecording] = useState(false);
   const [progress, setProgress] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [remainingTime, setRemainingTime] = useState("2:00");
   const {
     uploadFile,
@@ -53,9 +58,7 @@ const Recording = ({ index, canRecord, handleAudioUploaded }: RecordingProps) =>
         const audioBlob = new Blob(audioChunksRef.current, {
           type: "audio/wav",
         });
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
-        const file = new File([audioBlob], `recording_${index + 1}.wav`, {
+        const file = new File([audioBlob], `recording_${questionId}.wav`, {
           type: "audio/wav",
         });
         const dataTransfer = new DataTransfer();
@@ -66,7 +69,7 @@ const Recording = ({ index, canRecord, handleAudioUploaded }: RecordingProps) =>
         const uploadedUrl = await uploadFile(fileList);
         if (uploadedUrl) {
           setUploadedFileUrl(uploadedUrl);
-          handleAudioUploaded(index, uploadedUrl);
+          handleAudioUploaded(questionId, uploadedUrl);
         }
 
         stream.getTracks().forEach((track) => track.stop());
@@ -114,11 +117,8 @@ const Recording = ({ index, canRecord, handleAudioUploaded }: RecordingProps) =>
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl);
-      }
     };
-  }, [audioUrl]);
+  }, []);
 
   // Hàm tải file audio
   // const downloadAudio = () => {
@@ -134,7 +134,7 @@ const Recording = ({ index, canRecord, handleAudioUploaded }: RecordingProps) =>
 
   return (
     <div className="flex items-center gap-4 justify-center">
-      {!isRecording && !audioUrl && (
+      {!isRecording && !answers[questionId] && (
         <div className="w-1/2 rounded-xl border px-3 py-1 flex items-center gap-2">
           <Button
             onClick={isRecording ? stopRecording : startRecording}
@@ -191,9 +191,9 @@ const Recording = ({ index, canRecord, handleAudioUploaded }: RecordingProps) =>
           <span className="text-black text-sm w-10">{remainingTime}</span>
         </div>
       )}
-      {!isRecording && audioUrl && (
+      {!isRecording && answers[questionId] && (
         <div className="flex items-center gap-4">
-          <audio controls src={uploadedFileUrl || audioUrl} className="w-96" />
+          <audio controls src={answers[questionId]} className="w-96" />
           {isUploading && <p>Đang tải lên...</p>}
           {error && <p className="text-red-500">{error}</p>}
           {uploadedFileUrl && (

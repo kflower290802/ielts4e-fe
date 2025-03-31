@@ -8,6 +8,13 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { CalendarIcon, Filter } from "lucide-react";
+import { TargetScoreCard } from "./components/TargetScoreCart";
+import { SkillScoreCard } from "./components/SkillScoreCart";
+import { ScoreChart } from "./components/ScoreChart";
+import { TimeChart } from "./components/TimeChart";
+import { HistoryTable } from "./components/HistoryTable";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -15,15 +22,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TargetScoreCard } from "./components/TargetScoreCart";
-import { SkillScoreCard } from "./components/SkillScoreCart";
-import { ScoreChart } from "./components/ScoreChart";
-import { TimeChart } from "./components/TimeChart";
-import { HistoryTable } from "./components/HistoryTable";
+import { useGetAvgScore } from "./hooks/useGetAvgScore";
 const Report = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const { data: score } = useGetAvgScore();
+  const currentDate = new Date();
+  const [startDate, setStartDate] = useState<Date | undefined>(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 7);
+    return date;
+  });
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date());
   const [skill, setSkill] = useState<string>("all");
-  const [timeRange, setTimeRange] = useState<string>("month");
+  const handleStartDateSelect = (date: Date | undefined) => {
+    if (!date) {
+      setStartDate(undefined);
+      return;
+    }
+    if (date > currentDate) {
+      setStartDate(currentDate);
+    } else if (endDate && date > endDate) {
+      setStartDate(endDate);
+    } else {
+      setStartDate(date);
+    }
+  };
+  const handleEndDateSelect = (date: Date | undefined) => {
+    if (!date) {
+      setEndDate(undefined);
+      return;
+    }
+    if (date > currentDate) {
+      setEndDate(currentDate);
+    } else if (startDate && date < startDate) {
+      setEndDate(startDate);
+    } else {
+      setEndDate(date);
+    }
+  };
   return (
     <div className="container mx-auto py-8 px-4">
       <Card className="border-0 shadow-lg">
@@ -32,10 +67,10 @@ const Report = () => {
             <div className="flex items-center gap-2 w-full md:w-auto">
               <TargetScoreCard targetScore={7.0} />
             </div>
-            <SkillScoreCard skill="Speaking" score={5.0} />
-            <SkillScoreCard skill="Reading" score={6.0} />
-            <SkillScoreCard skill="Writing" score={5.0} />
-            <SkillScoreCard skill="Listening" score={7.0} />
+            <SkillScoreCard skill="Speaking" score={score?.speaking} />
+            <SkillScoreCard skill="Reading" score={score?.reading} />
+            <SkillScoreCard skill="Writing" score={score?.writing} />
+            <SkillScoreCard skill="Listening" score={score?.listening} />
             <div className="flex justify-center items-center gap-2 font-medium shadow rounded-lg">
               <span>10 bài học </span> / <span> 2 tiếng</span>
             </div>
@@ -49,6 +84,7 @@ const Report = () => {
                 <Filter className="h-4 w-4 text-gray-500" />
                 <span className="text-sm text-gray-500">Filter:</span>
               </div>
+
               <Select value={skill} onValueChange={setSkill}>
                 <SelectTrigger className="w-[120px]">
                   <SelectValue placeholder="Skill" />
@@ -61,33 +97,60 @@ const Report = () => {
                   <SelectItem value="listening">Listening</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder="Time" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="week">Week</SelectItem>
-                  <SelectItem value="month">Month</SelectItem>
-                  <SelectItem value="year">Year</SelectItem>
-                </SelectContent>
-              </Select>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant="outline"
-                    className="w-[150px] justify-start text-left font-normal"
+                    className={cn(
+                      "w-[200px] justify-start bg-transparent border-2 hover:bg-gray-200 border-[#3C64CE] rounded-full text-left flex gap-3",
+                      !startDate && "text-muted-foreground"
+                    )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    <CalendarIcon />
+                    {startDate ? (
+                      format(startDate, "PPP")
+                    ) : (
+                      <span>Pick a start date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  {/* <Calendar
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
                     mode="single"
-                    selected={date}
-                    onSelect={setDate}
+                    selected={startDate}
+                    onSelect={handleStartDateSelect}
                     initialFocus
-                  /> */}
+                    disabled={(date) =>
+                      date > currentDate || (endDate ? date > endDate : false)
+                    }
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    className={cn(
+                      "w-[200px] justify-start bg-transparent border-2 hover:bg-gray-200 border-[#3C64CE] rounded-full text-left flex gap-3",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon />
+                    {endDate ? (
+                      format(endDate, "PPP")
+                    ) : (
+                      <span>Pick a end date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={handleEndDateSelect}
+                    initialFocus
+                    disabled={(date) =>
+                      date > currentDate || (startDate ? date < startDate : false)
+                    }
+                  />
                 </PopoverContent>
               </Popover>
             </div>
@@ -99,7 +162,11 @@ const Report = () => {
                 <CardTitle className="text-lg">Test Score</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <ScoreChart skill={skill} timeRange={timeRange} />
+                <ScoreChart
+                  skill={skill}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
               </CardContent>
             </Card>
             <Card>
@@ -107,7 +174,11 @@ const Report = () => {
                 <CardTitle className="text-lg">Time to Learn</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <TimeChart skill={skill} timeRange={timeRange} />
+                <TimeChart
+                  skill={skill}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
               </CardContent>
             </Card>
           </div>

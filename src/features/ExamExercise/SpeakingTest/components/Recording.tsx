@@ -12,7 +12,12 @@ interface RecordingProps {
   handleAudioUploaded: (questionId: string, url: string) => void;
 }
 
-const Recording = ({ questionId, canRecord, handleAudioUploaded, answers }: RecordingProps) => {
+const Recording = ({
+  questionId,
+  canRecord,
+  handleAudioUploaded,
+  answers,
+}: RecordingProps) => {
   const [isRecording, setIsRecording] = useState(false);
   const [progress, setProgress] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -41,7 +46,9 @@ const Recording = ({ questionId, canRecord, handleAudioUploaded, answers }: Reco
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/wav",
+        });
         const file = new File([audioBlob], `recording_${questionId}.wav`, {
           type: "audio/wav",
         });
@@ -97,7 +104,6 @@ const Recording = ({ questionId, canRecord, handleAudioUploaded, answers }: Reco
       }
     };
   }, []);
-console.log(isUploading);
 
   return (
     <div className="flex items-center gap-4 justify-center">
@@ -108,7 +114,9 @@ console.log(isUploading);
             variant="outline"
             className={cn(
               "relative rounded-full size-10 p-5",
-              isRecording ? "bg-red-100 hover:bg-red-200" : "bg-green-100 hover:bg-green-200"
+              isRecording
+                ? "bg-red-100 hover:bg-red-200"
+                : "bg-green-100 hover:bg-green-200"
             )}
             disabled={!canRecord}
           >
@@ -133,7 +141,9 @@ console.log(isUploading);
             variant="outline"
             className={cn(
               "relative rounded-full size-10 p-5",
-              isRecording ? "bg-red-100 hover:bg-red-200" : "bg-green-100 hover:bg-green-200"
+              isRecording
+                ? "bg-red-100 hover:bg-red-200"
+                : "bg-green-100 hover:bg-green-200"
             )}
             disabled={!canRecord}
           >

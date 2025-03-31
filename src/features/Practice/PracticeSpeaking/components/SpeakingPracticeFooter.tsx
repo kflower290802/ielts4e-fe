@@ -1,26 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Route } from "@/constant/route";
 import { memo, useState } from "react";
-import DialogSubmitSpeakingPractice from "./DialogSubmitSpeakingPractice";
-import { PracticeSpeaking } from "@/types/PracticeType/speakingPractice";
+import DialogSubmitPractice from "../../components/DialogSubmitPractice";
 interface IProps {
-  id: string | undefined;
-  audioAnswers: {
-    [key: number]: string;
-  };
-  data: PracticeSpeaking[] | undefined;
+    answers: Record<string, string>;
+    id: string | undefined;
 }
-const SpeakingPracticeFooter = ({ id, audioAnswers, data }: IProps) => {
+const SpeakingPracticeFooter = ({ id, answers }: IProps) => {
   const [openDia, setOpenDia] = useState<boolean>(false);
   return (
     <div className="absolute bottom-0 right-5 h-20 flex items-center">
-      <DialogSubmitSpeakingPractice
+      <DialogSubmitPractice
         openDia={openDia}
         setOpenDia={setOpenDia}
-        audioAnswers={audioAnswers}
-        data={data}
+        totalQuestion={3}
+        answers={answers}
         id={id}
-        route={Route.PracticeSpeakingResult}
+        route={Route.PracticeListeningResult}
       />
       <div className="flex justify-end">
         <Button

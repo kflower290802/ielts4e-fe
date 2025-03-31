@@ -92,7 +92,7 @@ const SpeakingTest = () => {
                   (currentPart - 1) *
                     data?.exam.examPassage[currentPart - 1].questions.length +
                   index;
-                const prevQuestionId =
+                  const prevQuestionId =
                   index > 0
                     ? data?.exam.examPassage[currentPart - 1]?.questions[
                         index - 1

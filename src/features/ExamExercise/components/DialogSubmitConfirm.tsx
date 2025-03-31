@@ -20,7 +20,7 @@ const DialogSubmitConfirm = ({
   id,
   route,
 }: IProps) => {
-  const { mutateAsync: submit } = useExamSubmit(id ?? '');
+  const { mutateAsync: submit, isPending } = useExamSubmit(id ?? '');
   const nav = useNavigate();
   const totalAnswered = Object.values(answers).filter((answer) => {
     if (Array.isArray(answer)) {
@@ -63,6 +63,7 @@ const DialogSubmitConfirm = ({
           <Button
             className="bg-[#66B032] hover:bg-[#66B032]/80 text-white font-bold rounded-xl"
             onClick={handleSubmit}
+            isLoading={isPending}
           >
             Submit
           </Button>

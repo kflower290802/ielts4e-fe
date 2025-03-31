@@ -9,13 +9,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 interface IProps {
   timeLeft: number;
-  answers: Record<string, string>
+  answers: Record<string, string>;
   title: string;
   isLoading: boolean;
   id: string | undefined;
 }
 const Header = ({ timeLeft, title, isLoading, id, answers }: IProps) => {
   const [remainingTime, setRemainingTime] = useState(timeLeft);
+  const [isPending, setIsPending] = useState<boolean>(false);
   useEffect(() => {
     if (isLoading) return;
     if (remainingTime <= 0) {
@@ -25,18 +26,19 @@ const Header = ({ timeLeft, title, isLoading, id, answers }: IProps) => {
     const timer = setInterval(() => {
       setRemainingTime((prevTime) => Math.max(prevTime - 1000, 0));
     }, 1000);
-
     return () => clearInterval(timer);
   }, [remainingTime, id, isLoading]);
   const nav = useNavigate();
   const handleExit = async () => {
+    setIsPending(true);
     const formattedAnswers = Object.entries(answers).map(
       ([questionId, answer]) => ({
         questionId,
         answer,
       })
     );
-    await examExit(formattedAnswers, id ?? '');
+    await examExit(formattedAnswers, id ?? "");
+    setIsPending(false);
     nav(Route.Exam);
     setStorage("isTesting", false);
   };
@@ -59,6 +61,7 @@ const Header = ({ timeLeft, title, isLoading, id, answers }: IProps) => {
         <Button
           className="bg-white border-2 border-[#164C7E] text-[#164C7E] font-bold px-8 py-5 hover:bg-[#164C7E] hover:text-white"
           onClick={() => handleExit()}
+          isLoading={isPending}
         >
           EXIT
         </Button>
