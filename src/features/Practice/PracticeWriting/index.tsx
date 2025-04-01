@@ -19,7 +19,18 @@ const PracticeWriting = () => {
       setAnswers(data?.answer?.answer);
     }
   }, [data]);
-
+  useEffect(() => {
+    if (answers) {
+      const text = answers;
+      const wordArray = text
+        .trim()
+        .split(/\s+/)
+        .filter((word) => word.length > 0);
+      setWordCount(wordArray.length);
+    } else {
+      setWordCount(0);
+    }
+  }, [answers]);
   const [wordCount, setWordCount] = useState<number>(0);
   useEffect(() => {
     if (id) {
@@ -29,7 +40,11 @@ const PracticeWriting = () => {
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
     setAnswers(text);
-    setWordCount(text.length);
+    const wordArray = text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0);
+    setWordCount(wordArray.length);
   };
   return (
     <div className="h-full w-full relative p-4 flex justify-between">
@@ -47,16 +62,15 @@ const PracticeWriting = () => {
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
-      <div className="flex w-full h-full flex-col items-center">
+      <div className="flex w-full h-full flex-col items-center justify-between">
         <div className="flex-1 h-full w-11/12 overflow-y-hidden relative">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Left Panel - Task Description */}
-            <div className="border flex flex-col justify-between h-[70vh] border-black rounded-lg overflow-auto bg-white p-6 shadow-sm">
+            <div className="border flex flex-col justify-between h-[86vh] border-black rounded-lg overflow-auto bg-white p-6 shadow-sm">
               <span>
                 <h2 className="text-xl font-bold mb-4">WRITING PRACTICE</h2>
                 <div className="whitespace-pre-wrap">{data?.content}</div>
               </span>
-
               {data?.image && (
                 <div className="flex justify-center mb-4">
                   <img
@@ -88,8 +102,8 @@ const PracticeWriting = () => {
           </div>
 
           {/* Bottom Navigation */}
-          <WritingPracticeFooter answers={answers} id={id} />
         </div>
+        <WritingPracticeFooter answers={answers} id={id} />
       </div>
     </div>
   );

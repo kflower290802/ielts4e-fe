@@ -5,9 +5,11 @@ import { ChevronsLeft, ChevronsRight, Pause, Play } from "lucide-react";
 interface IProps {
   src: string;
   disabled?: boolean;
+  questionId: string
   onComplete?: () => void;
+  setActice: React.Dispatch<React.SetStateAction<string | null>>
 }
-const AudioPlayer = ({ src, disabled = false, onComplete }: IProps) => {
+const AudioPlayer = ({ src, disabled = false, onComplete, setActice, questionId }: IProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -57,6 +59,7 @@ const AudioPlayer = ({ src, disabled = false, onComplete }: IProps) => {
         audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
+      setActice(questionId)
     }
   };
 

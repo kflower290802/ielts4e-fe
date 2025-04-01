@@ -15,9 +15,9 @@ const ReadingFooterPracticeResult = ({
   result,
 }: IProps) => {
   return (
-    <div className="absolute bottom-0 left-10 right-0 h-20 px-6">
+    <div className="h-10 px-6">
       <div className="flex h-full items-center justify-between gap-20">
-        <div className="flex items-center gap-5 w-2/3 overflow-x-auto">
+        <div className="grid grid-cols-12 gap-2 w-fit py-2">
           {Array.from({ length: totalQuestions }).map((_, idx) => {
             let questionId = "";
             let currentIndex = idx;

@@ -1,10 +1,9 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
+import Sidebar from "../Sidebar";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
 
-export default function Layout() {
+export default function PracticeLayout() {
   const { isAuthenticated } = useAuthStore();
   return (
     <div
@@ -15,10 +14,7 @@ export default function Layout() {
     >
       <Sidebar />
       <div className="flex flex-col flex-1 ml-64 min-h-screen">
-        <Header />
-        <div className="flex-1">
-          <Outlet />
-        </div>
+        <Outlet />
       </div>
     </div>
   );

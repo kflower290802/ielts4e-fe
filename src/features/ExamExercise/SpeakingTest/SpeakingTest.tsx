@@ -6,10 +6,12 @@ import Recording from "./components/Recording";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useExamPassage } from "../hooks/useExamPassage";
 import AudioPlayer from "./components/AudioPlayer";
+import { cn } from "@/lib/utils";
 
 const SpeakingTest = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null);
   const questionParam = searchParams.get("part") ?? "1";
   const [currentPart, setCurrentPart] = useState(
     questionParam ? parseInt(questionParam) : 1
@@ -22,7 +24,7 @@ const SpeakingTest = () => {
       const initialAnswers: Record<string, string> = {};
       data?.exam.examPassage.forEach((passage) => {
         passage.questions.forEach((question) => {
-          initialAnswers[question.id] = question.answer as string || "";
+          initialAnswers[question.id] = (question.answer as string) || "";
         });
       });
       setAnswers(initialAnswers);
@@ -92,7 +94,7 @@ const SpeakingTest = () => {
                   (currentPart - 1) *
                     data?.exam.examPassage[currentPart - 1].questions.length +
                   index;
-                  const prevQuestionId =
+                const prevQuestionId =
                   index > 0
                     ? data?.exam.examPassage[currentPart - 1]?.questions[
                         index - 1
@@ -101,7 +103,10 @@ const SpeakingTest = () => {
 
                 return (
                   <div
-                    className="flex flex-col gap-5 border-2 bg-white shadow rounded-lg p-5"
+                    className={cn(
+                      "flex flex-col gap-5 border-2 bg-white shadow rounded-lg p-5",
+                      activeQuestionId === question.id ? "border-[#188F09]" : ""
+                    )}
                     key={question.id}
                   >
                     <div className="flex items-center gap-16">
@@ -110,7 +115,9 @@ const SpeakingTest = () => {
                       </div>
                       <div className="w-2/3">
                         <AudioPlayer
+                          setActiveQuestionId={setActiveQuestionId}
                           src={question.question}
+                          questionId={question.id}
                           disabled={index > 0 && !answers[prevQuestionId!]}
                           onComplete={() => handleAudioComplete(question.id)}
                         />

@@ -3,7 +3,7 @@ import HomeUser from "@/features/HomeUser";
 import { Exam } from "@/features/Exam";
 import { Practice } from "@/features/Practice";
 import Learn from "@/features/Learn";
-import Layout from "@/layout";
+import Layout from "@/layout/mainLayout";
 import ListeningTest from "@/features/ExamExercise/ListeningTest";
 import PracticeReading from "@/features/Practice/PracticeReading";
 import ReadingResult from "@/features/ExamExercise/ReadingTest/components/ReadingResult";
@@ -21,6 +21,7 @@ import PracticeSpeaking from "@/features/Practice/PracticeSpeaking";
 import PracticeListeningResult from "@/features/Practice/PracticeListening/components/ListeningPracticeResult";
 import WritingPracticeResult from "@/features/Practice/PracticeWriting/components/WritingPracticeResult";
 import Report from "@/features/Report";
+import PracticeLayout from "@/layout/practiceLayout";
 
 export const privateRoutes = [
   {
@@ -35,12 +36,21 @@ export const privateRoutes = [
         path: Route.Exam,
       },
       {
-        element: <Practice />,
-        path: Route.Practice,
-      },
-      {
         element: <Learn />,
         path: Route.Learn,
+      },
+      {
+        element: <Report />,
+        path: `${Route.Report}`,
+      },
+    ],
+  },
+  {
+    element: <PracticeLayout />,
+    children: [
+      {
+        element: <Practice />,
+        path: Route.Practice,
       },
       {
         element: <PracticeReading />,
@@ -73,10 +83,6 @@ export const privateRoutes = [
       {
         element: <WritingPracticeResult />,
         path: `${Route.PracticeWritingResult}/:id/:idResult`,
-      },
-      {
-        element: <Report />,
-        path: `${Route.Report}`,
       },
     ],
   },
@@ -111,5 +117,5 @@ export const privateRoutes = [
   {
     element: <WritingTestResult />,
     path: `${Route.ExamWritingResult}/:id`,
-  }
+  },
 ];

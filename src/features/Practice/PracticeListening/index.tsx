@@ -205,7 +205,7 @@ const ListeningPractice = () => {
   };
 
   return (
-    <div className="h-full w-full relative p-4 flex justify-between">
+    <div className="h-full w-full p-4 flex justify-between">
       <DialogPracticeExit
         openDia={openDia}
         setOpenDia={setOpenDia}
@@ -220,162 +220,167 @@ const ListeningPractice = () => {
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
-      <DndProvider backend={HTML5Backend}>
-        <div className="flex-1 h-[74vh] bg-white border border-black rounded-lg overflow-y-auto">
-          <div className="grid grid-cols-1 gap-6 p-6">
-            <div className="overflow-y-auto">
-              {questionTypes?.map((types, index) => {
-                const { start, end } = getQuestionRange(questionTypes, index);
-                const isSingleChoiceQuestion =
-                  types.type === EQuestionType.SingleChoice;
-                const isBlankPassageDrag =
-                  types.type === EQuestionType.BlankPassageDrag;
-                const isBlankPassageImageTextbox =
-                  types.type === EQuestionType.BlankPassageImageTextbox;
-                const isBlankPassageTextbox =
-                  types.type === EQuestionType.BlankPassageTextbox;
-                const isMultipleChoiceQuestion =
-                  types.type === EQuestionType.MultipleChoice;
-                if (isBlankPassageDrag || isBlankPassageTextbox) {
-                  return (
-                    <div key={index}>
-                      {isBlankPassageDrag ? (
-                        <QuestionPracticeHeader
-                          start={start}
-                          end={end}
-                          instruction="Drag in the CORRECT position"
-                        />
-                      ) : (
-                        <QuestionPracticeHeader
-                          start={start}
-                          end={end}
-                          instruction="Write the CORRECT answer"
-                        />
-                      )}
-                      <div className="flex justify-between">
-                        {questionPassageContent(index, isBlankPassageDrag)}
-                        {isBlankPassageDrag && (
-                          <div className="flex flex-col space-x-2 h-fit rounded-lg shadow">
-                            {types.questions.map((question) =>
-                              question.answers.map((answer, idx) => {
-                                const answerDrag = {
-                                  id: answer.id,
-                                  question: answer,
-                                  answer: answer.answer,
-                                };
-                                return (
-                                  <WordPractice key={idx} answer={answerDrag} />
-                                );
-                              })
-                            )}
-                          </div>
+      <div className="flex flex-col justify-between">
+        <DndProvider backend={HTML5Backend}>
+          <div className="h-[85vh] bg-white border border-black rounded-lg overflow-y-auto">
+            <div className="grid grid-cols-1 gap-6 p-6">
+              <div className="overflow-y-auto">
+                {questionTypes?.map((types, index) => {
+                  const { start, end } = getQuestionRange(questionTypes, index);
+                  const isSingleChoiceQuestion =
+                    types.type === EQuestionType.SingleChoice;
+                  const isBlankPassageDrag =
+                    types.type === EQuestionType.BlankPassageDrag;
+                  const isBlankPassageImageTextbox =
+                    types.type === EQuestionType.BlankPassageImageTextbox;
+                  const isBlankPassageTextbox =
+                    types.type === EQuestionType.BlankPassageTextbox;
+                  const isMultipleChoiceQuestion =
+                    types.type === EQuestionType.MultipleChoice;
+                  if (isBlankPassageDrag || isBlankPassageTextbox) {
+                    return (
+                      <div key={index}>
+                        {isBlankPassageDrag ? (
+                          <QuestionPracticeHeader
+                            start={start}
+                            end={end}
+                            instruction="Drag in the CORRECT position"
+                          />
+                        ) : (
+                          <QuestionPracticeHeader
+                            start={start}
+                            end={end}
+                            instruction="Write the CORRECT answer"
+                          />
                         )}
+                        <div className="flex justify-between">
+                          {questionPassageContent(index, isBlankPassageDrag)}
+                          {isBlankPassageDrag && (
+                            <div className="flex flex-col space-x-2 h-fit rounded-lg shadow">
+                              {types.questions.map((question) =>
+                                question.answers.map((answer, idx) => {
+                                  const answerDrag = {
+                                    id: answer.id,
+                                    question: answer,
+                                    answer: answer.answer,
+                                  };
+                                  return (
+                                    <WordPractice
+                                      key={idx}
+                                      answer={answerDrag}
+                                    />
+                                  );
+                                })
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                } else if (isSingleChoiceQuestion) {
-                  return (
+                    );
+                  } else if (isSingleChoiceQuestion) {
+                    return (
+                      <div className="space-y-4">
+                        {types.questions.map((question, index) => {
+                          const questionNumber =
+                            questionNumberMap[question.id] || index + 1;
+                          return (
+                            <SingleChoicePractice
+                              question={question}
+                              questionNumber={questionNumber}
+                              onClick={handleSelectSingleAnswer}
+                              currentAnswer={answers[question.id] as string}
+                            />
+                          );
+                        })}
+                      </div>
+                    );
+                  } else if (isMultipleChoiceQuestion) {
                     <div className="space-y-4">
                       {types.questions.map((question, index) => {
                         const questionNumber =
                           questionNumberMap[question.id] || index + 1;
                         return (
-                          <SingleChoicePractice
-                            question={question}
-                            questionNumber={questionNumber}
-                            onClick={handleSelectSingleAnswer}
-                            currentAnswer={answers[question.id] as string}
-                          />
-                        );
-                      })}
-                    </div>
-                  );
-                } else if (isMultipleChoiceQuestion) {
-                  <div className="space-y-4">
-                    {types.questions.map((question, index) => {
-                      const questionNumber =
-                        questionNumberMap[question.id] || index + 1;
-                      return (
-                        <div className="border rounded-md p-2">
-                          <div className="flex flex-col space-y-2">
-                            <p>
-                              {questionNumber}, {question.question}
-                            </p>
-                            <div className="grid grid-cols-2 gap-2">
-                              {question.answers.map((answer) => (
-                                <div
-                                  key={answer.id}
-                                  className="flex space-x-2 items-center"
-                                >
-                                  <Checkbox
-                                    checked={answers[question.id]?.includes(
-                                      answer.answer
-                                    )}
-                                    onCheckedChange={() =>
-                                      handleCheckedChange(
-                                        question.id,
+                          <div className="border rounded-md p-2">
+                            <div className="flex flex-col space-y-2">
+                              <p>
+                                {questionNumber}, {question.question}
+                              </p>
+                              <div className="grid grid-cols-2 gap-2">
+                                {question.answers.map((answer) => (
+                                  <div
+                                    key={answer.id}
+                                    className="flex space-x-2 items-center"
+                                  >
+                                    <Checkbox
+                                      checked={answers[question.id]?.includes(
                                         answer.answer
-                                      )
-                                    }
-                                  />
-                                  <span>{answer.answer}</span>
-                                </div>
-                              ))}
+                                      )}
+                                      onCheckedChange={() =>
+                                        handleCheckedChange(
+                                          question.id,
+                                          answer.answer
+                                        )
+                                      }
+                                    />
+                                    <span>{answer.answer}</span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>;
-                } else if (isBlankPassageImageTextbox) {
-                  return (
-                    <>
-                      <QuestionPracticeHeader
-                        start={start}
-                        end={end}
-                        instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
-                      />
-                      <div className="flex gap-5">
-                        <img
-                          src={types.image}
-                          alt="image type"
-                          className="w-2/3"
+                        );
+                      })}
+                    </div>;
+                  } else if (isBlankPassageImageTextbox) {
+                    return (
+                      <>
+                        <QuestionPracticeHeader
+                          start={start}
+                          end={end}
+                          instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
                         />
-                        <div className="flex flex-col gap-4 items-center">
-                          {types.questions.map((question) => {
-                            const questionNumber =
-                              questionNumberMap[question.id] || index + 1;
-                            return (
-                              <div className="flex gap-2 items-center">
-                                <span className="font-bold">
-                                  {questionNumber}
-                                </span>
-                                <input
-                                  id={question.id}
-                                  value={answers[question.id] || ""}
-                                  onChange={handleInput(question.id)}
-                                  className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
-                                />
-                              </div>
-                            );
-                          })}
+                        <div className="flex gap-5">
+                          <img
+                            src={types.image}
+                            alt="image type"
+                            className="w-2/3"
+                          />
+                          <div className="flex flex-col gap-4 items-center">
+                            {types.questions.map((question) => {
+                              const questionNumber =
+                                questionNumberMap[question.id] || index + 1;
+                              return (
+                                <div className="flex gap-2 items-center">
+                                  <span className="font-bold">
+                                    {questionNumber}
+                                  </span>
+                                  <input
+                                    id={question.id}
+                                    value={answers[question.id] || ""}
+                                    onChange={handleInput(question.id)}
+                                    className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    </>
-                  );
-                }
-              })}
+                      </>
+                    );
+                  }
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      </DndProvider>
-      <ListeningPracticeFooter
-        audio={data?.practiceListen.audio}
-        types={data?.types ?? []}
-        totalQuestions={totalQuestions}
-        answers={answers}
-        id={id}
-      />
+        </DndProvider>
+        <ListeningPracticeFooter
+          audio={data?.practiceListen.audio}
+          types={data?.types ?? []}
+          totalQuestions={totalQuestions}
+          answers={answers}
+          id={id}
+        />
+      </div>
     </div>
   );
 };

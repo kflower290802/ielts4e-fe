@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Pause, Play } from "lucide-react";
 interface IProps {
   src: string;
+  questionId: string
+  setActiveQuestionId: React.Dispatch<React.SetStateAction<string | null>>
   disabled?: boolean;
   onComplete?: () => void;
 }
-const AudioPlayer = ({ src, disabled = false, onComplete }: IProps) => {
+const AudioPlayer = ({ src, disabled = false, onComplete, questionId, setActiveQuestionId }: IProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -57,6 +59,7 @@ const AudioPlayer = ({ src, disabled = false, onComplete }: IProps) => {
         audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
+      setActiveQuestionId(questionId)
     }
   };
 

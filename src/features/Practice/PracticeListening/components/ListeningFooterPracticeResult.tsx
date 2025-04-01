@@ -18,14 +18,14 @@ const ListeningFooterPracticeResult = ({
   result,
 }: IProps) => {
   return (
-    <div className="absolute bottom-0 left-10 right-0 h-20 px-6">
-      <div className="flex h-full items-center justify-between gap-20">
+    <div className="h-10 px-6">
+      <div className="flex h-full items-center justify-between gap-5">
         {audio && (
           <div className="w-1/3 px-6">
             <AudioPlayer src={audio ?? ""} />
           </div>
         )}
-        <div className="flex items-center gap-5 w-2/3 overflow-x-auto">
+        <div className="grid grid-cols-10 gap-2 w-fit py-2">
           {Array.from({ length: totalQuestions }).map((_, idx) => {
             let questionId = "";
             let currentIndex = idx;
@@ -63,7 +63,7 @@ const ListeningFooterPracticeResult = ({
 
         <div className="w-1/6 flex justify-end">
           <Badge className="ml-4 bg-[#66B032] py-2 px-4 hover:bg-[#66B032]/80 text-base text-white font-bold rounded-xl">
-            Score: {result?.score.toFixed(2)} / 10
+            Score: {result?.score.toFixed(1)}/10
           </Badge>
         </div>
       </div>

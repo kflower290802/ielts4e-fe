@@ -146,172 +146,220 @@ export default function PracticeListeningResult() {
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
-      <div className="flex flex-col gap-4 w-full">
-        {/* Right Section */}
-        <Card className="px-8 py-2 h-[74vh] overflow-y-auto">
-          <CardContent className="pt-6 px-0">
-            <div className="space-y-8">
-              {questionTypes?.map((types, index) => {
-                const { start, end } = getQuestionRange(questionTypes, index);
-                const isSingleChoiceQuestion =
-                  types.type === EQuestionType.SingleChoice;
-                const isBlankPassageDrag =
-                  types.type === EQuestionType.BlankPassageDrag;
-                const isBlankPassageImageTextbox =
-                  types.type === EQuestionType.BlankPassageImageTextbox;
-                const isBlankPassageTextbox =
-                  types.type === EQuestionType.BlankPassageTextbox;
-                const isMultipleChoiceQuestion =
-                  types.type === EQuestionType.MultipleChoice;
-                if (isBlankPassageDrag || isBlankPassageTextbox) {
-                  return (
-                    <div key={index}>
-                      {isBlankPassageDrag ? (
-                        <QuestionPracticeHeader
-                          start={start}
-                          end={end}
-                          instruction="Drag in the CORRECT position"
-                        />
-                      ) : (
-                        <QuestionPracticeHeader
-                          start={start}
-                          end={end}
-                          instruction="Write the CORRECT answer"
-                        />
-                      )}
-                      <div className="flex justify-between">
-                        {questionPassageContent(index, isBlankPassageDrag)}
+      <div className="flex flex-col justify-between">
+        <div className="flex gap-4">
+          {/* Right Section */}
+          <Card className="px-8 py-2 h-[85vh] w-2/3 overflow-y-auto">
+            <CardContent className="pt-6 px-0">
+              <div className="space-y-8">
+                {questionTypes?.map((types, index) => {
+                  const { start, end } = getQuestionRange(questionTypes, index);
+                  const isSingleChoiceQuestion =
+                    types.type === EQuestionType.SingleChoice;
+                  const isBlankPassageDrag =
+                    types.type === EQuestionType.BlankPassageDrag;
+                  const isBlankPassageImageTextbox =
+                    types.type === EQuestionType.BlankPassageImageTextbox;
+                  const isBlankPassageTextbox =
+                    types.type === EQuestionType.BlankPassageTextbox;
+                  const isMultipleChoiceQuestion =
+                    types.type === EQuestionType.MultipleChoice;
+                  if (isBlankPassageDrag || isBlankPassageTextbox) {
+                    return (
+                      <div key={index}>
+                        {isBlankPassageDrag ? (
+                          <QuestionPracticeHeader
+                            start={start}
+                            end={end}
+                            instruction="Drag in the CORRECT position"
+                          />
+                        ) : (
+                          <QuestionPracticeHeader
+                            start={start}
+                            end={end}
+                            instruction="Write the CORRECT answer"
+                          />
+                        )}
+                        <div className="flex justify-between">
+                          {questionPassageContent(index, isBlankPassageDrag)}
+                        </div>
                       </div>
-                    </div>
-                  );
-                } else if (isSingleChoiceQuestion) {
-                  return (
+                    );
+                  } else if (isSingleChoiceQuestion) {
+                    return (
+                      <div className="space-y-4">
+                        <QuestionPracticeHeader
+                          start={start}
+                          end={end}
+                          instruction="Choose the CORRECT answer"
+                        />
+                        {types.questions.map((question, index) => {
+                          const questionNumber =
+                            questionNumberMap[question.id] || index + 1;
+                          const answerData = result?.summary.find(
+                            (item) => item.questionId === question.id
+                          );
+                          return (
+                            <SingleChoicePracticeResult
+                              question={question}
+                              questionNumber={questionNumber}
+                              userAnswer={answerData?.userAnswer}
+                              correctAnswer={answerData?.correctAnswer[0]}
+                              isCorrect={answerData?.isCorrect}
+                            />
+                          );
+                        })}
+                      </div>
+                    );
+                  } else if (isMultipleChoiceQuestion) {
                     <div className="space-y-4">
-                      <QuestionPracticeHeader
-                        start={start}
-                        end={end}
-                        instruction="Choose the CORRECT answer"
-                      />
                       {types.questions.map((question, index) => {
                         const questionNumber =
                           questionNumberMap[question.id] || index + 1;
-                        const answerData = result?.summary.find(
-                          (item) => item.questionId === question.id
-                        );
                         return (
-                          <SingleChoicePracticeResult
-                            question={question}
-                            questionNumber={questionNumber}
-                            userAnswer={answerData?.userAnswer}
-                            correctAnswer={answerData?.correctAnswer[0]}
-                            isCorrect={answerData?.isCorrect}
-                          />
-                        );
-                      })}
-                    </div>
-                  );
-                } else if (isMultipleChoiceQuestion) {
-                  <div className="space-y-4">
-                    {types.questions.map((question, index) => {
-                      const questionNumber =
-                        questionNumberMap[question.id] || index + 1;
-                      return (
-                        <div
-                          className="border rounded-md p-2"
-                          key={question.id}
-                        >
-                          <div className="flex flex-col space-y-2">
-                            <p>
-                              {questionNumber}, {question.question}
-                            </p>
-                            <div className="grid grid-cols-2 gap-2">
-                              {question.answers.map((answer) => (
-                                <div
-                                  key={answer.id}
-                                  className="flex space-x-2 items-center"
-                                >
-                                  {/* <Checkbox
+                          <div
+                            className="border rounded-md p-2"
+                            key={question.id}
+                          >
+                            <div className="flex flex-col space-y-2">
+                              <p>
+                                {questionNumber}, {question.question}
+                              </p>
+                              <div className="grid grid-cols-2 gap-2">
+                                {question.answers.map((answer) => (
+                                  <div
+                                    key={answer.id}
+                                    className="flex space-x-2 items-center"
+                                  >
+                                    {/* <Checkbox
                                       checked={answers[question.id]?.includes(
                                         answer.answer
                                       )}
                                     /> */}
-                                  <span>{answer.answer}</span>
-                                </div>
-                              ))}
+                                    <span>{answer.answer}</span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>;
-                } else if (isBlankPassageImageTextbox) {
-                  const questions = questionTypes[index].questions || [];
-                  return (
-                    <>
-                      <QuestionPracticeHeader
-                        start={start}
-                        end={end}
-                        instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
-                      />
-                      <div className="flex gap-5">
-                        <img
-                          src={types.image}
-                          alt="image type"
-                          className="w-2/3"
+                        );
+                      })}
+                    </div>;
+                  } else if (isBlankPassageImageTextbox) {
+                    const questions = questionTypes[index].questions || [];
+                    return (
+                      <>
+                        <QuestionPracticeHeader
+                          start={start}
+                          end={end}
+                          instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
                         />
-                        <div className="flex flex-col gap-4 items-center">
-                          {types.questions.map((question, idx) => {
-                            const questionNumber =
-                              questionNumberMap[question.id] || index + 1;
-                            const questionId = questions[idx]?.id;
-                            const answerData = result?.summary.find(
-                              (item) => item.questionId === questionId
-                            );
-                            return (
-                              <div className="flex gap-2 items-center">
-                                <span className="font-bold">
-                                  {questionNumber}
-                                </span>
+                        <div className="flex gap-5">
+                          <img
+                            src={types.image}
+                            alt="image type"
+                            className="w-2/3"
+                          />
+                          <div className="flex flex-col gap-4 items-center">
+                            {types.questions.map((question, idx) => {
+                              const questionNumber =
+                                questionNumberMap[question.id] || index + 1;
+                              const questionId = questions[idx]?.id;
+                              const answerData = result?.summary.find(
+                                (item) => item.questionId === questionId
+                              );
+                              return (
                                 <div className="flex gap-2 items-center">
-                                  <Badge
-                                    className={cn(
-                                      "w-32 h-9 border-b-4 rounded-xl",
-                                      answerData?.userAnswer === ""
-                                        ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
-                                        : answerData?.isCorrect
-                                        ? "bg-[#66B032] hover:bg-[#66B032]/80  border-green-800 text-white hover:border-green-800"
-                                        : "bg-red-500 border-red-700 text-white hover:bg-red-400"
-                                    )}
-                                  >
-                                    {answerData?.userAnswer === ""
-                                      ? "Not answered"
-                                      : answerData?.userAnswer}
-                                  </Badge>
-                                  {!answerData?.isCorrect && (
-                                    <Badge className="w-32 h-9 border-b-4 rounded-xl hover:bg-[#66B032]/80 bg-[#66B032] border-green-800 text-white hover:border-green-800">
-                                      {answerData?.correctAnswer[0]}
+                                  <span className="font-bold">
+                                    {questionNumber}
+                                  </span>
+                                  <div className="flex gap-2 items-center">
+                                    <Badge
+                                      className={cn(
+                                        "w-32 h-9 border-b-4 rounded-xl",
+                                        answerData?.userAnswer === ""
+                                          ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
+                                          : answerData?.isCorrect
+                                          ? "bg-[#66B032] hover:bg-[#66B032]/80  border-green-800 text-white hover:border-green-800"
+                                          : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                                      )}
+                                    >
+                                      {answerData?.userAnswer === ""
+                                        ? "Not answered"
+                                        : answerData?.userAnswer}
                                     </Badge>
-                                  )}
+                                    {!answerData?.isCorrect && (
+                                      <Badge className="w-32 h-9 border-b-4 rounded-xl hover:bg-[#66B032]/80 bg-[#66B032] border-green-800 text-white hover:border-green-800">
+                                        {answerData?.correctAnswer[0]}
+                                      </Badge>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    </>
-                  );
-                }
-              })}
-            </div>
-          </CardContent>
-        </Card>
+                      </>
+                    );
+                  }
+                })}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="px-8 py-2 h-[85vh] w-1/3 overflow-y-auto">
+            <CardContent className="pt-6 px-0">
+              <span>
+                Script Unit 1 EX12: 1. What activities do different members of
+                your family enjoy doing? My father enjoys planting flowers. Most
+                of them are grown by my father. My father is especially fond of
+                orchids so he has a collection of about 20 kinds of orchids. And
+                my mother loves to cook. On weekends she often cooks hearty
+                meals for my family My Brother also likes cooking but he likes
+                playing games more 2. What do your mother and father want you to
+                do in the future? My parents want to travel together in the
+                future. Their work is very busy so they don't have time for each
+                other. Since, they want to travel together to have more good
+                memories 3. What type of films do different members of your
+                family watch? My parents like movies about family emotions. The
+                biggest reason is that they love happy endings and meaningful
+                lessons from the movies. My brother likes all kinds of films,
+                from movies to fantasy to cartoon 4. What do different members
+                of your family talk to you about? "My parents say I'm a person
+                who is easygoing and careful. And my brother say I bully him
+                into doing house chore because he's too lazy so I make him work
+                Ex 13 1. Do you come from a large family? I come from a small
+                family. I live with my parents and my young brother. We were an
+                extended family many years ago but now we are a nuclear family
+                as we live in a town which is far away from our grandparent’s
+                house 2. Is there anything you usually do together with your
+                family? Everyday we spend an hour doing house chores together. I
+                sometimes play games with my young brother and watch films with
+                my parents. Those are happy time of my family 3. How often do
+                you see your grandparents? because my house is quite far from my
+                grandparent's house so I don't visit them often. However, when I
+                have free time or vacation I will visit my grandparents 4. Who
+                do you like the most in your family It's a difficult question
+                because I love them a lot. My family help me get through
+                difficult times of my life and enjoy every moment of my success
+                with me so they are ones love the most 5. Would you like to
+                spend more time with your family? Yes, because I have been
+                living in the city which is far away from my family and I miss
+                home so much. On weekends when I get back home I spend most of
+                my time with my family Unit 2 6. Can you describe the own where
+                you grew up? I live in a small town in the west of my country.
+                In my opinion, it’s an ideal town to live in thanks to beautiful
+                natural landscapes and great atmosphere 7.
+              </span>
+            </CardContent>
+          </Card>
+        </div>
+        <ListeningFooterPracticeResult
+          audio={data?.practiceListen.audio}
+          result={result}
+          types={data?.types || []}
+          totalQuestions={totalQuestions}
+        />
       </div>
-      <ListeningFooterPracticeResult
-        audio={data?.practiceListen.audio}
-        result={result}
-        types={data?.types || []}
-        totalQuestions={totalQuestions}
-      />
     </div>
   );
 }

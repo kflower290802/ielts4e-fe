@@ -9,7 +9,7 @@ interface IProps {
 const WritingPracticeFooter = ({ id, answers }: IProps) => {
   const [openDia, setOpenDia] = useState<boolean>(false);
   return (
-    <div className="h-20 flex justify-end items-center">
+    <div className="h-10 flex justify-end items-center">
       <DialogSubmitWritingPractice
         openDia={openDia}
         setOpenDia={setOpenDia}

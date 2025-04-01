@@ -21,7 +21,7 @@ const ListeningPracticeFooter = ({
 }: IProps) => {
   const [openDia, setOpenDia] = useState<boolean>(false);
   return (
-    <div className="absolute bottom-0 left-10 right-0 h-28 px-6">
+    <div className="h-fit px-6">
       <DialogSubmitPractice
         openDia={openDia}
         setOpenDia={setOpenDia}
@@ -30,44 +30,44 @@ const ListeningPracticeFooter = ({
         id={id}
         route={Route.PracticeListeningResult}
       />
-      <div className="flex h-full items-center pt-5 justify-between gap-20">
+      <div className="flex h-full items-center pt-5 justify-between">
         {audio && (
           <div className="w-1/3 px-6">
             <AudioPlayer src={audio ?? ""} />
           </div>
         )}
-        <div className="flex items-center gap-5 w-1/3 py-2 overflow-x-auto ">
-          {Array.from({ length: totalQuestions }).map((_, idx) => {
-            // Tìm passage và question tương ứng với index hiện tại
-            let questionId = "";
-            let currentIndex = idx;
-            let found = false;
+        <div className="grid grid-cols-10 gap-2 w-fit py-2">
+            {Array.from({ length: totalQuestions }).map((_, idx) => {
+              // Tìm passage và question tương ứng với index hiện tại
+              let questionId = "";
+              let currentIndex = idx;
+              let found = false;
 
-            for (const type of types) {
-              if (currentIndex < type.questions.length) {
-                questionId = type.questions[currentIndex].id;
-                found = true;
-                break;
+              for (const type of types) {
+                if (currentIndex < type.questions.length) {
+                  questionId = type.questions[currentIndex].id;
+                  found = true;
+                  break;
+                }
+                currentIndex -= type.questions.length;
               }
-              currentIndex -= type.questions.length;
-            }
 
-            const isAnswered = !!answers[questionId];
+              const isAnswered = !!answers[questionId];
 
-            return (
-              <Button
-                key={questionId}
-                className={cn(
-                  "h-8 w-8 rounded-full p-4 font-bold transition-colors",
-                  isAnswered
-                    ? "bg-[#3C64CE] text-white"
-                    : "bg-[#D9D9D9] hover:bg-[#3C64CE] hover:text-white"
-                )}
-              >
-                {idx + 1}
-              </Button>
-            );
-          })}
+              return (
+                <Button
+                  key={questionId}
+                  className={cn(
+                    "h-8 w-8 rounded-full p-4 font-bold transition-colors",
+                    isAnswered
+                      ? "bg-[#3C64CE] text-white"
+                      : "bg-[#D9D9D9] hover:bg-[#3C64CE] hover:text-white"
+                  )}
+                >
+                  {idx + 1}
+                </Button>
+              );
+            })}
         </div>
         <div className="w-1/6 flex justify-end">
           <Button

@@ -193,7 +193,7 @@ export default function PracticeReading() {
     return { start, end };
   };
   return (
-    <div className="h-full w-full relative p-4 flex justify-between">
+    <div className="h-full w-full p-4 flex justify-between">
       <DialogPracticeExit
         openDia={openDia}
         setOpenDia={setOpenDia}
@@ -208,193 +208,198 @@ export default function PracticeReading() {
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
-      <DndProvider backend={HTML5Backend}>
-        <div className="flex flex-1 flex-col gap-4">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Left Section */}
-            <Card className="px-8 py-2 h-[74vh] overflow-y-auto">
-              {data?.practiceReading ? (
-                <>
-                  <h2 className="mb-4 text-2xl text-center font-bold">
-                    {data.practiceReading.title ?? ""}
-                  </h2>
-                  <img
-                    src="/images/writing.png"
-                    alt="images"
-                    className="object-contain"
-                  />
-                  <p className="mb-4">
-                    <p className="mb-4">{data.practiceReading.content}</p>
-                  </p>
-                </>
-              ) : (
-                <p className="text-center">Loading passage...</p>
-              )}
-            </Card>
+      <div className="flex flex-col justify-between">
+        <DndProvider backend={HTML5Backend}>
+          <div className="flex flex-1 flex-col gap-4">
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Left Section */}
+              <Card className="px-8 py-2 h-[85vh] w-full overflow-y-auto">
+                {data?.practiceReading ? (
+                  <>
+                    <h2 className="mb-4 text-2xl text-center font-bold">
+                      {data.practiceReading.title ?? ""}
+                    </h2>
+                    <img
+                      src="/images/writing.png"
+                      alt="images"
+                      className="object-contain"
+                    />
+                    <p className="mb-4">
+                      <p className="mb-4">{data.practiceReading.content}</p>
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-center">Loading passage...</p>
+                )}
+              </Card>
 
-            {/* Right Section */}
-            <Card className="px-8 py-2 h-[74vh] overflow-y-auto">
-              <CardContent className="pt-6 px-0">
-                <div className="space-y-8">
-                  {questionTypes?.map((types, index) => {
-                    const { start, end } = getQuestionRange(
-                      questionTypes,
-                      index
-                    );
-                    const isSingleChoiceQuestion =
-                      types.type === EQuestionType.SingleChoice;
-                    const isBlankPassageDrag =
-                      types.type === EQuestionType.BlankPassageDrag;
-                    const isBlankPassageImageTextbox =
-                      types.type === EQuestionType.BlankPassageImageTextbox;
-                    const isBlankPassageTextbox =
-                      types.type === EQuestionType.BlankPassageTextbox;
-                    const isMultipleChoiceQuestion =
-                      types.type === EQuestionType.MultipleChoice;
-                    if (isBlankPassageDrag || isBlankPassageTextbox) {
-                      return (
-                        <div key={index}>
-                          {isBlankPassageDrag ? (
-                            <QuestionPracticeHeader
-                              start={start}
-                              end={end}
-                              instruction="Drag in the CORRECT position"
-                            />
-                          ) : (
-                            <QuestionPracticeHeader
-                              start={start}
-                              end={end}
-                              instruction="Write the CORRECT answer"
-                            />
-                          )}
-                          <div className="flex justify-between">
-                            {questionPassageContent(index, isBlankPassageDrag)}
-                            {isBlankPassageDrag && (
-                              <div className="flex flex-col space-x-2 h-fit rounded-lg shadow">
-                                {types.questions.map((question) =>
-                                  question.answers.map((answer, idx) => (
-                                    <WordPractice key={idx} answer={answer} />
-                                  ))
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
+              {/* Right Section */}
+              <Card className="px-8 py-2 h-[85vh] w-full overflow-y-auto">
+                <CardContent className="pt-6 px-0">
+                  <div className="space-y-8">
+                    {questionTypes?.map((types, index) => {
+                      const { start, end } = getQuestionRange(
+                        questionTypes,
+                        index
                       );
-                    } else if (isSingleChoiceQuestion) {
-                      return (
+                      const isSingleChoiceQuestion =
+                        types.type === EQuestionType.SingleChoice;
+                      const isBlankPassageDrag =
+                        types.type === EQuestionType.BlankPassageDrag;
+                      const isBlankPassageImageTextbox =
+                        types.type === EQuestionType.BlankPassageImageTextbox;
+                      const isBlankPassageTextbox =
+                        types.type === EQuestionType.BlankPassageTextbox;
+                      const isMultipleChoiceQuestion =
+                        types.type === EQuestionType.MultipleChoice;
+                      if (isBlankPassageDrag || isBlankPassageTextbox) {
+                        return (
+                          <div key={index}>
+                            {isBlankPassageDrag ? (
+                              <QuestionPracticeHeader
+                                start={start}
+                                end={end}
+                                instruction="Drag in the CORRECT position"
+                              />
+                            ) : (
+                              <QuestionPracticeHeader
+                                start={start}
+                                end={end}
+                                instruction="Write the CORRECT answer"
+                              />
+                            )}
+                            <div className="flex justify-between">
+                              {questionPassageContent(
+                                index,
+                                isBlankPassageDrag
+                              )}
+                              {isBlankPassageDrag && (
+                                <div className="flex flex-col space-x-2 h-fit rounded-lg shadow">
+                                  {types.questions.map((question) =>
+                                    question.answers.map((answer, idx) => (
+                                      <WordPractice key={idx} answer={answer} />
+                                    ))
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      } else if (isSingleChoiceQuestion) {
+                        return (
+                          <div className="space-y-4">
+                            <QuestionPracticeHeader
+                              start={start}
+                              end={end}
+                              instruction="Choose the CORRECT answer"
+                            />
+                            {types.questions.map((question, index) => {
+                              const questionNumber =
+                                questionNumberMap[question.id] || index + 1;
+                              return (
+                                <SingleChoicePractice
+                                  question={question}
+                                  questionNumber={questionNumber}
+                                  onClick={handleSelectSingleAnswer}
+                                  currentAnswer={answers[question.id] as string}
+                                />
+                              );
+                            })}
+                          </div>
+                        );
+                      } else if (isMultipleChoiceQuestion) {
                         <div className="space-y-4">
-                          <QuestionPracticeHeader
-                            start={start}
-                            end={end}
-                            instruction="Choose the CORRECT answer"
-                          />
                           {types.questions.map((question, index) => {
                             const questionNumber =
                               questionNumberMap[question.id] || index + 1;
                             return (
-                              <SingleChoicePractice
-                                question={question}
-                                questionNumber={questionNumber}
-                                onClick={handleSelectSingleAnswer}
-                                currentAnswer={answers[question.id] as string}
-                              />
-                            );
-                          })}
-                        </div>
-                      );
-                    } else if (isMultipleChoiceQuestion) {
-                      <div className="space-y-4">
-                        {types.questions.map((question, index) => {
-                          const questionNumber =
-                            questionNumberMap[question.id] || index + 1;
-                          return (
-                            <div
-                              className="border rounded-md p-2"
-                              key={question.id}
-                            >
-                              <div className="flex flex-col space-y-2">
-                                <p>
-                                  {questionNumber}, {question.question}
-                                </p>
-                                <div className="grid grid-cols-2 gap-2">
-                                  {question.answers.map((answer) => (
-                                    <div
-                                      key={answer.id}
-                                      className="flex space-x-2 items-center"
-                                    >
-                                      <Checkbox
-                                        checked={answers[question.id]?.includes(
-                                          answer.answer
-                                        )}
-                                        onCheckedChange={() =>
-                                          handleCheckedChange(
-                                            question.id,
-                                            answer.answer
-                                          )
-                                        }
-                                      />
-                                      <span>{answer.answer}</span>
-                                    </div>
-                                  ))}
+                              <div
+                                className="border rounded-md p-2"
+                                key={question.id}
+                              >
+                                <div className="flex flex-col space-y-2">
+                                  <p>
+                                    {questionNumber}, {question.question}
+                                  </p>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    {question.answers.map((answer) => (
+                                      <div
+                                        key={answer.id}
+                                        className="flex space-x-2 items-center"
+                                      >
+                                        <Checkbox
+                                          checked={answers[
+                                            question.id
+                                          ]?.includes(answer.answer)}
+                                          onCheckedChange={() =>
+                                            handleCheckedChange(
+                                              question.id,
+                                              answer.answer
+                                            )
+                                          }
+                                        />
+                                        <span>{answer.answer}</span>
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })}
-                      </div>;
-                    } else if (isBlankPassageImageTextbox) {
-                      return (
-                        <>
-                          <QuestionPracticeHeader
-                            start={start}
-                            end={end}
-                            instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
-                          />
-                          <div className="flex gap-5">
-                            <img
-                              src={types.image}
-                              alt="image type"
-                              className="w-2/3"
+                            );
+                          })}
+                        </div>;
+                      } else if (isBlankPassageImageTextbox) {
+                        return (
+                          <>
+                            <QuestionPracticeHeader
+                              start={start}
+                              end={end}
+                              instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
                             />
-                            <div className="flex flex-col gap-4 items-center">
-                              {types.questions.map((question) => {
-                                const questionNumber =
-                                  questionNumberMap[question.id] || index + 1;
-                                return (
-                                  <div className="flex gap-2 items-center">
-                                    <span className="font-bold">
-                                      {questionNumber}
-                                    </span>
-                                    <input
-                                      id={question.id}
-                                      value={answers[question.id] || ""}
-                                      onChange={handleInput(question.id)}
-                                      className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
-                                    />
-                                  </div>
-                                );
-                              })}
+                            <div className="flex gap-5">
+                              <img
+                                src={types.image}
+                                alt="image type"
+                                className="w-2/3"
+                              />
+                              <div className="flex flex-col gap-4 items-center">
+                                {types.questions.map((question) => {
+                                  const questionNumber =
+                                    questionNumberMap[question.id] || index + 1;
+                                  return (
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-bold">
+                                        {questionNumber}
+                                      </span>
+                                      <input
+                                        id={question.id}
+                                        value={answers[question.id] || ""}
+                                        onChange={handleInput(question.id)}
+                                        className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
+                                      />
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        </>
-                      );
-                    }
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                          </>
+                        );
+                      }
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-          {/* Pagination */}
-        </div>
-      </DndProvider>
-      <ReadingPracticeFooter
-        types={data?.types || []}
-        answers={answers as Record<string, string>}
-        totalQuestions={totalQuestions}
-        id={id}
-      />
+            {/* Pagination */}
+          </div>
+        </DndProvider>
+        <ReadingPracticeFooter
+          types={data?.types || []}
+          answers={answers as Record<string, string>}
+          totalQuestions={totalQuestions}
+          id={id}
+        />
+      </div>
     </div>
   );
 }

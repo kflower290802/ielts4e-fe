@@ -13,6 +13,7 @@ const PracticeSpeaking = () => {
   const [openDia, setOpenDia] = useState(false);
   const { id } = useParams<{ id: string }>();
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null);
   useEffect(() => {
     if (id) {
       refetch();
@@ -66,63 +67,70 @@ const PracticeSpeaking = () => {
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
-      <div className="flex-1 h-[74vh] bg-white border border-black rounded-lg overflow-y-auto">
-        <div className="grid grid-cols-1 gap-6 p-6">
-          <div className="mb-6 bg-[#164C7E] h-20 text-white flex gap-10 items-center justify-center rounded-lg">
-            <h1 className="text-xl font-semibold">SPEAKING TEST</h1>
-            <div className="font-medium">
-              <p>Listen the question and record your answer.</p>
-              <p>You have 10 seconds for preparing.</p>
+      <div className="flex flex-1 flex-col justify-between">
+        <div className="h-[86vh] bg-white border border-black rounded-lg overflow-y-auto">
+          <div className="grid grid-cols-1 gap-6 p-6">
+            <div className="mb-6 bg-[#164C7E] h-20 text-white flex gap-10 items-center justify-center rounded-lg">
+              <h1 className="text-xl font-semibold">SPEAKING TEST</h1>
+              <div className="font-medium">
+                <p>Listen the question and record your answer.</p>
+                <p>You have 10 seconds for preparing.</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-10">
+              {data?.map((item, index) => {
+                const prevQuestionId = index > 0 ? data[index - 1].id : null;
+                return (
+                  <div
+                    className={cn(
+                      "flex flex-col gap-5 border-2 shadow rounded-lg p-5",
+                      activeQuestionId === item.id ? "border-[#188F09]" : ""
+                    )}
+                    key={item.id}
+                  >
+                    <div className="flex items-center gap-16">
+                      <div className="border-2 border-black font-bold rounded-lg p-4">
+                        QUESTION {index + 1}
+                      </div>
+                      <div className="w-2/3">
+                        <AudioPlayer
+                          src={item.audio}
+                          questionId={item.id}
+                          setActice={setActiveQuestionId}
+                          disabled={index > 0 && !answers[prevQuestionId!]}
+                          onComplete={() => handleAudioComplete(item.id)}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-10">
+                      <Button
+                        className={cn(
+                          " border-2 font-bold bg-[#F5F5F5]",
+                          showQuestions[index]
+                            ? "text-[#188F09] border-[#188F09] hover:bg-[#188F09] hover:text-white"
+                            : "text-[#164C7E] border-[#164C7E] hover:bg-[#164C7E] hover:text-white"
+                        )}
+                        onClick={() => handleShowQuestion(index)}
+                        disabled={!completedAudio.includes(item.id)}
+                      >
+                        SHOW QUESTION
+                      </Button>
+                      {showQuestions[index] && <span>{item.question}</span>}
+                    </div>
+                    <Recording
+                      answers={answers}
+                      questionId={item.id}
+                      canRecord={completedAudio.includes(item.id)}
+                      handleAudioUploaded={handleAudioUploaded}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
-          <div className="flex flex-col gap-10">
-            {data?.map((item, index) => {
-              const prevQuestionId = index > 0 ? data[index - 1].id : null;
-              return (
-                <div
-                  className="flex flex-col gap-5 border-2 shadow rounded-lg p-5"
-                  key={item.id}
-                >
-                  <div className="flex items-center gap-16">
-                    <div className="border-2 border-black font-bold rounded-lg p-4">
-                      QUESTION {index + 1}
-                    </div>
-                    <div className="w-2/3">
-                      <AudioPlayer
-                        src={item.audio}
-                        disabled={index > 0 && !answers[prevQuestionId!]}
-                        onComplete={() => handleAudioComplete(item.id)}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-10">
-                    <Button
-                      className={cn(
-                        " border-2 font-bold bg-[#F5F5F5]",
-                        showQuestions[index]
-                          ? "text-[#188F09] border-[#188F09] hover:bg-[#188F09] hover:text-white"
-                          : "text-[#164C7E] border-[#164C7E] hover:bg-[#164C7E] hover:text-white"
-                      )}
-                      onClick={() => handleShowQuestion(index)}
-                      disabled={!completedAudio.includes(item.id)}
-                    >
-                      SHOW QUESTION
-                    </Button>
-                    {showQuestions[index] && <span>{item.question}</span>}
-                  </div>
-                  <Recording
-                    answers={answers}
-                    questionId={item.id}
-                    canRecord={completedAudio.includes(item.id)}
-                    handleAudioUploaded={handleAudioUploaded}
-                  />
-                </div>
-              );
-            })}
-          </div>
         </div>
+        <SpeakingPracticeFooter id={id} answers={answers} />
       </div>
-      <SpeakingPracticeFooter id={id} answers={answers} />
     </div>
   );
 };

@@ -40,6 +40,15 @@ export default function WritingTest() {
       refetch();
     }
   }, [id]);
+  useEffect(() => {
+    if (task?.id && answers[task.id]) {
+      const text = answers[task.id];
+      const wordArray = text.trim().split(/\s+/).filter((word) => word.length > 0);
+      setWordCount(wordArray.length);
+    } else {
+      setWordCount(0);
+    }
+  }, [task, answers]);
   const handleInput =
     (taskId: string) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const text = e.target.value;
@@ -48,7 +57,11 @@ export default function WritingTest() {
         [taskId]: e.target.value,
       }));
 
-      setWordCount(text.length);
+      const wordArray = text
+        .trim()
+        .split(/\s+/)
+        .filter((word) => word.length > 0);
+      setWordCount(wordArray.length);
     };
   const timeLeft = data?.remainingTime;
   return (

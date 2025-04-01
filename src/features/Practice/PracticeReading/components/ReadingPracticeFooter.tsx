@@ -20,7 +20,7 @@ const ReadingPracticeFooter = ({
 }: IProps) => {
   const [openDia, setOpenDia] = useState<boolean>(false);
   return (
-    <div className="absolute bottom-0 left-10 right-0 h-20 px-6">
+    <div className="h-14 px-6">
       <DialogSubmitPractice
         openDia={openDia}
         setOpenDia={setOpenDia}
@@ -29,8 +29,8 @@ const ReadingPracticeFooter = ({
         id={id}
         route={Route.PracticeReadingResult}
       />
-      <div className="flex h-full items-center justify-between gap-20">
-        <div className="flex items-center gap-5 w-2/3 p-2 overflow-x-auto ">
+      <div className="flex h-full items-center justify-between gap-5">
+        <div className="flex items-center gap-3 w-fit p-2 overflow-x-auto ">
           {Array.from({ length: totalQuestions }).map((_, idx) => {
             // Tìm passage và question tương ứng với index hiện tại
             let questionId = "";

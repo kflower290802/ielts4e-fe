@@ -137,7 +137,6 @@ export default function PracticeReadingResult() {
   };
   return (
     <div className="h-full relative p-4 flex justify-between">
-      {/* <DialogPracticeConfirm openDia={openDia} setOpenDia={setOpenDia} /> */}
       <Button
         variant="ghost"
         className="mb-4 w-fit hover:bg-[#F1FFEF] hover:border-0"
@@ -146,196 +145,201 @@ export default function PracticeReadingResult() {
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
-      <div className="flex flex-col gap-4 w-full">
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Left Section */}
-          <Card className="px-8 py-2 h-[74vh] overflow-y-auto">
-            {data?.practiceReading ? (
-              <>
-                <h2 className="mb-4 text-2xl text-center font-bold">
-                  {data.practiceReading.title ?? ""}
-                </h2>
-                <img
-                  src="/images/writing.png"
-                  alt="images"
-                  className="object-contain"
-                />
-                <p className="mb-4">
-                  <p className="mb-4">{data.practiceReading.content}</p>
-                </p>
-              </>
-            ) : (
-              <p>Loading passage...</p>
-            )}
-          </Card>
+      <div className="flex flex-col justify-between">
+        <div className="flex flex-col gap-4 w-full">
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Left Section */}
+            <Card className="px-8 py-2 h-[86vh] overflow-y-auto">
+              {data?.practiceReading ? (
+                <>
+                  <h2 className="mb-4 text-2xl text-center font-bold">
+                    {data.practiceReading.title ?? ""}
+                  </h2>
+                  <img
+                    src="/images/writing.png"
+                    alt="images"
+                    className="object-contain"
+                  />
+                  <p className="mb-4">
+                    <p className="mb-4">{data.practiceReading.content}</p>
+                  </p>
+                </>
+              ) : (
+                <p>Loading passage...</p>
+              )}
+            </Card>
 
-          {/* Right Section */}
-          <Card className="px-8 py-2 h-[74vh] overflow-y-auto">
-            <CardContent className="pt-6 px-0">
-              <div className="space-y-8">
-                {questionTypes?.map((types, index) => {
-                  const { start, end } = getQuestionRange(questionTypes, index);
-                  const isSingleChoiceQuestion =
-                    types.type === EQuestionType.SingleChoice;
-                  const isBlankPassageDrag =
-                    types.type === EQuestionType.BlankPassageDrag;
-                  const isBlankPassageImageTextbox =
-                    types.type === EQuestionType.BlankPassageImageTextbox;
-                  const isBlankPassageTextbox =
-                    types.type === EQuestionType.BlankPassageTextbox;
-                  const isMultipleChoiceQuestion =
-                    types.type === EQuestionType.MultipleChoice;
-                  if (isBlankPassageDrag || isBlankPassageTextbox) {
-                    return (
-                      <div key={index}>
-                        {isBlankPassageDrag ? (
-                          <QuestionPracticeHeader
-                            start={start}
-                            end={end}
-                            instruction="Drag in the CORRECT position"
-                          />
-                        ) : (
-                          <QuestionPracticeHeader
-                            start={start}
-                            end={end}
-                            instruction="Write the CORRECT answer"
-                          />
-                        )}
-                        <div className="flex justify-between">
-                          {questionPassageContent(index, isBlankPassageDrag)}
-                        </div>
-                      </div>
+            {/* Right Section */}
+            <Card className="px-8 py-2 h-[86vh] overflow-y-auto">
+              <CardContent className="pt-6 px-0">
+                <div className="space-y-8">
+                  {questionTypes?.map((types, index) => {
+                    const { start, end } = getQuestionRange(
+                      questionTypes,
+                      index
                     );
-                  } else if (isSingleChoiceQuestion) {
-                    return (
+                    const isSingleChoiceQuestion =
+                      types.type === EQuestionType.SingleChoice;
+                    const isBlankPassageDrag =
+                      types.type === EQuestionType.BlankPassageDrag;
+                    const isBlankPassageImageTextbox =
+                      types.type === EQuestionType.BlankPassageImageTextbox;
+                    const isBlankPassageTextbox =
+                      types.type === EQuestionType.BlankPassageTextbox;
+                    const isMultipleChoiceQuestion =
+                      types.type === EQuestionType.MultipleChoice;
+                    if (isBlankPassageDrag || isBlankPassageTextbox) {
+                      return (
+                        <div key={index}>
+                          {isBlankPassageDrag ? (
+                            <QuestionPracticeHeader
+                              start={start}
+                              end={end}
+                              instruction="Drag in the CORRECT position"
+                            />
+                          ) : (
+                            <QuestionPracticeHeader
+                              start={start}
+                              end={end}
+                              instruction="Write the CORRECT answer"
+                            />
+                          )}
+                          <div className="flex justify-between">
+                            {questionPassageContent(index, isBlankPassageDrag)}
+                          </div>
+                        </div>
+                      );
+                    } else if (isSingleChoiceQuestion) {
+                      return (
+                        <div className="space-y-4">
+                          <QuestionPracticeHeader
+                            start={start}
+                            end={end}
+                            instruction="Choose the CORRECT answer"
+                          />
+                          {types.questions.map((question, index) => {
+                            const questionNumber =
+                              questionNumberMap[question.id] || index + 1;
+                            const answerData = result?.summary.find(
+                              (item) => item.questionId === question.id
+                            );
+                            return (
+                              <SingleChoicePracticeResult
+                                question={question}
+                                questionNumber={questionNumber}
+                                userAnswer={answerData?.userAnswer}
+                                correctAnswer={answerData?.correctAnswer[0]}
+                                isCorrect={answerData?.isCorrect}
+                              />
+                            );
+                          })}
+                        </div>
+                      );
+                    } else if (isMultipleChoiceQuestion) {
                       <div className="space-y-4">
-                        <QuestionPracticeHeader
-                          start={start}
-                          end={end}
-                          instruction="Choose the CORRECT answer"
-                        />
                         {types.questions.map((question, index) => {
                           const questionNumber =
                             questionNumberMap[question.id] || index + 1;
-                          const answerData = result?.summary.find(
-                            (item) => item.questionId === question.id
-                          );
                           return (
-                            <SingleChoicePracticeResult
-                              question={question}
-                              questionNumber={questionNumber}
-                              userAnswer={answerData?.userAnswer}
-                              correctAnswer={answerData?.correctAnswer[0]}
-                              isCorrect={answerData?.isCorrect}
-                            />
-                          );
-                        })}
-                      </div>
-                    );
-                  } else if (isMultipleChoiceQuestion) {
-                    <div className="space-y-4">
-                      {types.questions.map((question, index) => {
-                        const questionNumber =
-                          questionNumberMap[question.id] || index + 1;
-                        return (
-                          <div
-                            className="border rounded-md p-2"
-                            key={question.id}
-                          >
-                            <div className="flex flex-col space-y-2">
-                              <p>
-                                {questionNumber}, {question.question}
-                              </p>
-                              <div className="grid grid-cols-2 gap-2">
-                                {question.answers.map((answer) => (
-                                  <div
-                                    key={answer.id}
-                                    className="flex space-x-2 items-center"
-                                  >
-                                    {/* <Checkbox
+                            <div
+                              className="border rounded-md p-2"
+                              key={question.id}
+                            >
+                              <div className="flex flex-col space-y-2">
+                                <p>
+                                  {questionNumber}, {question.question}
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {question.answers.map((answer) => (
+                                    <div
+                                      key={answer.id}
+                                      className="flex space-x-2 items-center"
+                                    >
+                                      {/* <Checkbox
                                       checked={answers[question.id]?.includes(
                                         answer.answer
                                       )}
                                     /> */}
-                                    <span>{answer.answer}</span>
-                                  </div>
-                                ))}
+                                      <span>{answer.answer}</span>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>;
-                  } else if (isBlankPassageImageTextbox) {
-                    const questions = questionTypes[index].questions || [];
-                    return (
-                      <>
-                        <QuestionPracticeHeader
-                          start={start}
-                          end={end}
-                          instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
-                        />
-                        <div className="flex gap-5">
-                          <img
-                            src={types.image}
-                            alt="image type"
-                            className="w-2/3"
+                          );
+                        })}
+                      </div>;
+                    } else if (isBlankPassageImageTextbox) {
+                      const questions = questionTypes[index].questions || [];
+                      return (
+                        <>
+                          <QuestionPracticeHeader
+                            start={start}
+                            end={end}
+                            instruction="Complete the labels on the diagrams below with ONE or TWO WORDS taken from the reading passage.  "
                           />
-                          <div className="flex flex-col gap-4 items-center">
-                            {types.questions.map((question, idx) => {
-                              const questionNumber =
-                                questionNumberMap[question.id] || index + 1;
+                          <div className="flex gap-5">
+                            <img
+                              src={types.image}
+                              alt="image type"
+                              className="w-2/3"
+                            />
+                            <div className="flex flex-col gap-4 items-center">
+                              {types.questions.map((question, idx) => {
+                                const questionNumber =
+                                  questionNumberMap[question.id] || index + 1;
                                 const questionId = questions[idx]?.id;
                                 const answerData = result?.summary.find(
                                   (item) => item.questionId === questionId
                                 );
-                              return (
-                                <div className="flex gap-2 items-center">
-                                  <span className="font-bold">
-                                    {questionNumber}
-                                  </span>
+                                return (
                                   <div className="flex gap-2 items-center">
-                                    <Badge
-                                      className={cn(
-                                        "w-32 h-9 border-b-4 rounded-xl",
-                                        answerData?.userAnswer === ""
-                                          ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
-                                          : answerData?.isCorrect
-                                          ? "bg-[#66B032] hover:bg-[#66B032]/80  border-green-800 text-white hover:border-green-800"
-                                          : "bg-red-500 border-red-700 text-white hover:bg-red-400"
-                                      )}
-                                    >
-                                      {answerData?.userAnswer === ""
-                                        ? "Not answered"
-                                        : answerData?.userAnswer}
-                                    </Badge>
-                                    {!answerData?.isCorrect && (
-                                      <Badge className="w-32 h-9 border-b-4 rounded-xl hover:bg-[#66B032]/80 bg-[#66B032] border-green-800 text-white hover:border-green-800">
-                                        {answerData?.correctAnswer[0]}
+                                    <span className="font-bold">
+                                      {questionNumber}
+                                    </span>
+                                    <div className="flex gap-2 items-center">
+                                      <Badge
+                                        className={cn(
+                                          "w-32 h-9 border-b-4 rounded-xl",
+                                          answerData?.userAnswer === ""
+                                            ? "bg-yellow-300 border-yellow-700 text-black hover:bg-yellow-400"
+                                            : answerData?.isCorrect
+                                            ? "bg-[#66B032] hover:bg-[#66B032]/80  border-green-800 text-white hover:border-green-800"
+                                            : "bg-red-500 border-red-700 text-white hover:bg-red-400"
+                                        )}
+                                      >
+                                        {answerData?.userAnswer === ""
+                                          ? "Not answered"
+                                          : answerData?.userAnswer}
                                       </Badge>
-                                    )}
+                                      {!answerData?.isCorrect && (
+                                        <Badge className="w-32 h-9 border-b-4 rounded-xl hover:bg-[#66B032]/80 bg-[#66B032] border-green-800 text-white hover:border-green-800">
+                                          {answerData?.correctAnswer[0]}
+                                        </Badge>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      </>
-                    );
-                  }
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                        </>
+                      );
+                    }
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Pagination */}
+          {/* Pagination */}
+        </div>
+        <ReadingFooterPracticeResult
+          result={result}
+          types={data?.types || []}
+          totalQuestions={totalQuestions}
+        />
       </div>
-      <ReadingFooterPracticeResult
-        result={result}
-        types={data?.types || []}
-        totalQuestions={totalQuestions}
-      />
     </div>
   );
 }

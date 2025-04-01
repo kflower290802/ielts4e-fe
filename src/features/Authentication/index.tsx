@@ -5,7 +5,7 @@ const Authentication = () => {
   const nav = useNavigate();
   return (
     <div className="px-20 h-full w-full flex items-center justify-center gap-20">
-      <div className="w-1/2 text-center h-fit py-10 bg-white rounded-lg flex items-center justify-center">
+      <div className="w-1/2 text-center h-fit py-10 bg-white px-7 rounded-lg flex items-center justify-center">
         <Tabs
           value={pathname.replace("/", "")} 
           onValueChange={(tab) => nav(tab)}
