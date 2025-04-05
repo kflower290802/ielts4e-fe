@@ -10,14 +10,7 @@ import {
 } from "recharts";
 import { useGetScoreChart } from "../hooks/useGetScoreChart";
 import { useEffect } from "react";
-
-export interface IChart {
-  date: string;
-  writing: number;
-  speaking: number;
-  listening: number;
-  reading: number;
-}
+import { IChart } from "@/types/report";
 
 interface ScoreChartProps {
   skill: string;

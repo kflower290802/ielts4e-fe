@@ -15,8 +15,10 @@ export const useLogin = () => {
     async onSuccess(data) {
       const token = data.token;
       const userName = data.user.name;
+      const role= data.user.account.role
       setStorage("token", token);
       setStorage("isTesting", "false")
+      setStorage("role", role)
       setStorage("userName", userName);
       setAuthStatus(true);
       toast.success("Login Success!");

@@ -12,6 +12,7 @@ export interface IUserExam {
 export interface IUser {
   id: string;
   email: string;
+  role: string;
   name: string;
   account: IAccount;
   status: string;
