@@ -148,7 +148,8 @@ const Report = () => {
                     onSelect={handleEndDateSelect}
                     initialFocus
                     disabled={(date) =>
-                      date > currentDate || (startDate ? date < startDate : false)
+                      date > currentDate ||
+                      (startDate ? date < startDate : false)
                     }
                   />
                 </PopoverContent>
@@ -182,11 +183,7 @@ const Report = () => {
               </CardContent>
             </Card>
           </div>
-
-          <div>
-            <h2 className="text-xl font-semibold mb-4">History</h2>
-            <HistoryTable />
-          </div>
+          <HistoryTable />
         </CardContent>
       </Card>
     </div>

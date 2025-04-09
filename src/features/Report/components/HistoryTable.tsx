@@ -1,78 +1,45 @@
-import { useState } from "react"
+import { Badge } from "@/components/ui/badge";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-
-interface Test {
-  id: string
-  name: string
-  startDate: string
-  endDate: string
-  result: number
-  status: "completed" | "in-progress" | "planned"
-}
-
-const mockTests: Test[] = [
-  {
-    id: "1",
-    name: "IELTS Practice Test 1",
-    startDate: "2025-03-01",
-    endDate: "2025-03-01",
-    result: 6.5,
-    status: "completed",
-  },
-  {
-    id: "2",
-    name: "IELTS Practice Test 2",
-    startDate: "2025-03-08",
-    endDate: "2025-03-08",
-    result: 6.0,
-    status: "completed",
-  },
-  {
-    id: "3",
-    name: "IELTS Practice Test 3",
-    startDate: "2025-03-15",
-    endDate: "2025-03-15",
-    result: 6.5,
-    status: "completed",
-  },
-  {
-    id: "4",
-    name: "IELTS Practice Test 4",
-    startDate: "2025-03-22",
-    endDate: "2025-03-22",
-    result: 7.0,
-    status: "completed",
-  },
-  {
-    id: "5",
-    name: "IELTS Official Test",
-    startDate: "2025-03-30",
-    endDate: "",
-    result: 0,
-    status: "planned",
-  },
-]
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useGetExamHistory } from "../hooks/useGetExamHistory";
+import { useGetPracticeHistory } from "../hooks/useGetPracticeHistory";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
 
 export function HistoryTable() {
-  const [page, setPage] = useState(1)
-  const itemsPerPage = 5
-  const totalPages = Math.ceil(mockTests.length / itemsPerPage)
-
-  const startIndex = (page - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const currentTests = mockTests.slice(startIndex, endIndex)
-
+  const { data: exam } = useGetExamHistory();
+  const { data: practice } = useGetPracticeHistory();
+  const [historyType, setHistoryType] = useState("exam");
+  const currentData = historyType === "exam" ? exam : practice;
   return (
-    <div>
+    <div className="flex flex-col gap-2">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold mb-4">History</h2>
+        <Select value={historyType} onValueChange={setHistoryType}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select History" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="exam">Exams History</SelectItem>
+            <SelectItem value="practice">Practices History</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -85,23 +52,26 @@ export function HistoryTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentTests.map((test) => (
+            {currentData?.map((test) => (
               <TableRow key={test.id}>
-                <TableCell className="font-medium">{test.name}</TableCell>
-                <TableCell>{test.startDate}</TableCell>
-                <TableCell>{test.endDate || "—"}</TableCell>
-                <TableCell>{test.status === "completed" ? test.result.toFixed(1) : "—"}</TableCell>
+                <TableCell className="font-medium">{historyType === "exam" ? test.exam.name : test.practice?.name || "Practice Test"}</TableCell>
+                <TableCell>
+                  {test.startTime ? format(test.startTime, "dd/MM/yyyy HH:mm:ss") : "_"}
+                </TableCell>
+                <TableCell>
+                  {test.endTime ? format(test.endTime, "dd/MM/yyyy HH:mm:ss") : "_"}
+                </TableCell>
+                <TableCell>
+                  {test.isCompleted ? test.score?.toFixed(1) : "_"}
+                </TableCell>
                 <TableCell>
                   <Badge
-                    variant={
-                      test.status === "completed" ? "default" : test.status === "in-progress" ? "secondary" : "outline"
-                    }
+                    className={cn(
+                      test.isCompleted ? "bg-green-500" : "bg-yellow-500",
+                      "px-2 py-1"
+                    )}
                   >
-                    {test.status === "completed"
-                      ? "Completed"
-                      : test.status === "in-progress"
-                        ? "In Progress"
-                        : "Planned"}
+                    {test.isCompleted ? "Completed" : "In Progress"}
                   </Badge>
                 </TableCell>
               </TableRow>
@@ -109,46 +79,6 @@ export function HistoryTable() {
           </TableBody>
         </Table>
       </div>
-
-      <Pagination className="mt-4">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                if (page > 1) setPage(page - 1)
-              }}
-              className={page === 1 ? "pointer-events-none opacity-50" : ""}
-            />
-          </PaginationItem>
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <PaginationItem key={i}>
-              <PaginationLink
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault()
-                  setPage(i + 1)
-                }}
-                isActive={page === i + 1}
-              >
-                {i + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-          <PaginationItem>
-            <PaginationNext
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                if (page < totalPages) setPage(page + 1)
-              }}
-              className={page === totalPages ? "pointer-events-none opacity-50" : ""}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
     </div>
-  )
+  );
 }
-

@@ -11,7 +11,6 @@ import {
 } from "recharts";
 import { useGetTimeChart } from "../hooks/useGetTimeChart";
 import { IChart } from "@/types/report";
-
 interface TimeChartProps {
   skill: string;
   startDate?: Date;
@@ -27,14 +26,22 @@ export function TimeChart({ skill, startDate, endDate }: TimeChartProps) {
   useEffect(() => {
     refetch();
   }, [startDate, endDate]);
-  const chartData: IChart[] =
-    (data as IChart[])?.map((item) => ({
-      date: item.date,
-      reading: item.reading / 3600000,
-      writing: item.writing / 3600000,
-      speaking: item.speaking / 3600000,
-      listening: item.listening / 3600000,
-    })) || [];
+  const TIME_UNIT_CONVERSION = 36000000
+  ;
+
+  const chartData =
+    (data as IChart[])?.map((item) => {
+      const converted = {
+        date: item.date,
+        reading: Number(item.reading) / TIME_UNIT_CONVERSION,
+        writing: Number(item.writing) / TIME_UNIT_CONVERSION,
+        speaking: Number(item.speaking) / TIME_UNIT_CONVERSION,
+        listening: Number(item.listening) / TIME_UNIT_CONVERSION,
+      };
+      console.log(`Date: ${item.date}`, converted); // Kiểm tra dữ liệu
+      return converted;
+    }) || [];
+
   const maxValue = Math.max(
     ...chartData.map((d) =>
       Math.max(d.reading, d.writing, d.speaking, d.listening)
@@ -62,9 +69,11 @@ export function TimeChart({ skill, startDate, endDate }: TimeChartProps) {
           domain={[0, yMax]}
           tickFormatter={(value) => `${value.toFixed(1)}h`}
         />
-        <Tooltip 
+        <Tooltip
           formatter={(value: number) => [`${value.toFixed(2)} giờ`, ""]}
-          labelFormatter={(label) => new Date(label).toLocaleDateString("vi-VN")}
+          labelFormatter={(label) =>
+            new Date(label).toLocaleDateString("vi-VN")
+          }
         />
         <Legend />
         {skill === "all" || skill === "speaking" ? (

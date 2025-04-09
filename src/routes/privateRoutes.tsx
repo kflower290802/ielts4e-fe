@@ -22,6 +22,8 @@ import PracticeListeningResult from "@/features/Practice/PracticeListening/compo
 import WritingPracticeResult from "@/features/Practice/PracticeWriting/components/WritingPracticeResult";
 import Report from "@/features/Report";
 import PracticeLayout from "@/layout/practiceLayout";
+import LearnLayout from "@/layout/learnLayout";
+import LearnLesson from "@/features/Learn/features/LearnLesson";
 
 export const privateRoutes = [
   {
@@ -83,6 +85,15 @@ export const privateRoutes = [
       {
         element: <WritingPracticeResult />,
         path: `${Route.PracticeWritingResult}/:id/:idResult`,
+      },
+    ],
+  },
+  {
+    element: <LearnLayout />,
+    children: [
+      {
+        element: <LearnLesson />,
+        path: `${Route.LearnLesson}/:id`,
       },
     ],
   },
