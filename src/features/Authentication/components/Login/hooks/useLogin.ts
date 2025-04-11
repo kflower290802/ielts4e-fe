@@ -20,7 +20,7 @@ export const useLogin = () => {
       setStorage("isTesting", "false")
       setStorage("role", role)
       setStorage("userName", userName);
-      setAuthStatus(true);
+      setAuthStatus({ isAuthenticated: true, role: role });
       toast.success("Login Success!");
       nav(Route.Home);
     },

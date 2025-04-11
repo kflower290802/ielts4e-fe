@@ -13,7 +13,7 @@ interface AuthMiddlewareProps {
 
 const AuthMiddleware = ({ children }: AuthMiddlewareProps) => {
   const { isAuthenticated } = useAuthStore();
-
+  
   const location = useLocation();
 
   const pathName = useMemo(() => {

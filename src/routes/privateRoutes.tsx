@@ -24,6 +24,11 @@ import Report from "@/features/Report";
 import PracticeLayout from "@/layout/practiceLayout";
 import LearnLayout from "@/layout/learnLayout";
 import LearnLesson from "@/features/Learn/features/LearnLesson";
+import AdminHome from "@/features/Admin/AdminHome";
+import AdminExam from "@/features/Admin/AdminExam";
+import AdminLearn from "@/features/Admin/AdminLearn";
+import AdminReport from "@/features/Admin/AdminReport";
+import AdminPractice from "@/features/Admin/AdminPractice";
 
 export const privateRoutes = [
   {
@@ -130,3 +135,30 @@ export const privateRoutes = [
     path: `${Route.ExamWritingResult}/:id`,
   },
 ];
+export const adminPrivateRoutes = [
+  {
+    element: <Layout />,
+    children: [
+      {
+        element: <AdminHome />,
+        path: Route.Home,
+      },
+      {
+        element: <AdminPractice />,
+        path: Route.Practice,
+      },
+      {
+        element: <AdminExam />,
+        path: Route.Exam,
+      },
+      {
+        element: <AdminLearn />,
+        path: Route.Learn,
+      },
+      {
+        element: <AdminReport />,
+        path: `${Route.Report}`,
+      },
+    ],
+  },
+]

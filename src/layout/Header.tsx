@@ -13,16 +13,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
 import { useLogout } from "./hooks/useLogOut";
 const Header = () => {
+  const { setAuthStatus } = useAuthStore();
   const { isAuthenticated } = useAuthStore();
   const { mutateAsync: logOut } = useLogout();
   const userName = getStorage("userName");
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     await logOut();
-  }
+    setAuthStatus({ isAuthenticated: false, role: "Learner" });
+  };
   return (
     <div className="flex items-center h-24 justify-between bg-white sticky top-0 right-0 left-64 z-40 shadow-lg p-10">
       <div className="flex items-center flex-1">
@@ -46,30 +48,30 @@ const Header = () => {
             </div>
           </div>
           <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar className="w-12 h-12">
-                  <AvatarImage
-                    src='https://img.freepik.com/premium-vector/man-empty-avatar-casual-business-style-vector-photo-placeholder-social-networks-resumes_885953-434.jpg?w=360'
-                    alt="Avatar"
-                    className="object-cover"
-                  />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-40 bg-white text-text">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <Link to="/profile">
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                  </Link>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="w-12 h-12">
+                <AvatarImage
+                  src="https://img.freepik.com/premium-vector/man-empty-avatar-casual-business-style-vector-photo-placeholder-social-networks-resumes_885953-434.jpg?w=360"
+                  alt="Avatar"
+                  className="object-cover"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40 bg-white text-text">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <Link to="/profile">
+                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                </Link>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ) : (
         <div className="flex items-center gap-4">

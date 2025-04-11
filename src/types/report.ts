@@ -1,4 +1,3 @@
-import { StringValidation } from "zod";
 
 export interface IScore {
   reading: number;
@@ -12,10 +11,7 @@ export interface IRequestChart {
 }
 export interface IHistory {
   id: string;
-  exam: {
-    id: string;
-    name: string;
-  }
+  exam: IExamHistory;
   practice: {
     id: string;
     name: string;
@@ -24,6 +20,18 @@ export interface IHistory {
   isCompleted: boolean;
   startTime: string;
   endTime: string;
+  updatedAt: string;
+  createdAt: string;
+}
+export interface IExamHistory {
+  id: string;
+  name: string;
+  image: string;
+  time: number;
+  type: string;
+  year: number;
+  createdAt: string;
+  updatedAt: string;
 }
 export interface IChart {
   date: string;
