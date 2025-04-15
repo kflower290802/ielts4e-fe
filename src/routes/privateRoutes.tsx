@@ -29,6 +29,9 @@ import AdminExam from "@/features/Admin/AdminExam";
 import AdminLearn from "@/features/Admin/AdminLearn";
 import AdminReport from "@/features/Admin/AdminReport";
 import AdminPractice from "@/features/Admin/AdminPractice";
+import CreatePractice from "@/features/Admin/AdminPractice/features/CreatePractice";
+import CreateReadingExamDetail from "@/features/Admin/AdminExam/features/CreateReading/CreateReadingExamDetail";
+import CreateExam from "@/features/Admin/AdminExam/features/CreateReading/CreateExam";
 
 export const privateRoutes = [
   {
@@ -132,7 +135,7 @@ export const privateRoutes = [
   },
   {
     element: <WritingTestResult />,
-    path: `${Route.ExamWritingResult}/:id`,
+    path: `${Route.ExamWritingResult}/:id/:idResult`,
   },
 ];
 export const adminPrivateRoutes = [
@@ -150,6 +153,18 @@ export const adminPrivateRoutes = [
       {
         element: <AdminExam />,
         path: Route.Exam,
+      },
+      {
+        element: <CreateExam />,
+        path: `${Route.CreateExam}`,
+      },
+      {
+        element: <CreateReadingExamDetail />,
+        path: `${Route.CreateExamDetail}/reading/:id`,
+      },
+      {
+        element: <CreatePractice />,
+        path: Route.CreatePractice,
       },
       {
         element: <AdminLearn />,

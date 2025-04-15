@@ -1,11 +1,11 @@
-import { getPracticeReadingResult } from "@/api/PracticeAPI/readingPractice";
-import { IPracticeResult } from "@/types/PracticeType/practice";
+import { getPracticeResult } from "@/api/PracticeAPI/practice";
 import { useQuery } from "@tanstack/react-query";
 
 export const usePracticeResult = (idResult: string) => {
-  const { data, error, isLoading, refetch } = useQuery<IPracticeResult, Error>({
+  const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["getPracticeReadingResult"],
-    queryFn: () => getPracticeReadingResult(idResult),
+    queryFn: () => getPracticeResult
+    (idResult),
     enabled: !!idResult,
   });
   return { data, error, isLoading, refetch };

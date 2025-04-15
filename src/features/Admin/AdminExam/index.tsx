@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,14 +12,16 @@ import {
 import { useEffect, useState } from "react";
 import {
   IRequestExcercise,
-  StatusExcercise,
   TypeExcercise,
 } from "@/types/excercise";
 import { examTabs } from "@/constant/filter";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { formatMillisecondsToMMSS } from "@/utils/time";
 import { useGetFullExam } from "./hooks/useGetFullExam";
+import { FilePlus2 } from "lucide-react";
+import { Route } from "@/constant/route";
 const AdminExam = () => {
+  const nav = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = useState<IRequestExcercise>(() => {
     return {
@@ -44,6 +45,17 @@ const AdminExam = () => {
   return (
     <div className="h-full p-8 gap-14">
       <div className="flex-1 flex flex-col items-center">
+        <div className="flex items-center justify-end w-full mb-4">
+          <Button
+            className="border-2 flex gap-3 border-[#164C7E] font-bold bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
+            onClick={() => {
+              nav(Route.CreateExam);
+            }}
+          >
+            <FilePlus2 />
+            Add Exam
+          </Button>
+        </div>
         <Tabs
           value={params.type}
           defaultValue="reading"
@@ -66,7 +78,7 @@ const AdminExam = () => {
 
           {examTabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id} className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-5">
                 {data?.data?.map((card) => {
                   return (
                     <Card key={card.id} className="overflow-hidden">
@@ -82,21 +94,10 @@ const AdminExam = () => {
                       </CardContent>
                       <CardFooter className="flex flex-col items-center gap-2 p-3">
                         <p className="text-sm text-center">{card.name}</p>
-                        <Button
-                          className={cn(
-                            card.status === StatusExcercise.NotStarted
-                              ? "border-2 border-[#164C7E] bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
-                              : card.status === StatusExcercise.InProgress
-                              ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
-                              : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
-                          )}
-                        >
-                          {card.status === StatusExcercise.Completed
-                            ? "RETRY"
-                            : card.status === StatusExcercise.InProgress
-                            ? "CONTINUTE"
-                            : "START"}
-                        </Button>
+                        <div className="flex gap-2 items-center justify-between">
+                          <Button className="w-20 bg-transparent text-xs hover:bg-red-500 hover:text-white font-semibold border-red-500 border-2 text-red-500">Delete Exam</Button>
+                          <Button className="w-20 bg-transparent text-xs hover:bg-blue-500 hover:text-white font-semibold border-blue-500 border-2 text-blue-500">Edit Exam</Button>
+                        </div>
                       </CardFooter>
                     </Card>
                   );

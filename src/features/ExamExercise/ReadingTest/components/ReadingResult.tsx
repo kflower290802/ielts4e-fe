@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import ReadingFooterResult from "./ReadingFooterResult";
 import { Badge } from "@/components/ui/badge";
 import { Route } from "@/constant/route";
-import { EQuestionType } from "@/types/ExamType/exam";
+import { EQuestionType, IExamResult } from "@/types/ExamType/exam";
 import SingleChoiceResult from "../../components/SingleChoiceResult";
 import QuestionHeader from "../../components/QuestionHeader";
 import { useExamPassage } from "../../hooks/useExamPassage";
@@ -17,7 +17,9 @@ const ReadingResult = () => {
   const { idResult } = useParams<{ idResult: string }>();
   const { id } = useParams<{ id: string }>();
   const { data } = useExamPassage(id ?? "");
-  const { data: result } = useExamResult(idResult ?? "");
+  const { data: result } = useExamResult(idResult ?? "") as {
+      data: IExamResult;
+    };
   const nav = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const passageParam = searchParams.get("passage") ?? "1";

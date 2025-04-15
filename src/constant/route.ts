@@ -27,7 +27,12 @@ export const Route = {
   PracticeWriting: '/practice/writing',
   PracticeWritingResult: '/practice/writing/result',
   //report:
-  Report: '/report'
+  Report: '/report',
+  //admin:
+  CreateExam: '/exam/create',
+  CreateExamDetail: '/exam/create/detail',
+  CreatePractice: '/practice/create',
+  CreatePracticeDetail: '/practice/create/detail',
 }
 
 export const authRoutes = [Route.Login, Route.SignUp]

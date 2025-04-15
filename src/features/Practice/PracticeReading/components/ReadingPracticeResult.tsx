@@ -12,10 +12,11 @@ import { EQuestionType } from "@/types/ExamType/exam";
 import QuestionPracticeHeader from "../../components/QuestionPracticeHeader";
 import SingleChoicePracticeResult from "../../components/SingleChoicePracticeResult";
 import ReadingFooterPracticeResult from "./ReadingFooterPracticeResult";
+import { IPracticeResult } from "@/types/PracticeType/practice";
 export default function PracticeReadingResult() {
   const { idResult } = useParams<{ idResult: string }>();
   const nav = useNavigate();
-  const { data: result } = usePracticeResult(idResult ?? "");
+  const { data: result } = usePracticeResult(idResult ?? "") as {data: IPracticeResult};
   const { id } = useParams<{ id: string }>();
   const { data, refetch } = useReadingPracticePassage(id ?? "");
   useEffect(() => {

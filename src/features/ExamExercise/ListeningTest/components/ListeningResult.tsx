@@ -6,7 +6,7 @@ import { Route } from "@/constant/route";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import ListeningFooterResult from "./ListeningFooterResult";
-import { EQuestionType } from "@/types/ExamType/exam";
+import { EQuestionType, IExamResult } from "@/types/ExamType/exam";
 import QuestionHeader from "../../components/QuestionHeader";
 import SingleChoiceResult from "../../components/SingleChoiceResult";
 import { useExamPassage } from "../../hooks/useExamPassage";
@@ -36,7 +36,10 @@ const ListeningTestResult = () => {
     });
     return map;
   }, [data?.exam]);
-  const { data: result } = useExamResult(idResult ?? "");
+  const { data: result } = useExamResult(idResult ?? "") as {
+    data: IExamResult;
+  };
+
   useEffect(() => {
     setSearchParams({ passage: currentSection.toString() });
   }, [currentSection, setSearchParams]);
@@ -230,7 +233,7 @@ const ListeningTestResult = () => {
                 <div className="space-y-4">
                   {questionType[index].questions.map((question, index) => {
                     const questionNumber =
-                    questionNumberMap[question.id] || index + 1;
+                      questionNumberMap[question.id] || index + 1;
                     return (
                       <div className="border rounded-md p-2">
                         <div className="flex flex-col space-y-2">

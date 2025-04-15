@@ -15,6 +15,20 @@ export interface IExamResult {
   ];
   score: number;
 }
+export interface IExamWritingResult {
+  summary: [
+    {
+      questionId: string;
+      overallBandScore: number;
+      taskResponse: number;
+      coherenceAndCohesion: number;
+      lexicalResource: number;
+      grammaticalRangeAndAccuracy: number;
+    }
+  ];
+  score: number;
+}
+
 export interface IUserAnswer {
   examId: string;
   examPassageQuestionId: string;

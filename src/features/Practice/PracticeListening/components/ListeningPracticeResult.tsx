@@ -12,10 +12,11 @@ import SingleChoicePracticeResult from "../../components/SingleChoicePracticeRes
 import { usePracticeResult } from "../../PracticeReading/hooks/usePracticeResult";
 import { useListeningPracticeSection } from "../hooks/useListeningPracticeSection";
 import ListeningFooterPracticeResult from "./ListeningFooterPracticeResult";
+import { IPracticeResult } from "@/types/PracticeType/practice";
 export default function PracticeListeningResult() {
   const { idResult } = useParams<{ idResult: string }>();
   const nav = useNavigate();
-  const { data: result } = usePracticeResult(idResult ?? "");
+  const { data: result } = usePracticeResult(idResult ?? "") as {data: IPracticeResult};
   const { id } = useParams<{ id: string }>();
   const { data, refetch } = useListeningPracticeSection(id ?? "");
   useEffect(() => {

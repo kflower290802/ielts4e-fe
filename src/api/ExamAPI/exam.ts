@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { IExam, IExamAnswerSubmit, IExamResult } from "@/types/ExamType/exam";
+import { IExam, IExamAnswerSubmit, IExamResult, IExamWritingResult } from "@/types/ExamType/exam";
 import { IExcercise, IRequestExcercise } from "@/types/excercise";
 
 export const getExcercise = (params: IRequestExcercise): Promise<IExcercise> =>
@@ -10,7 +10,7 @@ export const getYear = (): Promise<number[]> => api.get(`/exams/year`);
 export const startExam = (id: string) => api.get(`/exams/start-exam/${id}`);
 export const getExamById = (id: string): Promise<IExam> =>
   api.get(`/exams/exam/${id}`);
-export const getExamResult = (idResult: string): Promise<IExamResult> => api.get(`/exams/exam-summary/${idResult}`);
+export const getExamResult = (idResult: string): Promise<IExamResult | IExamWritingResult> => api.get(`/exams/exam-summary/${idResult}`);
 export const examExit = (
   data: IExamAnswerSubmit[],
   id: string

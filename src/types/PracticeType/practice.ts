@@ -13,6 +13,13 @@ export interface ISummary {
   userAnswer: string;
   correctAnswer: string[];
 }
+export interface IWritingSummary {
+  score: number,
+  taskResponse: number,
+  coherenceAndCohesion: number,
+  lexicalResource: number,
+  grammaticalRangeAndAccuracy: number,
+}
 export interface IUserAnswer {
   examId: string;
   examPassageQuestionId: string;

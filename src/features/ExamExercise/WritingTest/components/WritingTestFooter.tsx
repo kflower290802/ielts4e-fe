@@ -2,10 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Route } from "@/constant/route";
 import { cn } from "@/lib/utils";
 import { ExamPassage } from "@/types/ExamType/exam";
-import { useNavigate } from "react-router-dom";
-// import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
-// import { useState } from "react";
-// import { Route } from "@/constant/route";
+import { useState } from "react";
+import DialogSubmitConfirm from "../../components/DialogSubmitConfirm";
 interface IProps {
   setCurrentTask: React.Dispatch<React.SetStateAction<number>>;
   tasks: ExamPassage[] | undefined;
@@ -20,18 +18,17 @@ const WritingTestFooter = ({
   id,
   currentTask,
 }: IProps) => {
-  const nav = useNavigate();
-  // const [openDia, setOpenDia] = useState<boolean>(false);
+  const [openDia, setOpenDia] = useState<boolean>(false);
   return (
     <div className="h-20 px-6 flex justify-between items-center">
-      {/* <DialogSubmitConfirm
+      <DialogSubmitConfirm
         openDia={openDia}
         setOpenDia={setOpenDia}
         totalQuestion={tasks?.length}
         answers={answers}
         id={id}
         route={Route.ExamWritingResult}
-      /> */}
+      />
       <div className="flex h-full items-center justify-between gap-20">
         <div className="grid grid-cols-5 gap-10 min-w-1/3">
           {tasks?.map((task, index) => (
@@ -54,7 +51,9 @@ const WritingTestFooter = ({
       <div className="w-1/6 flex justify-end">
         <Button
           className="ml-4 bg-[#66B032] hover:bg-[#66B032]/80 text-white font-bold rounded-xl"
-          onClick={() => nav(`${Route.ExamWritingResult}/${id}`)}
+          onClick={() => {
+            setOpenDia(true);
+          }}
         >
           SUBMIT
         </Button>
