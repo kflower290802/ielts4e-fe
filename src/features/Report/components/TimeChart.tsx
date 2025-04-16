@@ -38,7 +38,6 @@ export function TimeChart({ skill, startDate, endDate }: TimeChartProps) {
         speaking: Number(item.speaking) / TIME_UNIT_CONVERSION,
         listening: Number(item.listening) / TIME_UNIT_CONVERSION,
       };
-      console.log(`Date: ${item.date}`, converted); // Kiểm tra dữ liệu
       return converted;
     }) || [];
 

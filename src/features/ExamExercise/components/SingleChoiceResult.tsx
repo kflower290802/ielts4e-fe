@@ -22,7 +22,6 @@ const SingleChoiceResult: React.FC<Props> = ({
   correctAnswer,
   isCorrect,
 }) => {
-  console.log(question.answers[1].answer.toLowerCase());
 
   return (
     <div className="border rounded-md p-2">

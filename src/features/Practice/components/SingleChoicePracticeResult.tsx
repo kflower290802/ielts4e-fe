@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ListeningQuestion } from "@/types/ExamType/listeningExam";
+import { ListeningQuestion } from "@/types/PracticeType/listeningPractice";
 import { ReadingQuestion } from "@/types/PracticeType/readingPractice";
 import React from "react";
 

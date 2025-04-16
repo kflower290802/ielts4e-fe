@@ -34,6 +34,7 @@ const PracticeWriting = () => {
   const [wordCount, setWordCount] = useState<number>(0);
   useEffect(() => {
     if (id) {
+      setAnswers("");
       refetch();
     }
   }, [id]);
@@ -103,7 +104,11 @@ const PracticeWriting = () => {
 
           {/* Bottom Navigation */}
         </div>
-        <WritingPracticeFooter answers={answers} id={id} />
+        <WritingPracticeFooter
+          answers={answers}
+          id={id}
+          setAnswers={setAnswers}
+        />
       </div>
     </div>
   );

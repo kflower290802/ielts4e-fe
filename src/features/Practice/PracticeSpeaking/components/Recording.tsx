@@ -96,7 +96,6 @@ const Recording = ({
       console.error("Error starting recording:", error);
     }
   };
-  console.log(uploadedFileUrl);
 
   // Dừng thu âm
   const stopRecording = () => {

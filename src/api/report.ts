@@ -12,7 +12,7 @@ export const getAvgScore = (): Promise<IScore> =>
 export const getUserTarget = (id: string): Promise<IUserTarget> =>
   api.get(`/users/${id}`);
 export const updateTarget = (id: string, data: {target: number}): Promise<IUserTarget> =>
-  api.patch(`/users/${id}`);
+  api.patch(`/users/${id}`, data);
 export const getScoreForDay = (date: IRequestChart): Promise<IChart[]> =>
   api.get(`/user-exams/scores-by-period-day`, { params: date });
 export const getTimeSpent = (date: IRequestChart): Promise<IChart[]> =>

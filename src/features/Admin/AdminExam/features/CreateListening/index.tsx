@@ -10,9 +10,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { EQuestionType } from "@/types/ExamType/exam";
-import DialogCreateQuestion from "../CreateReading/components/DialogCreateQuestion";
 import DialogCreateSection from "./components/DialogCreateSection";
 import DialogCreateListeningType from "./components/DialogCreateListeningType";
+import DialogCreateListeningQuestion from "./components/DialogCreateListeningQuestion";
 const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.TextBox]: "Text Box",
   [EQuestionType.MultipleChoice]: "Multiple Choice",
@@ -62,7 +62,7 @@ const CreateListeningExamDetail = () => {
         id={idPassage}
         refetch={refetch}
       />
-      <DialogCreateQuestion
+      <DialogCreateListeningQuestion
         openDia={openDiaCreateQuestion}
         setOpenDia={setOpenDiaCreateQuestion}
         id={idType}

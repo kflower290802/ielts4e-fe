@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { ICreateListeningType, ICreatePassage, ICreateQuestion, IExamDetail } from "@/types/admin";
+import { ICreateListeningQuestion, ICreateListeningType, ICreatePassage, ICreateQuestion, IExamDetail } from "@/types/admin";
 import { IExcerciseDetail } from "@/types/excercise";
 
 export const createExam = (exam: FormData): Promise<IExcerciseDetail> =>
@@ -24,3 +24,5 @@ export const createListeningType = (data: ICreateListeningType): Promise<string>
   api.post(`/exam-listen-types`, data);
 export const createQuestion = (data: ICreateQuestion): Promise<string> =>
   api.post(`/exam-passage-questions`, data);
+export const createListeningQuestion = (data: ICreateListeningQuestion): Promise<string> =>
+  api.post(`/exam-listen-questions`, data);

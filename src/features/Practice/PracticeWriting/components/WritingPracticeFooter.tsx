@@ -5,8 +5,9 @@ import DialogSubmitWritingPractice from "./DialogSubmitWritingPractice";
 interface IProps {
   id: string | undefined;
   answers: string;
+  setAnswers: React.Dispatch<React.SetStateAction<string>>
 }
-const WritingPracticeFooter = ({ id, answers }: IProps) => {
+const WritingPracticeFooter = ({ id, answers, setAnswers }: IProps) => {
   const [openDia, setOpenDia] = useState<boolean>(false);
   return (
     <div className="h-10 flex justify-end items-center">
@@ -14,12 +15,13 @@ const WritingPracticeFooter = ({ id, answers }: IProps) => {
         openDia={openDia}
         setOpenDia={setOpenDia}
         answers={answers}
+        setAnswers = {setAnswers}
         id={id}
         route={Route.PracticeWritingResult}
       />
       <Button
         className="bg-[#66B032] hover:bg-[#66B032]/80 text-white font-bold rounded-xl"
-        onClick={() => setOpenDia(true)}
+        onClick={() => {setOpenDia(true)}}
       >
         SUBMIT
       </Button>

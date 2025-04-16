@@ -27,8 +27,8 @@ import { useGetUserTarget } from "./hooks/useGetUserTarget";
 import { getStorage } from "@/utils/storage";
 const Report = () => {
   const { data: score } = useGetAvgScore();
-  const idUser = getStorage('idUser')
-  const {data: target} = useGetUserTarget(idUser ?? '');
+  const idUser = getStorage("idUser");
+  const { data: target, refetch } = useGetUserTarget(idUser ?? "");
   const currentDate = new Date();
   const [startDate, setStartDate] = useState<Date | undefined>(() => {
     const date = new Date();
@@ -68,16 +68,25 @@ const Report = () => {
       <Card className="border-0 shadow-lg">
         <CardHeader className="bg-white rounded-t-lg border-b flex">
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mt-4">
-            <div className="flex flex-col items-center gap-2 w-full md:w-auto">
-              <TargetScoreCard targetScore={target?.target} />
-              <button className="text-blue-600 underline hover:text-blue-300">Edit Target</button>
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              <TargetScoreCard
+                targetScore={target?.target}
+                idUser={idUser}
+                refetch={refetch}
+              />
             </div>
             <SkillScoreCard skill="Speaking" score={score?.speaking} />
             <SkillScoreCard skill="Reading" score={score?.reading} />
             <SkillScoreCard skill="Writing" score={score?.writing} />
             <SkillScoreCard skill="Listening" score={score?.listening} />
             <div className="flex justify-center items-center gap-2 font-medium shadow rounded-lg">
-              <span>10 bài học </span> / <span> 2 tiếng</span>
+              <span>
+                Avg:{" "}
+                <span className="">
+                  {score &&
+                    ((score.reading + score.listening + score.writing) / 3).toFixed(2)}
+                </span>
+              </span>
             </div>
           </div>
         </CardHeader>

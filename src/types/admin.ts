@@ -24,6 +24,11 @@ export interface ICreateQuestion {
   examReadingTypeId: string;
   answers: IAnswer[]
 }
+export interface ICreateListeningQuestion {
+  question: string;
+  examListenTypeId: string;
+  answers: IAnswer[]
+}
 export interface IAnswer {
   answer: string;
   isCorrect: boolean;

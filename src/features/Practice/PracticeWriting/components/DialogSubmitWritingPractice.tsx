@@ -8,22 +8,25 @@ interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
   answers: string;
+  setAnswers: React.Dispatch<React.SetStateAction<string>>;
   id: string | undefined;
   route: string;
 }
 const DialogSubmitWritingPractice = ({
   openDia,
   setOpenDia,
+  setAnswers,
   answers,
   id,
   route,
 }: IProps) => {
-  const { mutateAsync: submit } = usePracticeWritingSubmit(id ?? "");
+  const { mutateAsync: submit, isPending } = usePracticeWritingSubmit(id ?? "");
   const nav = useNavigate();
   const handleSubmit = async () => {
     try {
       const data = { answer: answers };
       const res = await submit(data);
+      setAnswers("");
       setStorage("isTesting", "false");
       nav(`${route}/${id}/${res}`);
     } catch (error) {
@@ -42,6 +45,7 @@ const DialogSubmitWritingPractice = ({
           <Button
             className="bg-[#66B032] hover:bg-[#66B032]/80 text-white font-bold rounded-xl"
             onClick={handleSubmit}
+            isLoading={isPending}
           >
             Submit
           </Button>

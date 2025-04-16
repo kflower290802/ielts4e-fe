@@ -87,7 +87,7 @@ const WritingPracticeResult = () => {
                 <div className="flex justify-center mb-8">
                   <div className="bg-white border-2 border-gray-200 rounded-lg px-10 py-4 shadow-sm">
                     <div className="text-6xl font-bold text-green-600 text-center">
-                      {result.score}
+                      {result?.score}
                     </div>
                     <div className="text-sm font-medium text-center mt-1">
                       OVERALL

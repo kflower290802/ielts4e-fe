@@ -52,7 +52,6 @@ const SpeakingTest = () => {
   useEffect(() => {
     if (id) refetch();
   }, [id]);
-  console.log(answers);
 
   const timeLeft = data?.remainingTime;
 

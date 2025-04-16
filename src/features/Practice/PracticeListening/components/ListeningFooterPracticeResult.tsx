@@ -63,7 +63,7 @@ const ListeningFooterPracticeResult = ({
 
         <div className="w-1/6 flex justify-end">
           <Badge className="ml-4 bg-[#66B032] py-2 px-4 hover:bg-[#66B032]/80 text-base text-white font-bold rounded-xl">
-            Score: {result?.score.toFixed(1)}/10
+            Score: {result?.score.toFixed(1)}
           </Badge>
         </div>
       </div>

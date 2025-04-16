@@ -69,7 +69,6 @@ const DialogCreateType = ({ openDia, setOpenDia, id, refetch }: IProps) => {
       image: file,
     }));
   };
-  console.log(formData.examPassageId, formData.type);
 
   const handleSubmit = async () => {
     if (!formData.examPassageId || !formData.type) {

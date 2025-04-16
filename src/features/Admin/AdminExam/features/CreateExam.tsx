@@ -44,15 +44,17 @@ const CreateExam = () => {
       const formData = new FormData();
 
       Object.entries(values).forEach(([key, value]) => {
-        if (value && key !== "file") {
+        if (value && key !== "file" && key !== "audio") {
           formData.append(key, value);
         }
       });
 
-      if (values) {
+      if (values.file && values.file[0]) {
         formData.append("file", values.file[0]);
       }
-
+      if (values.audio && values.audio[0]) {
+        formData.append("audio", values.audio[0]);
+      }
       const res = await createExam(formData);
       toast.success("Create Exam Success!");
       nav(`${Route.CreateExamDetail}/${res.type}/${res.id}`);
