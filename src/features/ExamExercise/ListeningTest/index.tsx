@@ -19,6 +19,9 @@ const ListeningTest = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDia, setOpenDia] = useState(false);
+  const [usedWordsByQuestion, setUsedWordsByQuestion] = useState<string[][]>(
+    []
+  );
   const sectionParam = searchParams.get("section") ?? "1";
   const [currentSection, setCurrentSection] = useState(
     sectionParam ? parseInt(sectionParam) : 1
@@ -69,9 +72,9 @@ const ListeningTest = () => {
       setAnswers(initialAnswers);
     }
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!questionType || !data?.exam) return;
-  
+
     setFilledWordsByQuestion((prev) => {
       const newFilledWordsByPassage =
         prev.length > 0
@@ -79,18 +82,19 @@ useEffect(() => {
           : Array(data.exam.examPassage.length)
               .fill([])
               .map(() => []);
-  
+
       const currentFilledWords =
         newFilledWordsByPassage[currentSection - 1]?.length > 0
           ? [...newFilledWordsByPassage[currentSection - 1]]
           : [];
-  
+
       questionType.forEach((type) => {
         if (type.type === EQuestionType.BlankPassageDrag) {
-          const answers = type.questions?.map((q) =>
-            typeof q.answer === "string" ? q.answer : q.answer?.answer || ""
-          ) || [];
-  
+          const answers =
+            type.questions?.map((q) =>
+              typeof q.answer === "string" ? q.answer : q.answer?.answer || ""
+            ) || [];
+
           answers.forEach((answer, answerIndex) => {
             if (!currentFilledWords[answerIndex]) {
               currentFilledWords[answerIndex] = answer;
@@ -105,9 +109,16 @@ useEffect(() => {
           });
         }
       });
-  
+
       newFilledWordsByPassage[currentSection - 1] = currentFilledWords;
       return newFilledWordsByPassage;
+    });
+    setUsedWordsByQuestion((prev) => {
+      return prev.length > 0
+        ? [...prev]
+        : Array(data.exam.examPassage.length)
+            .fill([])
+            .map(() => []);
     });
   }, [questionType, currentSection, data?.exam]);
   useEffect(() => {
@@ -155,7 +166,17 @@ useEffect(() => {
         newFilledWordsByPassage[currentSection - 1] = currentFilledWords;
         return newFilledWordsByPassage;
       });
-
+      setUsedWordsByQuestion((prev) => {
+        const newUsedWordsByPassage = [...prev];
+        const currentUsedWords = [
+          ...(newUsedWordsByPassage[currentSection - 1] || []),
+        ];
+        if (!currentUsedWords.includes(word)) {
+          currentUsedWords.push(word);
+        }
+        newUsedWordsByPassage[currentSection - 1] = currentUsedWords;
+        return newUsedWordsByPassage;
+      });
       const questionId =
         questionType?.[questionTypeIndex]?.questions?.[blankIndex]?.id;
       if (questionId) {
@@ -302,15 +323,17 @@ useEffect(() => {
                       {questionPassageContent(index, isBlankPassageDrag)}
                       {isBlankPassageDrag && (
                         <div className="flex flex-col space-x-2 h-fit rounded-lg shadow">
-                          {questionType[index].questions.map((question) =>
-                            question.answers.map((answer, idx) => {
-                              const answerDrag = {
-                                id: answer.id,
-                                question: answer.question,
-                                answer: answer.answer,
-                              };
-                              return <Word key={idx} answer={answerDrag} />;
-                            })
+                          {questionType[index].questions.flatMap((question) =>
+                            question.answers
+                              .filter(
+                                (answer) =>
+                                  !usedWordsByQuestion[
+                                    currentSection - 1
+                                  ]?.includes(answer.answer)
+                              )
+                              .map((answer, idx) => (
+                                <Word key={idx} answer={answer} />
+                              ))
                           )}
                         </div>
                       )}

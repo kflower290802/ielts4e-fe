@@ -1,13 +1,23 @@
 import { api } from "@/lib/api";
-import { IChart, IHistory, IRequestChart, IScore } from "@/types/report";
+import {
+  IChart,
+  IHistory,
+  IRequestChart,
+  IScore,
+  IUserTarget,
+} from "@/types/report";
 
 export const getAvgScore = (): Promise<IScore> =>
-    api.get(`/user-exams/avg-score`);
+  api.get(`/user-exams/avg-score`);
+export const getUserTarget = (id: string): Promise<IUserTarget> =>
+  api.get(`/users/${id}`);
+export const updateTarget = (id: string, data: {target: number}): Promise<IUserTarget> =>
+  api.patch(`/users/${id}`);
 export const getScoreForDay = (date: IRequestChart): Promise<IChart[]> =>
-    api.get(`/user-exams/scores-by-period-day`, {params: date});
+  api.get(`/user-exams/scores-by-period-day`, { params: date });
 export const getTimeSpent = (date: IRequestChart): Promise<IChart[]> =>
-    api.get(`/exams/time-spent`, {params: date});
+  api.get(`/exams/time-spent`, { params: date });
 export const getExamHistory = (): Promise<IHistory[]> =>
-    api.get(`/user-exams/exam-recently`);
+  api.get(`/user-exams/exam-recently`);
 export const getPracticeHistory = (): Promise<IHistory[]> =>
-    api.get(`/user-practices/recent-practices`);
+  api.get(`/user-practices/recent-practices`);

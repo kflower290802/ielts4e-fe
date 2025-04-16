@@ -23,8 +23,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useGetAvgScore } from "./hooks/useGetAvgScore";
+import { useGetUserTarget } from "./hooks/useGetUserTarget";
+import { getStorage } from "@/utils/storage";
 const Report = () => {
   const { data: score } = useGetAvgScore();
+  const idUser = getStorage('idUser')
+  const {data: target} = useGetUserTarget(idUser ?? '');
   const currentDate = new Date();
   const [startDate, setStartDate] = useState<Date | undefined>(() => {
     const date = new Date();
@@ -64,8 +68,9 @@ const Report = () => {
       <Card className="border-0 shadow-lg">
         <CardHeader className="bg-white rounded-t-lg border-b flex">
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mt-4">
-            <div className="flex items-center gap-2 w-full md:w-auto">
-              <TargetScoreCard targetScore={7.0} />
+            <div className="flex flex-col items-center gap-2 w-full md:w-auto">
+              <TargetScoreCard targetScore={target?.target} />
+              <button className="text-blue-600 underline hover:text-blue-300">Edit Target</button>
             </div>
             <SkillScoreCard skill="Speaking" score={score?.speaking} />
             <SkillScoreCard skill="Reading" score={score?.reading} />

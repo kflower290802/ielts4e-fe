@@ -1,18 +1,18 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useGetFullExamDetail } from "./hooks/useGetFullExamDetail";
-import Step from "./components/step";
-import DialogCreatePassage from "./components/DialogCreatePassage";
+import { useGetFullExamDetail } from "../CreateReading/hooks/useGetFullExamDetail";
+import Step from "../CreateReading/components/step";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import DialogCreateType from "./components/DialogCreateType";
 import { EQuestionType } from "@/types/ExamType/exam";
-import DialogCreateQuestion from "./components/DialogCreateQuestion";
+import DialogCreateQuestion from "../CreateReading/components/DialogCreateQuestion";
+import DialogCreateSection from "./components/DialogCreateSection";
+import DialogCreateListeningType from "./components/DialogCreateListeningType";
 const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.TextBox]: "Text Box",
   [EQuestionType.MultipleChoice]: "Multiple Choice",
@@ -22,8 +22,8 @@ const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.BlankPassageTextbox]: "Blank Passage Textbox",
   [EQuestionType.BlankPassageImageTextbox]: "Blank Passage Image Textbox",
 };
-const CreateReadingExamDetail = () => {
-  const [openDiaCreatePassage, setOpenDiaCreatePassage] =
+const CreateListeningExamDetail = () => {
+  const [openDiaCreateSection, setOpenDiaCreateSection] =
     useState<boolean>(false);
   const [openDiaCreateType, setOpenDiaCreateType] = useState<boolean>(false);
   const [openDiaCreateQuestion, setOpenDiaCreateQuestion] =
@@ -50,13 +50,13 @@ const CreateReadingExamDetail = () => {
   const passages = data?.examPassage;
   return (
     <div className="h-full w-full p-8 space-y-5">
-      <DialogCreatePassage
-        openDia={openDiaCreatePassage}
-        setOpenDia={setOpenDiaCreatePassage}
+      <DialogCreateSection
+        openDia={openDiaCreateSection}
+        setOpenDia={setOpenDiaCreateSection}
         id={id}
         refetch={refetch}
       />
-      <DialogCreateType
+      <DialogCreateListeningType
         openDia={openDiaCreateType}
         setOpenDia={setOpenDiaCreateType}
         id={idPassage}
@@ -75,13 +75,13 @@ const CreateReadingExamDetail = () => {
       <div className="w-10/12 mx-auto bg-white h-[70vh] overflow-y-auto rounded-lg shadow-md p-10">
         <div className="flex justify-between items-center">
           <h1 className="text-center mb-4 text-xl font-bold">
-            Create Passage Detail
+            Create Section Detail
           </h1>
           <Button
             className="border-2 flex gap-3 border-[#164C7E] font-bold bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
-            onClick={() => setOpenDiaCreatePassage(true)}
+            onClick={() => setOpenDiaCreateSection(true)}
           >
-            Create New Passage
+            Create New Section
           </Button>
         </div>
 
@@ -94,7 +94,7 @@ const CreateReadingExamDetail = () => {
             >
               <AccordionItem value="item-1" key={passage.id}>
                 <AccordionTrigger className="flex gap-3 items-center font-bold">
-                  <span>Passage {index + 1}:</span> <span>{passage.title}</span>
+                  <span>Passage {index + 1}</span>
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="flex justify-end">
@@ -165,4 +165,4 @@ const CreateReadingExamDetail = () => {
   );
 };
 
-export default CreateReadingExamDetail;
+export default CreateListeningExamDetail;

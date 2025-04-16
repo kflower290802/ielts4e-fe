@@ -14,11 +14,10 @@ export interface ICreatePassage {
   title: string;
   passage: string;
 }
-export interface ICreateType {
-  examPassageId: string;
+export interface ICreateListeningType {
+  examSectionId: string;
   type: string;
   content: string;
-  image: FileList;
 }
 export interface ICreateQuestion {
   question: string;

@@ -16,6 +16,8 @@ export const useLogin = () => {
       const token = data.token;
       const userName = data.user.name;
       const role= data.user.account.role
+      const idUser = data.user.id
+      setStorage("idUser", idUser);
       setStorage("token", token);
       setStorage("isTesting", "false")
       setStorage("role", role)

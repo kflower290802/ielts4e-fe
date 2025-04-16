@@ -19,11 +19,9 @@ interface IProps {
   id: string | undefined;
   refetch: () => void;
 }
-const questionTypeDisplayNames: Record<EQuestionType, string> = {
+const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.TextBox]: "Text Box",
-  [EQuestionType.MultipleChoice]: "Multiple Choice",
   [EQuestionType.SingleChoice]: "Single Choice",
-  [EQuestionType.TexBoxPosition]: "Text Box Position",
   [EQuestionType.BlankPassageDrag]: "Blank Passage Drag",
   [EQuestionType.BlankPassageTextbox]: "Blank Passage Textbox",
   [EQuestionType.BlankPassageImageTextbox]: "Blank Passage Image Textbox",
@@ -72,7 +70,7 @@ const DialogCreateType = ({ openDia, setOpenDia, id, refetch }: IProps) => {
     }));
   };
   console.log(formData.examPassageId, formData.type);
-  
+
   const handleSubmit = async () => {
     if (!formData.examPassageId || !formData.type) {
       toast.error("Please fill in all required fields");
@@ -99,7 +97,9 @@ const DialogCreateType = ({ openDia, setOpenDia, id, refetch }: IProps) => {
       setOpenDia(false);
     }
   };
-  const isContentEnabled = formData.type && contentEnabledTypes.includes(formData.type as EQuestionType);
+  const isContentEnabled =
+    formData.type &&
+    contentEnabledTypes.includes(formData.type as EQuestionType);
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
       <DialogContent className="p-6 bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
@@ -117,9 +117,9 @@ const DialogCreateType = ({ openDia, setOpenDia, id, refetch }: IProps) => {
               <SelectValue placeholder="Select Type" />
             </SelectTrigger>
             <SelectContent>
-              {Object.values(EQuestionType).map((type) => (
-                <SelectItem key={type} value={type}>
-                  {questionTypeDisplayNames[type]}
+              {Object.entries (questionTypeDisplayNames).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -133,7 +133,11 @@ const DialogCreateType = ({ openDia, setOpenDia, id, refetch }: IProps) => {
             value={formData.content}
             onChange={handleInputChange}
             disabled={!isContentEnabled}
-            placeholder={isContentEnabled ? "Enter Content" : "Content is disabled for this type"}
+            placeholder={
+              isContentEnabled
+                ? "Enter Content"
+                : "Content is disabled for this type"
+            }
             className="border-[#164C7E] text-[#164C7E]"
           />
         </div>

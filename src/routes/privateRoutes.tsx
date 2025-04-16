@@ -31,8 +31,9 @@ import AdminReport from "@/features/Admin/AdminReport";
 import AdminPractice from "@/features/Admin/AdminPractice";
 import CreatePractice from "@/features/Admin/AdminPractice/features/CreatePractice";
 import CreateReadingExamDetail from "@/features/Admin/AdminExam/features/CreateReading/CreateReadingExamDetail";
-import CreateExam from "@/features/Admin/AdminExam/features/CreateReading/CreateExam";
+import CreateExam from "@/features/Admin/AdminExam/features/CreateExam";
 import Store from "@/features/Store";
+import CreateListeningExamDetail from "@/features/Admin/AdminExam/features/CreateListening";
 
 export const privateRoutes = [
   {
@@ -168,6 +169,10 @@ export const adminPrivateRoutes = [
         path: `${Route.CreateExamDetail}/reading/:id`,
       },
       {
+        element: <CreateListeningExamDetail />,
+        path: `${Route.CreateExamDetail}/listening/:id`,
+      },
+      {
         element: <CreatePractice />,
         path: Route.CreatePractice,
       },
@@ -181,4 +186,4 @@ export const adminPrivateRoutes = [
       },
     ],
   },
-]
+];

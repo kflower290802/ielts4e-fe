@@ -33,6 +33,9 @@ export interface IExamHistory {
   createdAt: string;
   updatedAt: string;
 }
+export interface IUserTarget {
+  target: number;
+}
 export interface IChart {
   date: string;
   writing: number;

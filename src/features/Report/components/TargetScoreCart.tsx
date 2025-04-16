@@ -1,8 +1,8 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Target } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card";
+import { Target } from "lucide-react";
 
 interface TargetScoreCardProps {
-  targetScore: number
+  targetScore: number | undefined;
 }
 
 export function TargetScoreCard({ targetScore }: TargetScoreCardProps) {
@@ -12,10 +12,11 @@ export function TargetScoreCard({ targetScore }: TargetScoreCardProps) {
         <Target className="h-5 w-5 text-blue-600" />
         <div className="flex flex-col">
           <h3 className="text-sm font-medium text-gray-500">TARGET</h3>
-          <p className="text-xl font-bold text-blue-600">{targetScore.toFixed(1)}</p>
+          <p className="text-xl font-bold text-blue-600">
+            {targetScore?.toFixed(1)}
+          </p>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-
