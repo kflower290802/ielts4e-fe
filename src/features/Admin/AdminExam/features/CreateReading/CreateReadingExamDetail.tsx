@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/accordion";
 import DialogCreateType from "../../components/DialogCreateType";
 import { EQuestionType } from "@/types/ExamType/exam";
+import DialogCreateQuestion from "../../components/DialogCreateQuestion";
 const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.TextBox]: "Text Box",
   [EQuestionType.MultipleChoice]: "Multiple Choice",
@@ -25,7 +26,11 @@ const CreateReadingExamDetail = () => {
   const [openDiaCreatePassage, setOpenDiaCreatePassage] =
     useState<boolean>(false);
   const [openDiaCreateType, setOpenDiaCreateType] = useState<boolean>(false);
+  const [openDiaCreateQuestion, setOpenDiaCreateQuestion] =
+    useState<boolean>(false);
   const [idPassage, setIdPassage] = useState("");
+  const [idType, setIdType] = useState("");
+  const [type, setType] = useState("");
   const { id } = useParams<{ id: string }>();
   const { data, refetch } = useGetFullExamDetail(id ?? "");
   useEffect(() => {
@@ -36,6 +41,11 @@ const CreateReadingExamDetail = () => {
   const handleOpenCreateType = (idPassage: string) => {
     setIdPassage(idPassage);
     setOpenDiaCreateType(true);
+  };
+  const handleOpenCreateQuestion = (idType: string, type: string) => {
+    setIdType(idType);
+    setType(type);
+    setOpenDiaCreateQuestion(true);
   };
   const passages = data?.examPassage;
   return (
@@ -52,10 +62,17 @@ const CreateReadingExamDetail = () => {
         id={idPassage}
         refetch={refetch}
       />
+      <DialogCreateQuestion
+        openDia={openDiaCreateQuestion}
+        setOpenDia={setOpenDiaCreateQuestion}
+        id={idType}
+        type={type}
+        refetch={refetch}
+      />
       <div className="w-9/12 mx-auto">
         <Step step={1} />
       </div>
-      <div className="w-10/12 mx-auto bg-white min-h-[60vh] rounded-lg shadow-md p-10">
+      <div className="w-10/12 mx-auto bg-white h-[70vh] overflow-y-auto rounded-lg shadow-md p-10">
         <div className="flex justify-between items-center">
           <h1 className="text-center mb-4 text-xl font-bold">
             Create Passage Detail
@@ -69,12 +86,12 @@ const CreateReadingExamDetail = () => {
         </div>
 
         {passages && passages.length > 0 ? (
-          <Accordion
-            type="single"
-            collapsible
-            className="w-full bg-[#F1FFEF] border-2 border-[#188F09] rounded-lg px-4 mt-4"
-          >
-            {passages.map((passage, index) => (
+          passages.map((passage, index) => (
+            <Accordion
+              type="single"
+              collapsible
+              className="w-full bg-[#F1FFEF] border-2 border-[#188F09] rounded-lg px-4 mt-4"
+            >
               <AccordionItem value="item-1" key={passage.id}>
                 <AccordionTrigger className="flex gap-3 items-center font-bold">
                   <span>Passage {index + 1}:</span> <span>{passage.title}</span>
@@ -89,19 +106,45 @@ const CreateReadingExamDetail = () => {
                     </Button>
                   </div>
                   {passage.types && passage.types.length > 0 ? (
-                    <Accordion
-                      type="single"
-                      collapsible
-                      className="w-full bg-[#F1FFEF] border-2 border-[#164C7E] rounded-lg px-4 mt-4"
-                    >
-                      {passage.types.map((type) => (
+                    passage.types.map((type) => (
+                      <Accordion
+                        type="single"
+                        collapsible
+                        className="w-full bg-[#F1FFEF] border-2 border-[#164C7E] rounded-lg px-4 mt-4"
+                      >
                         <AccordionItem value="item-1" key={type.id}>
                           <AccordionTrigger className="flex gap-3 items-center font-bold">
-                            <span>Type:</span> <span>{questionTypeDisplayNames[type.type] || type.type}</span>
+                            <span>Type:</span>{" "}
+                            <span>
+                              {questionTypeDisplayNames[type.type] || type.type}
+                            </span>
                           </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="flex justify-end">
+                              <Button
+                                className="border-2 flex gap-3 border-[#188F09] font-bold bg-white text-[#188F09] hover:text-white hover:bg-[#188F09]"
+                                onClick={() =>
+                                  handleOpenCreateQuestion(type.id, type.type)
+                                }
+                              >
+                                Create New Question
+                              </Button>
+                            </div>
+                            {type.questions && type.questions.length > 0 ? (
+                              type.questions.map((question, index) => (
+                                <div className="w-full flex gap-4 font-bold text-black items-center bg-yellow-200 border-2 border-[#188F09] rounded-lg p-3 mt-4">
+                                  <span>Question {index + 1}:</span> <span>{question.question}</span>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-center text-black">
+                                There are currently no Question available.
+                              </div>
+                            )}
+                          </AccordionContent>
                         </AccordionItem>
-                      ))}
-                    </Accordion>
+                      </Accordion>
+                    ))
                   ) : (
                     <div className="text-center text-black">
                       There are currently no Type Question available.
@@ -109,8 +152,8 @@ const CreateReadingExamDetail = () => {
                   )}
                 </AccordionContent>
               </AccordionItem>
-            ))}
-          </Accordion>
+            </Accordion>
+          ))
         ) : (
           <div className="text-center text-black">
             There are currently no passages available.

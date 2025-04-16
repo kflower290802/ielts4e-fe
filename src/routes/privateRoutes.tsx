@@ -32,11 +32,16 @@ import AdminPractice from "@/features/Admin/AdminPractice";
 import CreatePractice from "@/features/Admin/AdminPractice/features/CreatePractice";
 import CreateReadingExamDetail from "@/features/Admin/AdminExam/features/CreateReading/CreateReadingExamDetail";
 import CreateExam from "@/features/Admin/AdminExam/features/CreateReading/CreateExam";
+import Store from "@/features/Store";
 
 export const privateRoutes = [
   {
     element: <Layout />,
     children: [
+      {
+        element: <Practice />,
+        path: Route.Practice,
+      },
       {
         element: <HomeUser />,
         path: Route.Home,
@@ -53,15 +58,15 @@ export const privateRoutes = [
         element: <Report />,
         path: `${Route.Report}`,
       },
+      {
+        element: <Store />,
+        path: `${Route.Store}`,
+      },
     ],
   },
   {
     element: <PracticeLayout />,
     children: [
-      {
-        element: <Practice />,
-        path: Route.Practice,
-      },
       {
         element: <PracticeReading />,
         path: `${Route.PracticeReading}/:id`,

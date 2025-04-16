@@ -18,6 +18,13 @@ export default function Page() {
     setType(type);
     setOpenDia(true);
   };
+  const sortedData = data
+    ? [...data].sort((a, b) => {
+        const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+        const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+        return dateB - dateA; // Giảm dần: ngày mới hơn lên đầu
+      })
+    : [];
   return (
     <div className="p-14 w-full">
       <DialogConfirm
@@ -44,7 +51,7 @@ export default function Page() {
         <div className="bg-white w-full p-5">
           <h2 className="mb-4 text-lg font-semibold">RECENT WORK</h2>
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
-            {data?.map((item, index) => (
+            {sortedData?.map((item, index) => (
               <div
                 key={index}
                 className="overflow-hidden rounded-lg bg-white shadow"

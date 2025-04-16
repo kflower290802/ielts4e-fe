@@ -33,6 +33,8 @@ export const Route = {
   CreateExamDetail: '/exam/create/detail',
   CreatePractice: '/practice/create',
   CreatePracticeDetail: '/practice/create/detail',
+  //store:
+  Store: '/store'
 }
 
 export const authRoutes = [Route.Login, Route.SignUp]

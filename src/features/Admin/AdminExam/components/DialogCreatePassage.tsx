@@ -37,7 +37,7 @@ const DialogCreatePassage = ({ openDia, setOpenDia, id, refetch }: IProps) => {
   };
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
-      <DialogContent className="px-6 py-2 bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
+      <DialogContent className="p-6 bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
         <h2 className="text-lg font-semibold mb-4">Create New Passage</h2>
         <div className="mb-4">
           <label htmlFor="title" className="block text-sm font-medium mb-1">

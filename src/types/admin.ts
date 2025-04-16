@@ -20,6 +20,15 @@ export interface ICreateType {
   content: string;
   image: FileList;
 }
+export interface ICreateQuestion {
+  question: string;
+  examReadingTypeId: string;
+  answers: IAnswer[]
+}
+export interface IAnswer {
+  answer: string;
+  isCorrect: boolean;
+}
 export interface IExamDetail extends IDetailExcercise {
   examPassage: ExamPassage[]
 }
