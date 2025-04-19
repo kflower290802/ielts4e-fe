@@ -15,7 +15,6 @@ interface Props {
 const AnswerList = ["A", "B", "C", "D", "E"];
 
 const SingleChoiceResult: React.FC<Props> = ({
-  index,
   question,
   userAnswer,
   questionNumber,

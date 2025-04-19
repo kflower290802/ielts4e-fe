@@ -1,5 +1,11 @@
 import { api } from "@/lib/api";
-import { ICreateListeningQuestion, ICreateListeningType, ICreatePassage, ICreateQuestion, IExamDetail } from "@/types/admin";
+import {
+  ICreateListeningQuestion,
+  ICreateListeningType,
+  ICreatePassage,
+  ICreateQuestion,
+  IExamDetail,
+} from "@/types/admin";
 import { IExcerciseDetail } from "@/types/excercise";
 
 export const createExam = (exam: FormData): Promise<IExcerciseDetail> =>
@@ -12,6 +18,12 @@ export const getFullExamDetail = (id: string): Promise<IExamDetail> =>
   api.get(`/exams/exam-detail/${id}`);
 export const createPassage = (data: ICreatePassage): Promise<string> =>
   api.post(`/exam-passages/`, data);
+export const createPart = (data: FormData): Promise<string> =>
+  api.post(`/exam-writings/`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 export const createSection = (data: { examId: string }): Promise<string> =>
   api.post(`/exam-listen-sections/`, data);
 export const createType = (data: FormData): Promise<string> =>
@@ -20,9 +32,11 @@ export const createType = (data: FormData): Promise<string> =>
       "Content-Type": "multipart/form-data",
     },
   });
-export const createListeningType = (data: ICreateListeningType): Promise<string> =>
-  api.post(`/exam-listen-types`, data);
+export const createListeningType = (
+  data: ICreateListeningType
+): Promise<string> => api.post(`/exam-listen-types`, data);
 export const createQuestion = (data: ICreateQuestion): Promise<string> =>
   api.post(`/exam-passage-questions`, data);
-export const createListeningQuestion = (data: ICreateListeningQuestion): Promise<string> =>
-  api.post(`/exam-listen-questions`, data);
+export const createListeningQuestion = (
+  data: ICreateListeningQuestion
+): Promise<string> => api.post(`/exam-listen-questions`, data);

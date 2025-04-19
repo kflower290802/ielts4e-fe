@@ -22,7 +22,6 @@ import PracticeListeningResult from "@/features/Practice/PracticeListening/compo
 import WritingPracticeResult from "@/features/Practice/PracticeWriting/components/WritingPracticeResult";
 import Report from "@/features/Report";
 import PracticeLayout from "@/layout/practiceLayout";
-import LearnLayout from "@/layout/learnLayout";
 import LearnLesson from "@/features/Learn/features/LearnLesson";
 import AdminHome from "@/features/Admin/AdminHome";
 import AdminExam from "@/features/Admin/AdminExam";
@@ -34,6 +33,8 @@ import CreateReadingExamDetail from "@/features/Admin/AdminExam/features/CreateR
 import CreateExam from "@/features/Admin/AdminExam/features/CreateExam";
 import Store from "@/features/Store";
 import CreateListeningExamDetail from "@/features/Admin/AdminExam/features/CreateListening";
+import CreateWritingDetail from "@/features/Admin/AdminExam/features/CreateWriting";
+import CreatePracticeReading from "@/features/Admin/AdminPractice/features/PracticeReading";
 
 export const privateRoutes = [
   {
@@ -62,6 +63,10 @@ export const privateRoutes = [
       {
         element: <Store />,
         path: `${Route.Store}`,
+      },
+      {
+        element: <LearnLesson />,
+        path: `${Route.LearnLesson}/:id`,
       },
     ],
   },
@@ -99,15 +104,6 @@ export const privateRoutes = [
       {
         element: <WritingPracticeResult />,
         path: `${Route.PracticeWritingResult}/:id/:idResult`,
-      },
-    ],
-  },
-  {
-    element: <LearnLayout />,
-    children: [
-      {
-        element: <LearnLesson />,
-        path: `${Route.LearnLesson}/:id`,
       },
     ],
   },
@@ -173,8 +169,16 @@ export const adminPrivateRoutes = [
         path: `${Route.CreateExamDetail}/listening/:id`,
       },
       {
+        element: <CreateWritingDetail />,
+        path: `${Route.CreateExamDetail}/writing/:id`,
+      },
+      {
         element: <CreatePractice />,
         path: Route.CreatePractice,
+      },
+      {
+        element: <CreatePracticeReading />,
+        path: `${Route.CreatePracticeDetail}/reading/:id`,
       },
       {
         element: <AdminLearn />,

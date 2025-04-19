@@ -1,12 +1,14 @@
-import { useParams } from 'react-router-dom';
-import { useGetBloDetail } from './hooks/useGetBlogDetail';
+import { useParams } from "react-router-dom";
+import { useGetBloDetail } from "./hooks/useGetBlogDetail";
 
 const LearnLesson = () => {
-    const { id } = useParams<{ id: string }>();
-    const {data} = useGetBloDetail(id ?? '')
+  const { id } = useParams<{ id: string }>();
+  const { data } = useGetBloDetail(id ?? "");
   return (
-    <div dangerouslySetInnerHTML={{ __html: data?.content ?? '' }} />
-  )
-}
+    <div className="bg-white w-11/12 mx-auto h-full p-3">
+      <div dangerouslySetInnerHTML={{ __html: data?.content ?? "" }} />
+    </div>
+  );
+};
 
-export default LearnLesson
+export default LearnLesson;

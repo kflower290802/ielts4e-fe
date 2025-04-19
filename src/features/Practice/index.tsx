@@ -9,14 +9,10 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import {
-  practiceTabs,
-  questionTypeFilters,
-  statusFilters,
-} from "@/constant/filter";
+import { practiceTabs, statusFilters } from "@/constant/filter";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
@@ -27,7 +23,14 @@ import {
 import { useGetPracticeExcercise } from "./hooks/useGetPracticeExcercise";
 import { useGetTopic } from "./hooks/useGetTopic";
 import DialogPracticeConfirm from "./components/DialogPracticeConfirm";
-
+import { EQuestionType } from "@/types/ExamType/exam";
+const questionTypeDisplayNames: Record<string, string> = {
+  [EQuestionType.TextBox]: "Text Box",
+  [EQuestionType.SingleChoice]: "Single Choice",
+  [EQuestionType.BlankPassageDrag]: "Blank Passage Drag",
+  [EQuestionType.BlankPassageTextbox]: "Blank Passage Textbox",
+  [EQuestionType.BlankPassageImageTextbox]: "Blank Image Textbox",
+};
 export function Practice() {
   const [openDia, setOpenDia] = useState(false);
   const [id, setId] = useState("");
@@ -38,6 +41,7 @@ export function Practice() {
       status: searchParams.get("status") as StatusExcercise | undefined,
       year: searchParams.get("year") || undefined,
       type: (searchParams.get("type") as TypeExcercise) ?? "reading",
+      questionType: searchParams.get("questionType") as EQuestionType,
       page: searchParams.get("page")
         ? Number(searchParams.get("page"))
         : undefined,
@@ -49,6 +53,8 @@ export function Practice() {
     if (params.status) newSearchParams.set("status", params.status);
     if (params.topic) newSearchParams.set("topic", params.topic);
     if (params.type) newSearchParams.set("type", params.type);
+    if (params.questionType)
+      newSearchParams.set("questionType", params.questionType);
     if (params.page != undefined)
       newSearchParams.set("page", params.page.toString());
     setSearchParams(newSearchParams);
@@ -115,19 +121,33 @@ export function Practice() {
               </RadioGroup>
             </div>
           </div>
-          <section>
+          <div>
             <h3 className="text-lg font-semibold mb-3">Type Question</h3>
             <div className="space-y-2">
-              <RadioGroup>
-                {questionTypeFilters.map((type) => (
-                  <div key={type.id} className="flex items-center space-x-2">
-                    <RadioGroupItem value={type.id} id={type.id} />
-                    <Label htmlFor={type.id}>{type.label}</Label>
-                  </div>
-                ))}
+              <RadioGroup
+                value={params.questionType || ""}
+                onValueChange={(value) => {
+                  setParams((prev) => ({
+                    ...prev,
+                    questionType: value,
+                  }));
+                }}
+              >
+                {Object.entries(questionTypeDisplayNames).map(
+                  ([questionType, label]) => (
+                    <div
+                      key={questionType}
+                      className="flex items-center space-x-2"
+                    >
+                      <RadioGroupItem value={questionType} id={questionType} />
+                      <Label htmlFor={questionType}>{label}</Label>
+                    </div>
+                  )
+                )}
               </RadioGroup>
             </div>
-          </section>
+          </div>
+
           <Button
             variant="outline"
             className="w-full mt-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
@@ -172,7 +192,10 @@ export function Practice() {
                         />
                       </CardContent>
                       <CardFooter className="flex flex-col items-center gap-2 p-3">
-                        <p className="text-sm text-center">{card.name}</p>
+                        <p className="text-sm text-center line-clamp-1"
+                        >
+                          {card.name}
+                        </p>
                         <Button
                           className={cn(
                             card.status === StatusExcercise.NotStarted
@@ -181,7 +204,9 @@ export function Practice() {
                               ? "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
                               : "border-2 bg-white border-red-500 text-red-500 hover:text-white hover:bg-red-500"
                           )}
-                          onClick={() => handleStartPractice(card.id, card.type)}
+                          onClick={() =>
+                            handleStartPractice(card.id, card.type)
+                          }
                         >
                           {card.status === StatusExcercise.Completed
                             ? "RETRY"

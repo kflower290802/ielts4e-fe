@@ -42,10 +42,10 @@ export default function Store() {
           },
         },
         {
-          name: "Plus",
+          name: "Vip",
           price: 20,
           description: "Boost your IELTS score with more practice and detailed feedback",
-          buttonText: "Upgrade to Plus",
+          buttonText: "Upgrade to Vip",
           popular: true,
           features: [
             { text: "All features in Free plan" },
@@ -91,7 +91,7 @@ export default function Store() {
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-2xl font-bold">{tier.name}</CardTitle>
-                  {tier.popular && <Badge className="bg-[#188F09] text-white text-xs uppercase">Phổ biến</Badge>}
+                  {tier.popular && <Badge className="bg-[#188F09] text-white text-xs uppercase">Popular</Badge>}
                 </div>
                 <div className="flex items-baseline mt-2">
                   <span className="text-3xl font-extrabold tracking-tight">$</span>

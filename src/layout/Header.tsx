@@ -17,13 +17,11 @@ import {
 import { Link } from "react-router-dom";
 import { useLogout } from "./hooks/useLogOut";
 const Header = () => {
-  const { setAuthStatus } = useAuthStore();
   const { isAuthenticated } = useAuthStore();
   const { mutateAsync: logOut } = useLogout();
   const userName = getStorage("userName");
   const handleLogout = async () => {
     await logOut();
-    setAuthStatus({ isAuthenticated: false, role: "Learner" });
   };
   return (
     <div className="flex items-center h-24 justify-between bg-white sticky top-0 right-0 left-64 z-40 shadow-lg p-10">
@@ -40,11 +38,12 @@ const Header = () => {
       </div>
       {isAuthenticated ? (
         <div className="flex items-center gap-10">
-          <div className="flex items-center gap-2 flex-col min-w-[7vw]">
-            <span>{userName?.toUpperCase()}</span>
-            <div className="flex items-center justify-between w-full">
-              <span>Exp: 1000</span>
-              <span className="text-yellow-500">VIP</span>
+          <div className="flex items-center  gap-2 flex-col min-w-[7vw]">
+            <div className="flex items-end justify-end w-full">
+              <span>{userName?.toUpperCase()}</span>
+            </div>
+            <div className="flex items-end justify-end w-full">
+              <span className="text-yellow-500">FREE</span>
             </div>
           </div>
           <DropdownMenu>

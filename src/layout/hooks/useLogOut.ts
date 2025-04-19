@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { logOut } from "@/api/auth";
 import { removeLocalStorage } from "@/utils/storage";
@@ -10,11 +10,13 @@ import { useAuthStore } from "@/store/auth";
 export const useLogout = () => {
   const { setAuthStatus } = useAuthStore();
   const nav = useNavigate();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => logOut(),
     async onSuccess() {
       removeLocalStorage();
-      setAuthStatus(false);
+      queryClient.invalidateQueries();
+      setAuthStatus({ isAuthenticated: false, role: "Learner" });
       toast.success("Log out Success!");
       nav(Route.Login);
     },

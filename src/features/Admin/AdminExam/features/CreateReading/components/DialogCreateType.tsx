@@ -116,41 +116,46 @@ const DialogCreateType = ({ openDia, setOpenDia, id, refetch }: IProps) => {
               <SelectValue placeholder="Select Type" />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries (questionTypeDisplayNames).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
+              {Object.entries(questionTypeDisplayNames).map(
+                ([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                )
+              )}
             </SelectContent>
           </Select>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Content</label>
-          <Textarea
-            name="content"
-            value={formData.content}
-            onChange={handleInputChange}
-            disabled={!isContentEnabled}
-            placeholder={
-              isContentEnabled
-                ? "Enter Content"
-                : "Content is disabled for this type"
-            }
-            className="border-[#164C7E] text-[#164C7E]"
-          />
-        </div>
+        {isContentEnabled && (
+          <>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Content</label>
+              <Textarea
+                name="content"
+                value={formData.content}
+                onChange={handleInputChange}
+                placeholder={
+                  isContentEnabled
+                    ? "Enter Content"
+                    : "Content is disabled for this type"
+                }
+                className="border-[#164C7E] text-[#164C7E]"
+              />
+            </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Image</label>
-          <Input
-            type="file"
-            accept="image/*"
-            disabled={!isContentEnabled}
-            onChange={handleImageChange}
-            className="border-[#164C7E] text-[#164C7E]"
-          />
-        </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Image</label>
+              <Input
+                type="file"
+                accept="image/*"
+                disabled={!isContentEnabled}
+                onChange={handleImageChange}
+                className="border-[#164C7E] text-[#164C7E]"
+              />
+            </div>
+          </>
+        )}
         <Button
           isLoading={isPending}
           onClick={handleSubmit}

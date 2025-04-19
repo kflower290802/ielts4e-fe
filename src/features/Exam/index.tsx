@@ -20,7 +20,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useGetYear } from "./hooks/useGetYear";
-import { examFilters, examTabs, statusFilters } from "@/constant/filter";
+import { examTabs, statusFilters } from "@/constant/filter";
 import { useSearchParams } from "react-router-dom";
 import DialogConfirm from "./components/DialogConfirm";
 import { formatMillisecondsToMMSS } from "@/utils/time";
@@ -114,20 +114,6 @@ export function Exam() {
               </RadioGroup>
             </div>
           </section>
-
-          <section>
-            <h3 className="text-lg font-semibold mb-3">Exam</h3>
-            <div className="space-y-2">
-              <RadioGroup>
-                {examFilters.map((type) => (
-                  <div key={type.id} className="flex items-center space-x-2">
-                    <RadioGroupItem value={type.id} id={type.id} />
-                    <Label htmlFor={type.id}>{type.label}</Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          </section>
           <Button
             variant="outline"
             className="w-full mt-4 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
@@ -176,7 +162,9 @@ export function Exam() {
                         </div>
                       </CardContent>
                       <CardFooter className="flex flex-col items-center gap-2 p-3">
-                        <p className="text-sm text-center">{card.name}</p>
+                        <p className="text-sm text-center line-clamp-1  ">
+                          {card.name}
+                        </p>
                         <Button
                           className={cn(
                             card.status === StatusExcercise.NotStarted

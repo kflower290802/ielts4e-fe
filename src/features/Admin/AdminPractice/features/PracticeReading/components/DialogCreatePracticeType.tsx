@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
 import {
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EQuestionType } from "@/types/ExamType/exam";
-import { useCreateListeningType } from "../hooks/useCreateListeningType";
+import { useCreatePracticeType } from "../hooks/useCreateType";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
@@ -23,29 +24,30 @@ const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.SingleChoice]: "Single Choice",
   [EQuestionType.BlankPassageDrag]: "Blank Passage Drag",
   [EQuestionType.BlankPassageTextbox]: "Blank Passage Textbox",
+  [EQuestionType.BlankPassageImageTextbox]: "Blank Passage Image Textbox",
 };
 const contentEnabledTypes = [
   EQuestionType.BlankPassageDrag,
   EQuestionType.BlankPassageTextbox,
   EQuestionType.BlankPassageImageTextbox,
 ];
-const DialogCreateListeningType = ({
+const DialogCreatePracticeType = ({
   openDia,
   setOpenDia,
   id,
   refetch,
 }: IProps) => {
-  const { mutateAsync: createListeningType, isPending } =
-    useCreateListeningType();
+  const { mutateAsync: createType, isPending } = useCreatePracticeType();
   const [formData, setFormData] = useState({
-    examSectionId: id || "",
+    practiceReadingId: id || "",
     type: "",
     content: "",
+    image: null as File | null,
   });
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
-      examSectionId: id || "",
+      practiceReadingId: id || "",
     }));
   }, [id]);
   const handleInputChange = (
@@ -65,17 +67,32 @@ const DialogCreateListeningType = ({
       content: contentEnabledTypes.includes(newType) ? prev.content : "",
     }));
   };
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData((prev) => ({
+      ...prev,
+      image: file,
+    }));
+  };
+
   const handleSubmit = async () => {
-    if (!formData.examSectionId || !formData.type) {
+    if (!formData.practiceReadingId || !formData.type) {
       toast.error("Please fill in all required fields");
       return;
     }
+    const data = new FormData();
+    data.append("practiceReadingId", formData.practiceReadingId);
+    data.append("type", formData.type);
+    if (formData.content) data.append("content", formData.content);
+    if (formData.image) data.append("image", formData.image);
+
     try {
-      await createListeningType(formData);
+      await createType(data);
       setFormData({
-        examSectionId: id || "",
+        practiceReadingId: id || "",
         type: "",
         content: "",
+        image: null,
       });
     } catch (error) {
       console.error(error);
@@ -90,7 +107,7 @@ const DialogCreateListeningType = ({
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
       <DialogContent className="p-6 bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
-        <h2 className="text-lg font-semibold mb-4">Create New Type Section</h2>
+        <h2 className="text-lg font-semibold mb-4">Create New Type Passage</h2>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">
             Type <span className="text-red-500">*</span>
@@ -114,22 +131,34 @@ const DialogCreateListeningType = ({
             </SelectContent>
           </Select>
         </div>
-
         {isContentEnabled && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Content</label>
-            <Textarea
-              name="content"
-              value={formData.content}
-              onChange={handleInputChange}
-              placeholder={
-                isContentEnabled
-                  ? "Enter Content"
-                  : "Content is disabled for this type"
-              }
-              className="border-[#164C7E] text-[#164C7E]"
-            />
-          </div>
+          <>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Content</label>
+              <Textarea
+                name="content"
+                value={formData.content}
+                onChange={handleInputChange}
+                placeholder={
+                  isContentEnabled
+                    ? "Enter Content"
+                    : "Content is disabled for this type"
+                }
+                className="border-[#164C7E] text-[#164C7E]"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Image</label>
+              <Input
+                type="file"
+                accept="image/*"
+                disabled={!isContentEnabled}
+                onChange={handleImageChange}
+                className="border-[#164C7E] text-[#164C7E]"
+              />
+            </div>
+          </>
         )}
 
         <Button
@@ -137,11 +166,11 @@ const DialogCreateListeningType = ({
           onClick={handleSubmit}
           className="w-full rounded-full bg-[#164C7E] text-white hover:bg-[#123d66]"
         >
-          Create Type Section
+          Create Type Passage
         </Button>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default DialogCreateListeningType;
+export default DialogCreatePracticeType;

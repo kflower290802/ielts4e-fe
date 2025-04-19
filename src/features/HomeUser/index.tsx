@@ -48,47 +48,49 @@ export default function Page() {
       </div>
 
       <div className="flex flex-col w-full items-center gap-10">
-        <div className="bg-white w-full p-5">
-          <h2 className="mb-4 text-lg font-semibold">RECENT WORK</h2>
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
-            {sortedData?.map((item, index) => (
-              <div
-                key={index}
-                className="overflow-hidden rounded-lg bg-white shadow"
-              >
-                <div className="relative">
-                  <img
-                    src={item.exam.image || "/placeholder.svg"}
-                    alt={item.exam.name}
-                    className="h-24 w-full object-cover"
-                  />
-                  {item.exam.updatedAt && (
-                    <span className="absolute left-2 top-2 rounded bg-white/80 px-2 py-1 text-sm">
-                      {format(item.updatedAt, "dd/MM/yyyy HH:mm:ss")}
-                    </span>
-                  )}
-                </div>
-                <div className="p-3 flex flex-col items-center">
-                  <h3 className="mb-4 text-sm line-clamp-2">
-                    {item.exam.name}
-                  </h3>
-                  <Button
-                    className={cn(
-                      item.isCompleted
-                        ? "border-2 border-[#164C7E] bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
-                        : "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
+        {data && data.length > 0 && (
+          <div className="bg-white w-full p-5">
+            <h2 className="mb-4 text-lg font-semibold">RECENT WORK</h2>
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
+              {sortedData?.map((item, index) => (
+                <div
+                  key={index}
+                  className="overflow-hidden rounded-lg bg-white shadow"
+                >
+                  <div className="relative">
+                    <img
+                      src={item.exam.image || "/placeholder.svg"}
+                      alt={item.exam.name}
+                      className="h-24 w-full object-cover"
+                    />
+                    {item.exam.updatedAt && (
+                      <span className="absolute left-2 top-2 rounded bg-white/80 px-2 py-1 text-sm">
+                        {format(item.updatedAt, "dd/MM/yyyy HH:mm:ss")}
+                      </span>
                     )}
-                    onClick={() =>
-                      handleStartExam(item.exam.id, item.exam.type)
-                    }
-                  >
-                    {item.isCompleted ? "RETRY" : "CONTINUTE"}
-                  </Button>
+                  </div>
+                  <div className="p-3 flex flex-col items-center">
+                    <h3 className="mb-4 text-sm line-clamp-2">
+                      {item.exam.name}
+                    </h3>
+                    <Button
+                      className={cn(
+                        item.isCompleted
+                          ? "border-2 border-[#164C7E] bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
+                          : "border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white"
+                      )}
+                      onClick={() =>
+                        handleStartExam(item.exam.id, item.exam.type)
+                      }
+                    >
+                      {item.isCompleted ? "RETRY" : "CONTINUTE"}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="bg-white p-5 w-full">
           <h2 className="mb-4 text-lg font-semibold">SUGGESTIONS FOR YOU</h2>

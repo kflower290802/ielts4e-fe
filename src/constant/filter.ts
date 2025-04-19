@@ -19,12 +19,3 @@ export const statusFilters = [
   { id: StatusExcercise.InProgress, label: "In Progress" },
   { id: StatusExcercise.Completed, label: "Completed" },
 ];
-export const examFilters = [
-  { id: "academic", label: "Academic " },
-  { id: "general", label: "General" },
-];
-export const questionTypeFilters = [
-  { id: "multiple", label: "Multiple choice " },
-  { id: "matching", label: "Matching" },
-  { id: "truefalse", label: "True/False/NG" },
-];
