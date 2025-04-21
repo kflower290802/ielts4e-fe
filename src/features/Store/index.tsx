@@ -1,82 +1,98 @@
-"use client"
+"use client";
 
-import { Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface PricingFeature {
-  text: string
+  text: string;
 }
 
 interface PricingTier {
-  name: string
-  price: number
-  description: string
-  features: PricingFeature[]
-  buttonText: string
-  popular?: boolean
-  footerText?: string
+  name: string;
+  price: number;
+  description: string;
+  features: PricingFeature[];
+  buttonText: string;
+  popular?: boolean;
+  footerText?: string;
   footerLink?: {
-    text: string
-    href: string
-  }
+    text: string;
+    href: string;
+  };
 }
 
 export default function Store() {
-    const pricingTiers: PricingTier[] = [
+  const pricingTiers: PricingTier[] = [
+    {
+      name: "Free",
+      price: 0,
+      description: "Start your IELTS preparation with basic practice tools",
+      buttonText: "Your Current Plan",
+      features: [
+        { text: "Access to 2 full IELTS practice tests per month" },
+        { text: "Basic writing and speaking feedback" },
+        { text: "Limited vocabulary exercises" },
+      ],
+      footerText: "Already on this plan? ",
+      footerLink: {
+        text: "View billing support",
+        href: "#",
+      },
+    },
+    {
+      name: "Vip",
+      price: 100000,
+      description:
+        "Boost your IELTS score with more practice and detailed feedback",
+      buttonText: "Upgrade to Vip",
+      popular: true,
+      features: [
+        { text: "All features in Free plan" },
+        { text: "10 full IELTS practice tests per month" },
+        { text: "Detailed writing and speaking scoring with feedback" },
+        { text: "Access to advanced vocabulary and grammar exercises" },
+      ],
+      footerLink: {
+        text: "Subject to usage limits",
+        href: "#",
+      },
+    },
+    {
+      name: "Pro",
+      price: 200000,
+      description:
+        "Maximize your IELTS potential with unlimited practice and premium support",
+      buttonText: "Upgrade to Pro",
+      features: [
+        { text: "All features in Plus plan" },
+        { text: "Unlimited IELTS practice tests" },
         {
-          name: "Free",
-          price: 0,
-          description: "Start your IELTS preparation with basic practice tools",
-          buttonText: "Your Current Plan",
-          features: [
-            { text: "Access to 2 full IELTS practice tests per month" },
-            { text: "Basic writing and speaking feedback" },
-            { text: "Limited vocabulary exercises" },
-          ],
-          footerText: "Already on this plan? ",
-          footerLink: {
-            text: "View billing support",
-            href: "#",
-          },
+          text: "Priority writing and speaking scoring with in-depth feedback",
         },
-        {
-          name: "Vip",
-          price: 20,
-          description: "Boost your IELTS score with more practice and detailed feedback",
-          buttonText: "Upgrade to Vip",
-          popular: true,
-          features: [
-            { text: "All features in Free plan" },
-            { text: "10 full IELTS practice tests per month" },
-            { text: "Detailed writing and speaking scoring with feedback" },
-            { text: "Access to advanced vocabulary and grammar exercises" },
-          ],
-          footerLink: {
-            text: "Subject to usage limits",
-            href: "#",
-          },
-        },
-        {
-          name: "Pro",
-          price: 200,
-          description: "Maximize your IELTS potential with unlimited practice and premium support",
-          buttonText: "Upgrade to Pro",
-          features: [
-            { text: "All features in Plus plan" },
-            { text: "Unlimited IELTS practice tests" },
-            { text: "Priority writing and speaking scoring with in-depth feedback" },
-            { text: "Personalized study plans and progress tracking" },
-          ],
-          footerText: "Unlimited access subject to fair use policies. ",
-          footerLink: {
-            text: "Learn more",
-            href: "#",
-          },
-        },
-      ]
-
+        { text: "Personalized study plans and progress tracking" },
+      ],
+      footerText: "Unlimited access subject to fair use policies. ",
+      footerLink: {
+        text: "Learn more",
+        href: "#",
+      },
+    },
+  ];
+  const formatVND = (number: number) => {
+    return number.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
   return (
     <div className="h-full p-8 gap-14">
       <div className="mx-auto">
@@ -90,22 +106,34 @@ export default function Store() {
             >
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-2xl font-bold">{tier.name}</CardTitle>
-                  {tier.popular && <Badge className="bg-[#188F09] text-white text-xs uppercase">Popular</Badge>}
+                  <CardTitle className="text-2xl font-bold">
+                    {tier.name}
+                  </CardTitle>
+                  {tier.popular && (
+                    <Badge className="bg-[#188F09] text-white text-xs uppercase">
+                      Popular
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex items-baseline mt-2">
-                  <span className="text-3xl font-extrabold tracking-tight">$</span>
-                  <span className="text-5xl font-extrabold tracking-tight">{tier.price}</span>
+                  <span className="text-4xl font-extrabold tracking-tight">
+                    {formatVND(tier.price)}
+                  </span>
                   <span className="ml-1 text-sm font-medium text-gray-400">
-                    USD/
+                    /
                     <br />
                     tháng
                   </span>
                 </div>
-                <CardDescription className="text-black mt-2">{tier.description}</CardDescription>
+                <CardDescription className="text-black mt-2">
+                  {tier.description}
+                </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
-                <Button className="w-full py-6 mb-6 bg-[#188F09] text-white font-bold" disabled ={tier.name === 'Free'}>
+                <Button
+                  className="w-full py-6 mb-6 bg-[#188F09] text-white font-bold"
+                  disabled={tier.name === "Free"}
+                >
                   {tier.buttonText}
                 </Button>
                 <ul className="space-y-3">
@@ -122,7 +150,10 @@ export default function Store() {
                   <div className="text-xs text-gray-400">
                     {tier.footerText}
                     {tier.footerLink && (
-                      <a href={tier.footerLink.href} className="text-black underline hover:text-white">
+                      <a
+                        href={tier.footerLink.href}
+                        className="text-black underline hover:text-white"
+                      >
                         {tier.footerLink.text}
                       </a>
                     )}
@@ -134,5 +165,5 @@ export default function Store() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -14,6 +14,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import ReadingPracticeFooter from "./components/ReadingPracticeFooter";
 import DialogPracticeExit from "../components/DiaPracticeExit";
+import ClockCountTime from "../components/ClockCountTime";
 export default function PracticeReading() {
   const [openDia, setOpenDia] = useState(false);
   const { id } = useParams<{ id: string }>();
@@ -193,7 +194,7 @@ export default function PracticeReading() {
     return { start, end };
   };
   return (
-    <div className="h-full w-full p-4 flex justify-between">
+    <div className="h-full w-full p-4 flex gap-3 justify-between">
       <DialogPracticeExit
         openDia={openDia}
         setOpenDia={setOpenDia}
@@ -208,7 +209,7 @@ export default function PracticeReading() {
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
-      <div className="flex flex-col justify-between">
+      <div className="flex flex-1 flex-col justify-between">
         <DndProvider backend={HTML5Backend}>
           <div className="flex flex-1 flex-col gap-4">
             <div className="grid gap-6 md:grid-cols-2">
@@ -242,6 +243,8 @@ export default function PracticeReading() {
                         questionTypes,
                         index
                       );
+
+                      const isTextBox = types.type === EQuestionType.TextBox;
                       const isSingleChoiceQuestion =
                         types.type === EQuestionType.SingleChoice;
                       const isBlankPassageDrag =
@@ -303,6 +306,38 @@ export default function PracticeReading() {
                                   onClick={handleSelectSingleAnswer}
                                   currentAnswer={answers[question.id] as string}
                                 />
+                              );
+                            })}
+                          </div>
+                        );
+                      } else if (isTextBox) {
+                        return (
+                          <div className="space-y-4">
+                            <QuestionPracticeHeader
+                              start={start}
+                              end={end}
+                              instruction="Write the CORRECT answer"
+                            />
+                            {types.questions.map((question, index) => {
+                              const questionNumber =
+                                questionNumberMap[question.id] || index + 1;
+                              return (
+                                <div
+                                  className="border rounded-md p-2"
+                                  key={question.id}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <p>
+                                      {questionNumber}. {question.question}
+                                    </p>
+                                    <input
+                                      id={question.id}
+                                      value={answers[question.id] || ""}
+                                      onChange={handleInput(question.id)}
+                                      className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
+                                    />
+                                  </div>
+                                </div>
                               );
                             })}
                           </div>
@@ -400,6 +435,7 @@ export default function PracticeReading() {
           id={id}
         />
       </div>
+      <ClockCountTime />
     </div>
   );
 }

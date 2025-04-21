@@ -1,19 +1,19 @@
 import { Button } from "@/components/ui/button";
 import StepPractice from "../../components/stepPractice";
 import { useState } from "react";
-import DialogPracticeCreatePassage from "./components/DialogPracticeCreatePassage";
 import { useParams } from "react-router-dom";
-import { useGetPracticeDetail } from "./hooks/useGetPracticeDetail";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import DialogCreatePracticeType from "./components/DialogCreatePracticeType";
 import { EQuestionType } from "@/types/ExamType/exam";
-import DialogCreateReadingPracticeQuestion from "./components/DialogCreateReadingPracticeQuestion";
+import { useGetPracticeDetail } from "../PracticeReading/hooks/useGetPracticeDetail";
+import DialogCreateListening from "./components/DialogCreateSection";
 import { IPracticeDetail } from "@/types/admin";
+import DialogCreatePracticeListeningType from "./components/DialogCreatePracticeListeningType";
+import DialogCreateListeningPracticeQuestion from "./components/DialogCreateReadingPracticeQuestion";
 const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.TextBox]: "Text Box",
   [EQuestionType.MultipleChoice]: "Multiple Choice",
@@ -23,9 +23,8 @@ const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.BlankPassageTextbox]: "Blank Passage Textbox",
   [EQuestionType.BlankPassageImageTextbox]: "Blank Passage Image Textbox",
 };
-const CreatePracticeReading = () => {
-  const [openDiaCreatePassage, setOpenDiaCreatePassage] =
-    useState<boolean>(false);
+const CreatePracticeListening = () => {
+  const [openDiaAddAudio, setOpenDiaAddAudio] = useState<boolean>(false);
   const [openDiaCreateType, setOpenDiaCreateType] = useState<boolean>(false);
   const { id } = useParams<{ id: string }>();
   const [openDiaCreateQuestion, setOpenDiaCreateQuestion] =
@@ -43,22 +42,22 @@ const CreatePracticeReading = () => {
     setOpenDiaCreateType(true);
   };
   const { data, refetch } = useGetPracticeDetail(id ?? "");
-  const practiceDetail = data as IPracticeDetail
+  const practiceDetail = data as IPracticeDetail;
   return (
     <div className="h-full w-full p-8 space-y-5">
-      <DialogPracticeCreatePassage
-        openDia={openDiaCreatePassage}
-        setOpenDia={setOpenDiaCreatePassage}
+      <DialogCreateListening
+        openDia={openDiaAddAudio}
+        setOpenDia={setOpenDiaAddAudio}
         id={id}
         refetch={refetch}
       />
-      <DialogCreatePracticeType
+      <DialogCreatePracticeListeningType
         openDia={openDiaCreateType}
         setOpenDia={setOpenDiaCreateType}
         id={idPassage}
         refetch={refetch}
       />
-      <DialogCreateReadingPracticeQuestion
+      <DialogCreateListeningPracticeQuestion
         openDia={openDiaCreateQuestion}
         setOpenDia={setOpenDiaCreateQuestion}
         id={idType}
@@ -71,18 +70,18 @@ const CreatePracticeReading = () => {
       <div className="w-10/12 mx-auto bg-white h-[70vh] overflow-y-auto rounded-lg shadow-md p-10">
         <div className="flex justify-between items-center">
           <h1 className="text-center mb-4 text-xl font-bold">
-            Create Reading Practice Detail
+            Create Listening Practice Detail
           </h1>
-          {!practiceDetail && (
+          {!practiceDetail?.audio && (
             <Button
               className="border-2 flex gap-3 border-[#164C7E] font-bold bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
-              onClick={() => setOpenDiaCreatePassage(true)}
+              onClick={() => setOpenDiaAddAudio(true)}
             >
-              Create Passage
+              Add Audio Listening
             </Button>
           )}
         </div>
-        {practiceDetail ? (
+        {practiceDetail?.audio ? (
           <Accordion
             type="single"
             collapsible
@@ -90,10 +89,14 @@ const CreatePracticeReading = () => {
           >
             <AccordionItem value="item-1">
               <AccordionTrigger className="flex gap-3 items-center font-bold">
-                Passage: <span>{practiceDetail.title}</span>
+                Practice Listening:
               </AccordionTrigger>
               <AccordionContent>
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center mb-4 gap-4">
+                  <audio controls className="w-full">
+                    <source src={practiceDetail.audio} type="audio/mpeg" />
+                    Your browser does not support the audio element.
+                  </audio>
                   <Button
                     className="border-2 flex gap-3 border-blue-500 font-bold bg-white text-blue-500 hover:text-white hover:bg-blue-500"
                     onClick={() => handleOpenCreateType(practiceDetail.id)}
@@ -153,7 +156,7 @@ const CreatePracticeReading = () => {
           </Accordion>
         ) : (
           <div className="text-center text-black">
-            There are currently no passages available.
+            There are currently no audio available.
           </div>
         )}
       </div>
@@ -161,4 +164,4 @@ const CreatePracticeReading = () => {
   );
 };
 
-export default CreatePracticeReading;
+export default CreatePracticeListening;

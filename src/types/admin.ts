@@ -47,6 +47,8 @@ export interface IPracticeDetail {
   id: string;
   content: string;
   image: string;
+  audio: string;
+  question: string
   practice: {
     id: string;
   };
@@ -64,5 +66,15 @@ export interface ICreatePracticePassage {
 export interface ICreateReadingPracticeQuestion {
   question: string;
   practiceReadingTypeId: string;
+  answers: IAnswer[];
+}
+export interface ICreatePracticeListeningType {
+  practiceListenId: string;
+  type: string;
+  content: string;
+}
+export interface ICreatePracticeListeningQuestion {
+  question: string;
+  typeId: string;
   answers: IAnswer[];
 }

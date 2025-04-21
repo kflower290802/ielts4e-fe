@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 
 interface QuestionHeaderProps {
@@ -12,7 +13,7 @@ const QuestionPracticeHeader: React.FC<QuestionHeaderProps> = ({
   instruction,
 }) => {
   return (
-    <div className="my-6 rounded-lg bg-blue-900 p-4 flex gap-3 items-center text-white">
+    <div className={cn(start === 1 ? '' : 'my-6', "rounded-lg bg-blue-900 p-4 flex gap-3 items-center text-white")}>
       <h3 className="text-lg font-semibold">QUESTION {start} - {end}</h3>
       <p>{instruction}</p>
     </div>

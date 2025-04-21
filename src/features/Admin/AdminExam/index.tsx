@@ -90,7 +90,9 @@ const AdminExam = () => {
                         </div>
                       </CardContent>
                       <CardFooter className="flex flex-col items-center gap-2 px-3">
-                        <p className="text-sm text-center line-clamp-1">{card.name}</p>
+                        <p className="text-sm text-center line-clamp-1">
+                          {card.name}
+                        </p>
                         <div className="flex gap-1 items-center justify-between w-full">
                           <button className="w-1/2 px-2 py-1 line-clamp-1 bg-transparent rounded-lg text-xs hover:bg-red-500 hover:text-white font-semibold border-red-500 border-2 text-red-500">
                             Delete Exam

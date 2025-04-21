@@ -295,6 +295,7 @@ const ListeningTest = () => {
               const { start, end } = getQuestionRange(questionType, index);
               const isSingleChoiceQuestion =
                 types.type === EQuestionType.SingleChoice;
+              const isTextBox = types.type === EQuestionType.TextBox;
               const isBlankPassageDrag =
                 types.type === EQuestionType.BlankPassageDrag;
               const isBlankPassageTextbox =
@@ -338,6 +339,38 @@ const ListeningTest = () => {
                         </div>
                       )}
                     </div>
+                  </div>
+                );
+              } else if (isTextBox) {
+                return (
+                  <div className="space-y-4">
+                    <QuestionHeader
+                      start={start}
+                      end={end}
+                      instruction="Write the CORRECT answer"
+                    />
+                    {questionType[index].questions.map((question, index) => {
+                      const questionNumber =
+                        questionNumberMap[question.id] || index + 1;
+                      return (
+                        <div
+                          className="border rounded-md p-2"
+                          key={question.id}
+                        >
+                          <div className="flex items-center gap-3">
+                            <p>
+                              {questionNumber}. {question.question}
+                            </p>
+                            <input
+                              id={question.id}
+                              value={answers[question.id] || ""}
+                              onChange={handleInput(question.id)}
+                              className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 );
               } else if (isSingleChoiceQuestion) {

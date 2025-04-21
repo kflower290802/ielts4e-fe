@@ -8,6 +8,7 @@ import Recording from "./components/Recording";
 import { ArrowLeft } from "lucide-react";
 import DialogPracticeSpeakingExit from "./components/DialogPracticeSpeakingExit";
 import SpeakingPracticeFooter from "./components/SpeakingPracticeFooter";
+import ClockCountTime from "../components/ClockCountTime";
 
 const PracticeSpeaking = () => {
   const [openDia, setOpenDia] = useState(false);
@@ -52,7 +53,7 @@ const PracticeSpeaking = () => {
     setShowQuestions(newShowQuestions);
   };
   return (
-    <div className="h-full w-full relative p-4 flex justify-between">
+    <div className="h-full w-full relative p-4 flex justify-between gap-3">
       <DialogPracticeSpeakingExit
         openDia={openDia}
         setOpenDia={setOpenDia}
@@ -131,6 +132,8 @@ const PracticeSpeaking = () => {
         </div>
         <SpeakingPracticeFooter id={id} answers={answers} />
       </div>
+
+      <ClockCountTime />
     </div>
   );
 };

@@ -72,7 +72,7 @@ export default function LearnWithDialog() {
             />
           </div>
           {data?.data && data.data.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {data?.data?.map((card) => (
                 <Card key={card.id} className="overflow-hidden">
                   <CardContent className="p-0 relative">
@@ -173,7 +173,7 @@ export default function LearnWithDialog() {
           />
         </div>
         {grammar?.data && grammar.data.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {grammar.data.map((card, index) => (
               <Card key={card.id || index} className="overflow-hidden">
                 <CardContent className="p-0 relative">

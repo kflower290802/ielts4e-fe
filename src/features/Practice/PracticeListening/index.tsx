@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-// import { useListeningPracticeAnswers } from "./hooks/useListeningPracticeAnswer";
 import { useListeningPracticeSection } from "./hooks/useListeningPracticeSection";
 import { getStorage, setStorage } from "@/utils/storage";
 import BlankPracticeSpace from "../components/BlankPracticeSpace";
@@ -15,11 +14,11 @@ import ListeningPracticeFooter from "./components/ListeningPracticeFooter";
 import DialogPracticeExit from "../components/DiaPracticeExit";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import ClockCountTime from "../components/ClockCountTime";
 
 const ListeningPractice = () => {
   const { id } = useParams<{ id: string }>();
   const [openDia, setOpenDia] = useState(false);
-  // const { mutateAsync: examListenAnswers } = useListeningPracticeAnswers();
   const [answers, setAnswers] = React.useState<
     Record<string, string | string[]>
   >({});
@@ -205,7 +204,7 @@ const ListeningPractice = () => {
   };
 
   return (
-    <div className="h-full w-full p-4 flex justify-between">
+    <div className="h-full w-full p-4 flex gap-3 justify-between">
       <DialogPracticeExit
         openDia={openDia}
         setOpenDia={setOpenDia}
@@ -220,13 +219,14 @@ const ListeningPractice = () => {
       >
         <ArrowLeft className="text-[#164C7E]" />
       </Button>
-      <div className="flex flex-col justify-between">
+      <div className="flex-1 flex flex-col justify-between">
         <DndProvider backend={HTML5Backend}>
           <div className="h-[85vh] bg-white border border-black rounded-lg overflow-y-auto">
             <div className="grid grid-cols-1 gap-6 p-6">
               <div className="overflow-y-auto">
                 {questionTypes?.map((types, index) => {
                   const { start, end } = getQuestionRange(questionTypes, index);
+                  const isTextBox = types.type === EQuestionType.TextBox;
                   const isSingleChoiceQuestion =
                     types.type === EQuestionType.SingleChoice;
                   const isBlankPassageDrag =
@@ -275,6 +275,38 @@ const ListeningPractice = () => {
                             </div>
                           )}
                         </div>
+                      </div>
+                    );
+                  } else if (isTextBox) {
+                    return (
+                      <div className="space-y-4">
+                        <QuestionPracticeHeader
+                          start={start}
+                          end={end}
+                          instruction="Write the CORRECT answer"
+                        />
+                        {types.questions.map((question, index) => {
+                          const questionNumber =
+                            questionNumberMap[question.id] || index + 1;
+                          return (
+                            <div
+                              className="border rounded-md p-2"
+                              key={question.id}
+                            >
+                              <div className="flex items-center gap-3">
+                                <p>
+                                  {questionNumber}. {question.question}
+                                </p>
+                                <input
+                                  id={question.id}
+                                  value={answers[question.id] || ""}
+                                  onChange={handleInput(question.id)}
+                                  className="w-36 border-b-4 border px-3 rounded-xl text-[#164C7E] border-[#164C7E]"
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   } else if (isSingleChoiceQuestion) {
@@ -381,6 +413,7 @@ const ListeningPractice = () => {
           id={id}
         />
       </div>
+      <ClockCountTime/>
     </div>
   );
 };

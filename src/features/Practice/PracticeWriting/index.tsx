@@ -7,6 +7,7 @@ import WritingPracticeFooter from "./components/WritingPracticeFooter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import DialogPracticeWritingExit from "./components/DiaPracticeWritingExit";
+import ClockCountTime from "../components/ClockCountTime";
 
 const PracticeWriting = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,7 +49,7 @@ const PracticeWriting = () => {
     setWordCount(wordArray.length);
   };
   return (
-    <div className="h-full w-full relative p-4 flex justify-between">
+    <div className="h-full w-full relative p-4 flex justify-between gap-3">
       <DialogPracticeWritingExit
         openDia={openDia}
         setOpenDia={setOpenDia}
@@ -110,6 +111,7 @@ const PracticeWriting = () => {
           setAnswers={setAnswers}
         />
       </div>
+      <ClockCountTime/>
     </div>
   );
 };

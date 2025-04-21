@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
 import { useLogout } from "./hooks/useLogOut";
+import { cn } from "@/lib/utils";
 const Header = () => {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, role } = useAuthStore();
   const { mutateAsync: logOut } = useLogout();
   const userName = getStorage("userName");
   const handleLogout = async () => {
@@ -40,11 +41,15 @@ const Header = () => {
         <div className="flex items-center gap-10">
           <div className="flex items-center  gap-2 flex-col min-w-[7vw]">
             <div className="flex items-end justify-end w-full">
-              <span>{userName?.toUpperCase()}</span>
+              <span className={cn(role === "admin" ? "text-yellow-500" : "")}>
+                {userName?.toUpperCase()}
+              </span>
             </div>
-            <div className="flex items-end justify-end w-full">
-              <span className="text-yellow-500">FREE</span>
-            </div>
+            {role === "Learner" && (
+              <div className="flex items-end justify-end w-full">
+                <span className="text-yellow-500">FREE</span>
+              </div>
+            )}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
