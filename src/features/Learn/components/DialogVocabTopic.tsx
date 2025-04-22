@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useGetTopics } from "../hooks/useGetTopics"
 
@@ -64,7 +63,6 @@ export function DialogVocabTopic({
                   : "border-gray-200 hover:border-[#164C7E]/50 hover:bg-[#164C7E]/5",
               )}
             >
-              {selectedTopic === topic.id && <Check className="w-5 h-5 text-[#164C7E] absolute top-2 right-2" />}
               <span className="font-medium text-center">{topic.name}</span>
             </div>
           ))}

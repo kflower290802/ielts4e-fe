@@ -21,9 +21,13 @@ export interface IExamWritingResult {
       questionId: string;
       overallBandScore: number;
       taskResponse: number;
+      taskResponseDetails: string;
       coherenceAndCohesion: number;
+      coherenceAndCohesionDetails: string;
       lexicalResource: number;
+      lexicalResourceDetails: string;
       grammaticalRangeAndAccuracy: number;
+      grammaticalRangeAndAccuracyDetails: string;
     }
   ];
   score: number;

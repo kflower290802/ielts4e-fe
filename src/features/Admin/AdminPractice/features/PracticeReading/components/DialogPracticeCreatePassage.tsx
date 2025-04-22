@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useCreatePracticePassage } from "../hooks/useCreatePassage";
 import toast from "react-hot-toast";
+import TextEditorImage from "@/components/TextEditor/TextEditor";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
@@ -43,6 +43,12 @@ const DialogPracticeCreatePassage = ({
       image: file,
     }));
   };
+  const handleContentChange = (content: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      content,
+    }));
+  };
   const handleSubmit = async () => {
     if (
       !formData.practiceId ||
@@ -77,7 +83,7 @@ const DialogPracticeCreatePassage = ({
   };
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
-      <DialogContent className="p-6 bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
+      <DialogContent className="p-6 w-fit max-w-full bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
         <h2 className="text-lg font-semibold mb-4">Create New Passage</h2>
         <div className="mb-4">
           <label htmlFor="title" className="block text-sm font-medium mb-1">
@@ -96,13 +102,9 @@ const DialogPracticeCreatePassage = ({
           <label htmlFor="content" className="block text-sm font-medium mb-1">
             Content
           </label>
-          <Textarea
-            id="content"
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            placeholder="Enter content"
-            className="w-full border-[#164C7E] text-[#164C7E] h-32"
+          <TextEditorImage
+            content={formData.content}
+            onChange={handleContentChange}
           />
         </div>
         <div className="mb-4">

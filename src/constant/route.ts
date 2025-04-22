@@ -6,6 +6,7 @@ export const Route = {
   //learn
   Learn: '/learn',
   LearnLesson: '/learn/lesson',
+  LearnCreate: '/learn/create',
   //exam:
   Exam: '/exam',
   ExamReading: '/exam/reading',

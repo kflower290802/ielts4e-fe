@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { Route } from "@/constant/route";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useExamPassage } from "../hooks/useExamPassage";
 import WritingResultFooter from "./components/WritingResultFooter";
 import { useExamResult } from "../hooks/useExamResult";
 import { IExamWritingResult } from "@/types/ExamType/exam";
+import { Button } from "@/components/ui/button";
 
 const WritingTestResult = () => {
   const { idResult } = useParams<{ idResult: string }>();
@@ -61,7 +62,11 @@ const WritingTestResult = () => {
               <h2 className="text-xl font-bold mb-4">
                 WRITING TASK {currentTask}
               </h2>
-              <span>{data?.exam.examPassage[currentTask - 1].content}</span>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: data?.exam.examPassage[currentTask - 1].content || "",
+                }}
+              />
             </span>
 
             {data?.exam.examPassage[currentTask - 1].image && (
@@ -106,57 +111,27 @@ const WritingTestResult = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Scoring Categories */}
                 <div className="space-y-4">
-                  <div className="w-full bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <div className="font-medium text-lg">
-                        Coherence and Cohesion:
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-2xl font-bold text-green-600">
-                          {currentResult?.coherenceAndCohesion}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-full bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <div className="font-medium text-lg">
-                        Lexical Resource:
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-2xl font-bold text-green-600">
-                          {currentResult?.lexicalResource}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-full bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <div className="font-medium text-lg">
-                        Grammatical Range and Accuracy:
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-2xl font-bold text-green-600">
-                          {currentResult?.coherenceAndCohesion}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-full bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <div className="font-medium text-lg">
-                        Task Achievement:
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-2xl font-bold text-green-600">
-                          {currentResult?.taskResponse}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <ScoreCategory
+                    title="Coherence and Cohesion:"
+                    score={currentResult?.coherenceAndCohesion}
+                    detail={currentResult?.coherenceAndCohesionDetails}
+                  />
+                  <ScoreCategory
+                    title="Lexical Resource:"
+                    score={currentResult?.lexicalResource}
+                    detail={currentResult?.lexicalResourceDetails}
+                  />
+                  <ScoreCategory
+                    title="Grammatical Range and Accuracy:"
+                    score={currentResult?.grammaticalRangeAndAccuracy}
+                    detail={currentResult?.grammaticalRangeAndAccuracyDetails}
+                  />
+                  <ScoreCategory
+                    title="Task Achievement:"
+                    score={currentResult?.taskResponse}
+                    detail={currentResult?.taskResponseDetails}
+                  />
                 </div>
               </div>
             </div>
@@ -165,10 +140,56 @@ const WritingTestResult = () => {
       </div>
       <WritingResultFooter
         setCurrentTask={setCurrentTask}
-        currentTask = {currentTask}
+        currentTask={currentTask}
         tasks={data?.exam.examPassage}
       />
     </div>
   );
 };
+interface ScoreCategoryProps {
+  title: string;
+  score: number;
+  detail: string;
+}
+
+function ScoreCategory({ title, score, detail }: ScoreCategoryProps) {
+  const [showDetail, setShowDetail] = useState(false);
+  return (
+    <div className="w-full bg-white border border-gray-200 rounded-lg p-4">
+      <div className="flex flex-col gap-3 items-center">
+        <div className="flex gap-3 justify-between items-center">
+          <div className="font-medium text-lg line-clamp-1">{title}</div>
+          <div className="text-2xl font-bold text-green-600">
+            {score?.toFixed(1)}
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <Button
+            className="border-[#164C7E] border-2 rounded-lg font-bold bg-white hover:bg-[#164C7E] hover:text-white px-6"
+            onClick={() => setShowDetail(true)}
+          >
+            Details
+          </Button>
+        </div>
+      </div>
+      {showDetail && (
+        <div className="flex flex-col mt-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <Check className="text-green-600" />
+              <span className="text-sm font-medium">Detail:</span>
+            </div>
+            <div className="text-sm text-center text-gray-600">{detail}</div>
+          </div>
+          <Button
+            className="border-[#164C7E] mt-5 w-32 mx-auto border-2 rounded-lg font-bold bg-white hover:bg-[#164C7E] hover:text-white px-6"
+            onClick={() => setShowDetail(false)}
+          >
+            Hide
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 export default WritingTestResult;

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useCreatePracticeWriting } from "../hooks/useCreatePracticeWriting";
+import TextEditorImage from "@/components/TextEditor/TextEditor";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
@@ -28,13 +28,10 @@ const DialogCreatePracticePart = ({
       practiceId: id || "",
     }));
   }, [id]);
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
+  const handleContentChange = (content: string) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      content,
     }));
   };
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,19 +58,16 @@ const DialogCreatePracticePart = ({
   };
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
-      <DialogContent className="p-6 bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
+      <DialogContent className="p-6 w-fit max-w-full bg-white border-2 font-medium border-[#164C7E]">
         <h2 className="text-lg font-semibold mb-4">Create New Part</h2>
         <h1 className="font-semibold mb-4">
           Are you sure you want to create another section?
         </h1>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Content</label>
-          <Textarea
-            name="content"
-            value={formData.content}
-            onChange={handleInputChange}
-            placeholder="Enter Content"
-            className="border-[#164C7E] text-[#164C7E]"
+          <TextEditorImage
+            content={formData.content}
+            onChange={handleContentChange}
           />
         </div>
         <div className="mb-4">

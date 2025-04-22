@@ -226,7 +226,11 @@ export default function PracticeReading() {
                       className="object-contain"
                     />
                     <p className="mb-4">
-                      <p className="mb-4">{data.practiceReading.content}</p>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: data.practiceReading.content || "",
+                        }}
+                      />
                     </p>
                   </>
                 ) : (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { Route } from "@/constant/route";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWritingPracticeById } from "../hooks/useWritingPracticeById";
@@ -96,7 +96,7 @@ const WritingPracticeResult = () => {
                 </div>
 
                 {/* Scoring Categories */}
-                <div className="space-y-4">
+                {/* <div className="space-y-4">
                   <div className="w-full bg-white border border-gray-200 rounded-lg p-4">
                     <div className="flex justify-between items-center">
                       <div className="font-medium text-lg">
@@ -145,6 +145,28 @@ const WritingPracticeResult = () => {
                       </div>
                     </div>
                   </div>
+                </div> */}
+                <div className="space-y-4">
+                  <ScoreCategory
+                    title="Coherence and Cohesion:"
+                    score={result?.coherenceAndCohesion}
+                    detail={result?.coherenceAndCohesionDetails}
+                  />
+                  <ScoreCategory
+                    title="Lexical Resource:"
+                    score={result?.lexicalResource}
+                    detail={result?.lexicalResourceDetails}
+                  />
+                  <ScoreCategory
+                    title="Grammatical Range and Accuracy:"
+                    score={result?.grammaticalRangeAndAccuracy}
+                    detail={result?.grammaticalRangeAndAccuracyDetails}
+                  />
+                  <ScoreCategory
+                    title="Task Achievement:"
+                    score={result?.taskResponse}
+                    detail={result?.taskResponseDetails}
+                  />
                 </div>
               </div>
             </div>
@@ -154,4 +176,50 @@ const WritingPracticeResult = () => {
     </div>
   );
 };
+interface ScoreCategoryProps {
+  title: string;
+  score: number;
+  detail: string;
+}
+
+function ScoreCategory({ title, score, detail }: ScoreCategoryProps) {
+  const [showDetail, setShowDetail] = useState(false);
+  return (
+    <div className="w-full bg-white border border-gray-200 rounded-lg p-4">
+      <div className="flex flex-col gap-3 items-center">
+        <div className="flex gap-3 justify-between items-center">
+          <div className="font-medium text-lg line-clamp-1">{title}</div>
+          <div className="text-2xl font-bold text-green-600">
+            {score?.toFixed(1)}
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <Button
+            className="border-[#164C7E] border-2 rounded-lg font-bold bg-white hover:bg-[#164C7E] hover:text-white px-6"
+            onClick={() => setShowDetail(true)}
+          >
+            Details
+          </Button>
+        </div>
+      </div>
+      {showDetail && (
+        <div className="flex flex-col mt-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <Check className="text-green-600" />
+              <span className="text-sm font-medium">Detail:</span>
+            </div>
+            <div className="text-sm text-center text-gray-600">{detail}</div>
+          </div>
+          <Button
+            className="border-[#164C7E] mt-5 w-32 mx-auto border-2 rounded-lg font-bold bg-white hover:bg-[#164C7E] hover:text-white px-6"
+            onClick={() => setShowDetail(false)}
+          >
+            Hide
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 export default WritingPracticeResult;

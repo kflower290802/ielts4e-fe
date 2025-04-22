@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useCreatePassage } from "../hooks/useCreatePassage";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import TextEditorImage from "@/components/TextEditor/TextEditor";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
@@ -17,6 +17,12 @@ const DialogCreatePassage = ({ openDia, setOpenDia, id, refetch }: IProps) => {
     title: "",
     passage: "",
   });
+  const handleContentChange = (passage: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      passage,
+    }));
+  };
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -37,7 +43,7 @@ const DialogCreatePassage = ({ openDia, setOpenDia, id, refetch }: IProps) => {
   };
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
-      <DialogContent className="p-6 bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
+      <DialogContent className="p-6 bg-white max-w-full w-fit border-2 font-medium border-[#164C7E] text-[#164C7E]">
         <h2 className="text-lg font-semibold mb-4">Create New Passage</h2>
         <div className="mb-4">
           <label htmlFor="title" className="block text-sm font-medium mb-1">
@@ -56,14 +62,7 @@ const DialogCreatePassage = ({ openDia, setOpenDia, id, refetch }: IProps) => {
           <label htmlFor="passage" className="block text-sm font-medium mb-1">
             Passage
           </label>
-          <Textarea
-            id="passage"
-            name="passage"
-            value={formData.passage}
-            onChange={handleChange}
-            placeholder="Enter Passage"
-            className="w-full border-[#164C7E] text-[#164C7E] h-32"
-          />
+          <TextEditorImage content={formData.passage} onChange={handleContentChange}/>
         </div>
         <Button
           isLoading={isPending}

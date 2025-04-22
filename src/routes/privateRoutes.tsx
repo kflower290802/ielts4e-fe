@@ -38,6 +38,7 @@ import CreatePracticeReading from "@/features/Admin/AdminPractice/features/Pract
 import CreatePracticeListening from "@/features/Admin/AdminPractice/features/PracticeListening";
 import CreatePracticeWriting from "@/features/Admin/AdminPractice/features/PracticeWriting";
 import CreatePracticeSpeaking from "@/features/Admin/AdminPractice/features/PracticeSpeaking";
+import CreateLearn from "@/features/Admin/AdminLearn/CreateLearn";
 
 export const privateRoutes = [
   {
@@ -198,6 +199,10 @@ export const adminPrivateRoutes = [
       {
         element: <AdminLearn />,
         path: Route.Learn,
+      },
+      {
+        element: <CreateLearn />,
+        path: Route.LearnCreate,
       },
       {
         element: <AdminReport />,

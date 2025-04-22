@@ -43,7 +43,10 @@ export default function WritingTest() {
   useEffect(() => {
     if (task?.id && answers[task.id]) {
       const text = answers[task.id];
-      const wordArray = text.trim().split(/\s+/).filter((word) => word.length > 0);
+      const wordArray = text
+        .trim()
+        .split(/\s+/)
+        .filter((word) => word.length > 0);
       setWordCount(wordArray.length);
     } else {
       setWordCount(0);
@@ -88,7 +91,11 @@ export default function WritingTest() {
               <h2 className="text-xl font-bold mb-4">
                 WRITING TASK {currentTask}
               </h2>
-              <span>{data?.exam.examPassage[currentTask - 1].content}</span>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: data?.exam.examPassage[currentTask - 1].content || "",
+                }}
+              />
             </span>
 
             {data?.exam.examPassage[currentTask - 1].image && (

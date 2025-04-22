@@ -1,0 +1,30 @@
+.text-editor-container {
+  width: 100%;
+  height: 300px; /* Chiều cao tổng thể của container */
+  border: 1px solid #ccc; /* Viền để dễ nhận diện */
+  box-sizing: border-box;
+}
+
+/* Tùy chỉnh phần nội dung của CKEditor */
+.ck-editor__editable_inline {
+  min-height: 200px; /* Chiều cao tối thiểu */
+  max-height: 200px; /* Chiều cao tối đa, cuộn khi vượt quá */
+  overflow-y: auto; /* Kích hoạt cuộn dọc */
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Đảm bảo thanh công cụ cố định */
+.ck-editor__top {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: white;
+}
+
+/* Tùy chỉnh tổng thể editor */
+.ck.ck-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Đảm bảo editor lấp đầy container */
+}

@@ -8,7 +8,6 @@ export interface ICreateExam {
   file: FileList;
   audio?: FileList;
   year: number;
-  time: number;
 }
 export interface ICreatePractice {
   topicId: string;

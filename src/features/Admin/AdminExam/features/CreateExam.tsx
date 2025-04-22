@@ -34,7 +34,6 @@ const CreateExam = () => {
       file: undefined,
       audio: undefined,
       year: 2024,
-      time: 0,
     },
   });
   const selectedType = watch("type");
@@ -66,15 +65,6 @@ const CreateExam = () => {
   };
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 11 }, (_, index) => currentYear - index);
-  const timeOptions = [
-    { label: "15 minutes", value: 15 * 60 * 1000 },
-    { label: "30 minutes", value: 30 * 60 * 1000 },
-    { label: "1 hour", value: 60 * 60 * 1000 },
-    { label: "1 hour 30 minutes", value: 90 * 60 * 1000 },
-    { label: "2 hours", value: 120 * 60 * 1000 },
-    { label: "2 hours 30 minutes", value: 150 * 60 * 1000 },
-    { label: "3 hours", value: 180 * 60 * 1000 },
-  ];
   return (
     <div className="h-full w-full p-8 space-y-5">
       <div className="w-9/12 mx-auto">
@@ -200,41 +190,6 @@ const CreateExam = () => {
               <p className="text-red-500 text-sm mt-1">{errors.year.message}</p>
             )}
           </div>
-
-          {/* Time Field */}
-          <div className="flex flex-col items-center gap-1">
-            <div className="flex justify-between w-full gap-5">
-              <Label htmlFor="time" className="flex gap-2 w-32">
-                Time <span className="text-red-500">*</span>
-              </Label>
-              <Select
-                onValueChange={(value) => setValue("time", Number(value))}
-                defaultValue={String(timeOptions[0].value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select time" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeOptions.map((option) => (
-                    <SelectItem key={option.value} value={String(option.value)}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <input
-                type="hidden"
-                {...register("time", {
-                  required: "Time is required",
-                  valueAsNumber: true,
-                })}
-              />
-            </div>
-            {errors.time && (
-              <p className="text-red-500 text-sm mt-1">{errors.time.message}</p>
-            )}
-          </div>
-
           {/* Submit Button */}
           <Button
             isLoading={loading}

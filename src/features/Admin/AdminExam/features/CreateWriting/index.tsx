@@ -56,7 +56,11 @@ const CreateWritingDetail = () => {
                   <span>Part {index + 1}:</span> <span>{passage.title}</span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <span>{passage.content}</span>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: passage.content || "",
+                  }}
+                />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

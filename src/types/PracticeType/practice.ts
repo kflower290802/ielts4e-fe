@@ -14,11 +14,16 @@ export interface ISummary {
   correctAnswer: string[];
 }
 export interface IWritingSummary {
-  score: number,
-  taskResponse: number,
-  coherenceAndCohesion: number,
-  lexicalResource: number,
-  grammaticalRangeAndAccuracy: number,
+  score: number;
+  overallBandScore: number;
+  taskResponse: number;
+  taskResponseDetails: string;
+  coherenceAndCohesion: number;
+  coherenceAndCohesionDetails: string;
+  lexicalResource: number;
+  lexicalResourceDetails: string;
+  grammaticalRangeAndAccuracy: number;
+  grammaticalRangeAndAccuracyDetails: string;
 }
 export interface IUserAnswer {
   examId: string;

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCreatePart } from "../hooks/useCreatePart";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import TextEditorImage from "@/components/TextEditor/TextEditor";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
@@ -23,15 +23,12 @@ const DialogCreatePart = ({ openDia, setOpenDia, id, refetch }: IProps) => {
       examId: id || "",
     }));
   }, [id]);
-  const handleInputChange = (
-      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-      const { name, value } = e.target;
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    };
+  const handleContentChange = (content: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      content,
+    }));
+  };
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
         setFormData((prev) => ({
@@ -56,20 +53,14 @@ const DialogCreatePart = ({ openDia, setOpenDia, id, refetch }: IProps) => {
   };
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
-      <DialogContent className="p-6 bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
+      <DialogContent className="p-6 w-fit max-w-full bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
         <h2 className="text-lg font-semibold mb-4">Create New Part</h2>
         <h1 className="font-semibold mb-4">
           Are you sure you want to create another section?
         </h1>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Content</label>
-          <Textarea
-            name="content"
-            value={formData.content}
-            onChange={handleInputChange}
-            placeholder= "Enter Content"
-            className="border-[#164C7E] text-[#164C7E]"
-          />
+          <TextEditorImage content={formData.content} onChange={handleContentChange}/>
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Image</label>

@@ -292,7 +292,13 @@ const ReadingTest = () => {
                   </h2>
                   <p className="mb-4">
                     <p className="mb-4">
-                      {data.exam.examPassage[currentPassage - 1].passage}
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            data.exam.examPassage[currentPassage - 1].passage ||
+                            "",
+                        }}
+                      />
                     </p>
                   </p>
                 </>

@@ -71,7 +71,7 @@ const PracticeWriting = () => {
             <div className="border flex flex-col justify-between h-[86vh] border-black rounded-lg overflow-auto bg-white p-6 shadow-sm">
               <span>
                 <h2 className="text-xl font-bold mb-4">WRITING PRACTICE</h2>
-                <div className="whitespace-pre-wrap">{data?.content}</div>
+                <div dangerouslySetInnerHTML={{ __html: data?.content || "" }} />
               </span>
               {data?.image && (
                 <div className="flex justify-center mb-4">

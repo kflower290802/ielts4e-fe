@@ -18,8 +18,8 @@ const ReadingResult = () => {
   const { id } = useParams<{ id: string }>();
   const { data } = useExamPassage(id ?? "");
   const { data: result } = useExamResult(idResult ?? "") as {
-      data: IExamResult;
-    };
+    data: IExamResult;
+  };
   const nav = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const passageParam = searchParams.get("passage") ?? "1";
@@ -172,7 +172,12 @@ const ReadingResult = () => {
                   {data.exam.examPassage[currentPassage - 1].title ?? ""}
                 </h2>
                 <p className="mb-4">
-                  {data.exam.examPassage[currentPassage - 1].passage ?? ""}
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        data.exam.examPassage[currentPassage - 1].passage || "",
+                    }}
+                  />
                 </p>
               </>
             ) : (

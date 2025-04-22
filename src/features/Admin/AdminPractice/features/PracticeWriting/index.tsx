@@ -16,7 +16,7 @@ const CreatePracticeWriting = () => {
   const { id } = useParams<{ id: string }>();
   const [openDiaCreatePart, setOpenDiaCreatePart] = useState<boolean>(false);
   const { data, refetch } = useGetPracticeDetail(id ?? "");
-  const practiceDetail = data as IPracticeDetail
+  const practiceDetail = data as IPracticeDetail;
   useEffect(() => {
     if (id) {
       refetch();
@@ -38,28 +38,34 @@ const CreatePracticeWriting = () => {
           <h1 className="text-center mb-4 text-xl font-bold">
             Create Part Detail
           </h1>
-          <Button
-            className="border-2 flex gap-3 border-[#164C7E] font-bold bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
-            onClick={() => setOpenDiaCreatePart(true)}
-          >
-            Create New Part
-          </Button>
+          {!practiceDetail?.content && (
+            <Button
+              className="border-2 flex gap-3 border-[#164C7E] font-bold bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
+              onClick={() => setOpenDiaCreatePart(true)}
+            >
+              Create New Part
+            </Button>
+          )}
         </div>
         {practiceDetail?.content ? (
-            <Accordion
-              type="single"
-              collapsible
-              className="w-full bg-[#F1FFEF] border-2 border-[#188F09] rounded-lg px-4 mt-4"
-            >
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="flex gap-3 items-center font-bold">
-                  <span>Part:</span> <span>{practiceDetail.title}</span>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <span>{practiceDetail.content}</span>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full bg-[#F1FFEF] border-2 border-[#188F09] rounded-lg px-4 mt-4"
+          >
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="flex gap-3 items-center font-bold">
+                <span>Part:</span> <span>{practiceDetail.title}</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: practiceDetail.content || "",
+                  }}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         ) : (
           <div className="text-center text-black">
             There are currently no Writing Practice available.
