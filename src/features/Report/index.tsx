@@ -84,7 +84,7 @@ const Report = () => {
                 Avg:{" "}
                 <span className="">
                   {score &&
-                    ((score.reading + score.listening + score.writing) / 3).toFixed(2)}
+                    ((score.reading + score.listening + score.writing) / 3).toFixed(1)}
                 </span>
               </span>
             </div>

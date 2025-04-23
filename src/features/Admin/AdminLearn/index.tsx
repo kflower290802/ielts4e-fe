@@ -94,8 +94,8 @@ const AdminLearn = () => {
                     />
                   </CardContent>
                   <CardFooter className="flex flex-col justify-between items-center gap-2 p-4">
-                    <div className="h-16">
-                      <p className="text-sm text-center line-clamp-2">
+                    <div className="h-12">
+                      <p className="text-sm text-center line-clamp-1" title={card.title}>
                         {card.title}
                       </p>
                     </div>
@@ -197,8 +197,8 @@ const AdminLearn = () => {
                   />
                 </CardContent>
                 <CardFooter className="flex flex-col justify-between items-center p-3 gap-3">
-                  <div className="h-16">
-                    <p className="font-medium text-center flex-1 line-clamp-2">
+                  <div className="h-12">
+                    <p className="font-medium text-center flex-1 line-clamp-1" title={card.title}>
                       {card.title}
                     </p>
                   </div>

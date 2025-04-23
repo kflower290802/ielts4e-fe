@@ -90,7 +90,7 @@ const AdminExam = () => {
                         </div>
                       </CardContent>
                       <CardFooter className="flex flex-col items-center gap-2 px-3">
-                        <p className="text-sm text-center line-clamp-1">
+                        <p className="text-sm text-center line-clamp-1" title={card.name}>
                           {card.name}
                         </p>
                         <div className="flex gap-1 items-center justify-between w-full">

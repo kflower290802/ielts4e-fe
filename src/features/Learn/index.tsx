@@ -84,7 +84,10 @@ export default function LearnWithDialog() {
                   </CardContent>
                   <CardFooter className="flex flex-col items-center gap-2 p-4">
                     <div className="h-12">
-                      <p className="text-sm text-center line-clamp-2">
+                      <p
+                        className="text-sm text-center line-clamp-1"
+                        title={card.title}
+                      >
                         {card.title}
                       </p>
                     </div>
@@ -186,9 +189,14 @@ export default function LearnWithDialog() {
                   />
                 </CardContent>
                 <CardFooter className="flex flex-col justify-between items-center p-3 gap-3">
-                  <p className="font-medium text-center flex-1 line-clamp-2">
-                    {card.title}
-                  </p>
+                  <div className="h-12">
+                    <p
+                      className="font-medium text-center flex-1 line-clamp-1"
+                      title={card.title}
+                    >
+                      {card.title}
+                    </p>
+                  </div>
                   <Button
                     className="border-2 border-[#164C7E] bg-white text-[#164C7E] hover:text-white hover:bg-[#164C7E]"
                     onClick={() => {
