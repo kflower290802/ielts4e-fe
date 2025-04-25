@@ -25,6 +25,7 @@ import {
 import { useGetAvgScore } from "./hooks/useGetAvgScore";
 import { useGetUserTarget } from "./hooks/useGetUserTarget";
 import { getStorage } from "@/utils/storage";
+import { roundToHalfOrWhole } from "@/utils/roundup";
 const Report = () => {
   const { data: score } = useGetAvgScore();
   const idUser = getStorage("idUser");
@@ -84,7 +85,9 @@ const Report = () => {
                 Avg:{" "}
                 <span className="">
                   {score &&
-                    ((score.reading + score.listening + score.writing) / 3).toFixed(1)}
+                    roundToHalfOrWhole(
+                      (score.reading + score.listening + score.writing) / 3
+                    ).toFixed(1)}
                 </span>
               </span>
             </div>

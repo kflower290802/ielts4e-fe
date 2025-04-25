@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { roundToHalfOrWhole } from "@/utils/roundup";
 
 export function HistoryTable() {
   const { data: exam } = useGetExamHistory();
@@ -54,15 +55,23 @@ export function HistoryTable() {
           <TableBody>
             {currentData?.map((test) => (
               <TableRow key={test.id}>
-                <TableCell className="font-medium">{historyType === "exam" ? test.exam.name : test.practice?.name || "Practice Test"}</TableCell>
-                <TableCell>
-                  {test.startTime ? format(test.startTime, "dd/MM/yyyy HH:mm:ss") : "_"}
+                <TableCell className="font-medium">
+                  {historyType === "exam"
+                    ? test.exam.name
+                    : test.practice?.name || "Practice Test"}
                 </TableCell>
                 <TableCell>
-                  {test.endTime ? format(test.endTime, "dd/MM/yyyy HH:mm:ss") : "_"}
+                  {test.startTime
+                    ? format(test.startTime, "dd/MM/yyyy HH:mm:ss")
+                    : "_"}
                 </TableCell>
                 <TableCell>
-                  {test.isCompleted ? test.score?.toFixed(1) : "_"}
+                  {test.endTime
+                    ? format(test.endTime, "dd/MM/yyyy HH:mm:ss")
+                    : "_"}
+                </TableCell>
+                <TableCell>
+                  {test.isCompleted ? roundToHalfOrWhole(test.score).toFixed(1) : "_"}
                 </TableCell>
                 <TableCell>
                   <Badge
