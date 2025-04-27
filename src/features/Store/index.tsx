@@ -11,12 +11,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ESubcription } from "@/types/auth";
+import { useUpgradeSub } from "./hooks/useUpgradeSub";
+import { getStorage, setStorage } from "@/utils/storage";
+import { useAuthStore } from "@/store/auth";
 
 interface PricingFeature {
   text: string;
 }
 
 interface PricingTier {
+  id: string;
   name: string;
   price: number;
   description: string;
@@ -31,16 +36,19 @@ interface PricingTier {
 }
 
 export default function Store() {
+  const { mutateAsync: upgrade, isPending } = useUpgradeSub();
+  const { setAuthStatus } = useAuthStore();
+  const subscription = getStorage("subscription");
   const pricingTiers: PricingTier[] = [
     {
+      id: ESubcription.Free,
       name: "Free",
       price: 0,
       description: "Start your IELTS preparation with basic practice tools",
-      buttonText: "Your Current Plan",
+      buttonText: "Upgrade to Free",
       features: [
-        { text: "Access to 2 full IELTS practice tests per month" },
-        { text: "Basic writing and speaking feedback" },
-        { text: "Limited vocabulary exercises" },
+        { text: "Accept access to do exams and practice" },
+        { text: "No support for writing and grading" },
       ],
       footerText: "Already on this plan? ",
       footerLink: {
@@ -49,17 +57,16 @@ export default function Store() {
       },
     },
     {
-      name: "Vip",
+      id: ESubcription.Plus,
+      name: "Plus",
       price: 100000,
       description:
         "Boost your IELTS score with more practice and detailed feedback",
-      buttonText: "Upgrade to Vip",
+      buttonText: "Upgrade to Plus",
       popular: true,
       features: [
         { text: "All features in Free plan" },
-        { text: "10 full IELTS practice tests per month" },
-        { text: "Detailed writing and speaking scoring with feedback" },
-        { text: "Access to advanced vocabulary and grammar exercises" },
+        { text: "Limited access to written assignments and grading" },
       ],
       footerLink: {
         text: "Subject to usage limits",
@@ -67,6 +74,7 @@ export default function Store() {
       },
     },
     {
+      id: ESubcription.Pro,
       name: "Pro",
       price: 200000,
       description:
@@ -74,11 +82,7 @@ export default function Store() {
       buttonText: "Upgrade to Pro",
       features: [
         { text: "All features in Plus plan" },
-        { text: "Unlimited IELTS practice tests" },
-        {
-          text: "Priority writing and speaking scoring with in-depth feedback",
-        },
-        { text: "Personalized study plans and progress tracking" },
+        { text: "Unlimited access to written assignments and grading" },
       ],
       footerText: "Unlimited access subject to fair use policies. ",
       footerLink: {
@@ -93,6 +97,16 @@ export default function Store() {
       currency: "VND",
     });
   };
+  const handleUpgrade = async (plan: ESubcription) => {
+    await upgrade({ plan });
+    setStorage("subscription", plan);
+    const currentState = useAuthStore.getState();
+    setAuthStatus({
+      isAuthenticated: currentState.isAuthenticated,
+      role: currentState.role,
+      subscription: plan,
+    });
+  };
   return (
     <div className="h-full p-8 gap-14">
       <div className="mx-auto">
@@ -100,7 +114,7 @@ export default function Store() {
           {pricingTiers.map((tier, index) => (
             <Card
               key={index}
-              className={`bg-white border-gray-700 text-black h-full flex flex-col ${
+              className={`bg-white border-gray-700 text-black h-[500px] flex flex-col ${
                 tier.popular ? "ring-2 ring-green-500" : ""
               }`}
             >
@@ -132,9 +146,20 @@ export default function Store() {
               <CardContent className="flex-grow">
                 <Button
                   className="w-full py-6 mb-6 bg-[#188F09] text-white font-bold"
-                  disabled={tier.name === "Free"}
+                  isLoading={isPending}
+                  disabled={
+                    (subscription === ESubcription.Free &&
+                      tier.id === ESubcription.Free) ||
+                    (subscription === ESubcription.Plus &&
+                      (tier.id === ESubcription.Plus ||
+                        tier.id === ESubcription.Free)) ||
+                    subscription === ESubcription.Pro
+                  }
+                  onClick={() => handleUpgrade(tier.id as ESubcription)}
                 >
-                  {tier.buttonText}
+                  {tier.id === subscription
+                    ? "Your Current Plan"
+                    : tier.buttonText}
                 </Button>
                 <ul className="space-y-3">
                   {tier.features.map((feature, featureIndex) => (

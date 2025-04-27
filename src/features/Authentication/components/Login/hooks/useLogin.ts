@@ -9,20 +9,26 @@ import { Route } from "@/constant/route";
 import { useAuthStore } from "@/store/auth";
 export const useLogin = () => {
   const nav = useNavigate();
-  const { setAuthStatus } = useAuthStore()
+  const { setAuthStatus } = useAuthStore();
   return useMutation({
     mutationFn: (values: IUserSignIn) => signIn(values),
     async onSuccess(data) {
       const token = data.token;
       const userName = data.user.name;
-      const role= data.user.account.role
-      const idUser = data.user.id
+      const role = data.user.account.role;
+      const idUser = data.user.id;
+      const subscription = data.subscription;
       setStorage("idUser", idUser);
+      setStorage("subscription", subscription);
       setStorage("token", token);
-      setStorage("isTesting", "false")
-      setStorage("role", role)
+      setStorage("isTesting", "false");
+      setStorage("role", role);
       setStorage("userName", userName);
-      setAuthStatus({ isAuthenticated: true, role: role });
+      setAuthStatus({
+        isAuthenticated: true,
+        role: role,
+        subscription: subscription,
+      });
       toast.success("Login Success!");
       nav(Route.Home);
     },

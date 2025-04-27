@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 import { useLogout } from "./hooks/useLogOut";
 import { cn } from "@/lib/utils";
 const Header = () => {
-  const { isAuthenticated, role } = useAuthStore();
+  const { isAuthenticated, role, subscription } = useAuthStore();
   const { mutateAsync: logOut } = useLogout();
   const userName = getStorage("userName");
   const handleLogout = async () => {
@@ -47,7 +47,7 @@ const Header = () => {
             </div>
             {role === "Learner" && (
               <div className="flex items-end justify-end w-full">
-                <span className="text-yellow-500">FREE</span>
+                <span className="text-yellow-500">{subscription?.toLocaleUpperCase()}</span>
               </div>
             )}
           </div>

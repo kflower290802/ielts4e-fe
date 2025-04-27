@@ -6,6 +6,7 @@ import { validateError } from "@/utils/validate";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/constant/route";
 import { useAuthStore } from "@/store/auth";
+import { ESubcription } from "@/types/auth";
 
 export const useLogout = () => {
   const { setAuthStatus } = useAuthStore();
@@ -16,7 +17,11 @@ export const useLogout = () => {
     async onSuccess() {
       removeLocalStorage();
       queryClient.invalidateQueries();
-      setAuthStatus({ isAuthenticated: false, role: "Learner" });
+      setAuthStatus({
+        isAuthenticated: false,
+        role: "Learner",
+        subscription: ESubcription.Free,
+      });
       toast.success("Log out Success!");
       nav(Route.Login);
     },
