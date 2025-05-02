@@ -39,6 +39,7 @@ import CreatePracticeListening from "@/features/Admin/AdminPractice/features/Pra
 import CreatePracticeWriting from "@/features/Admin/AdminPractice/features/PracticeWriting";
 import CreatePracticeSpeaking from "@/features/Admin/AdminPractice/features/PracticeSpeaking";
 import CreateLearn from "@/features/Admin/AdminLearn/CreateLearn";
+import EditExam from "@/features/Admin/AdminExam/features/EditExam";
 
 export const privateRoutes = [
   {
@@ -175,6 +176,22 @@ export const adminPrivateRoutes = [
       {
         element: <CreateWritingDetail />,
         path: `${Route.CreateExamDetail}/writing/:id`,
+      },
+      {
+        element: <EditExam />,
+        path: `${Route.EditExam}/:id`,
+      },
+      {
+        element: <CreateReadingExamDetail />,
+        path: `${Route.EditExamDetail}/reading/:id`,
+      },
+      {
+        element: <CreateListeningExamDetail />,
+        path: `${Route.EditExamDetail}/listening/:id`,
+      },
+      {
+        element: <CreateWritingDetail />,
+        path: `${Route.EditExamDetail}/writing/:id`,
       },
       {
         element: <CreatePractice />,

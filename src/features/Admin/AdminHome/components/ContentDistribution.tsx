@@ -1,12 +1,32 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
+import { useGetRegistration } from "../hooks/useGetRegistration";
+import { useEffect } from "react";
 
 const data = [
   { name: "Exam", value: 142, color: "#0ea5e9" },
   { name: "Practice", value: 287, color: "#10b981" },
   { name: "Blog", value: 89, color: "#f59e0b" },
-]
+];
+interface IProps {
+  startDate: Date;
+  endDate: Date;
+}
+export function ContentDistribution({ startDate, endDate }: IProps) {
+  const { data: registration, refetch } = useGetRegistration({
+    startDate,
+    endDate,
+  });
+  useEffect(() => {
+    refetch();
+  }, [startDate, endDate]);
 
-export function ContentDistribution() {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <PieChart>
@@ -18,7 +38,9 @@ export function ContentDistribution() {
           outerRadius={80}
           fill="#8884d8"
           dataKey="value"
-          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+          label={({ name, percent }) =>
+            `${name} ${(percent * 100).toFixed(0)}%`
+          }
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.color} />
@@ -28,5 +50,5 @@ export function ContentDistribution() {
         <Legend />
       </PieChart>
     </ResponsiveContainer>
-  )
+  );
 }

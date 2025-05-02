@@ -34,6 +34,10 @@ export const Route = {
   CreateExamDetail: '/exam/create/detail',
   CreatePractice: '/practice/create',
   CreatePracticeDetail: '/practice/create/detail',
+  EditExam: '/exam/edit',
+  EditExamDetail: '/exam/edit/detail',
+  EditPractice: '/practice/edit',
+  EditPracticeDetail: '/practice/edit/detail',
   //store:
   Store: '/store'
 }

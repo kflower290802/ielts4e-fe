@@ -16,8 +16,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { FilePlus2 } from "lucide-react";
 import { Route } from "@/constant/route";
 import { useGetFullPractice } from "./hooks/useGetFullPractices";
+import DialogDeletePractice from "./components/DialogDeletePractice";
 const AdminPractice = () => {
   const nav = useNavigate();
+  const [idPractice, setIdPractice] = useState("");
+  const [openDeletePractice, setOpenDeletePractice] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = useState<IRequestExcercise>(() => {
     return {
@@ -38,8 +41,18 @@ const AdminPractice = () => {
   useEffect(() => {
     refetch();
   }, [params]);
+  const handleDelete = (id: string) => {
+    setOpenDeletePractice(true);
+    setIdPractice(id);
+  };
   return (
     <div className="h-full p-8 gap-14">
+      <DialogDeletePractice
+        openDeletePractice={openDeletePractice}
+        id={idPractice}
+        setOpenDeletePractice={setOpenDeletePractice}
+        refetch={refetch}
+      />
       <div className="flex-1 flex flex-col items-center">
         <div className="flex items-center justify-end w-full mb-4">
           <Button
@@ -86,9 +99,17 @@ const AdminPractice = () => {
                         />
                       </CardContent>
                       <CardFooter className="flex flex-col items-center gap-2 px-3">
-                        <p className="text-sm text-center line-clamp-1" title={card.name}>{card.name}</p>
+                        <p
+                          className="text-sm text-center line-clamp-1"
+                          title={card.name}
+                        >
+                          {card.name}
+                        </p>
                         <div className="flex gap-1 items-center justify-between w-full">
-                          <button className="w-1/2 px-1 py-1 bg-transparent rounded-lg text-xs hover:bg-red-500 hover:text-white font-semibold border-red-500 border-2 text-red-500">
+                          <button
+                            className="w-1/2 px-1 py-1 bg-transparent rounded-lg text-xs hover:bg-red-500 hover:text-white font-semibold border-red-500 border-2 text-red-500"
+                            onClick={() => handleDelete(card.id)}
+                          >
                             Delete Practice
                           </button>
                           <button className="w-1/2 px-2 py-1 bg-transparent rounded-lg text-xs hover:bg-blue-500 hover:text-white font-semibold border-blue-500 border-2 text-blue-500">

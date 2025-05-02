@@ -3,8 +3,8 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/constant/route";
-import { startExam } from "@/api/ExamAPI/exam";
 import { setStorage } from "@/utils/storage";
+import { useStartExam } from "../hooks/useStartExam";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
@@ -22,6 +22,7 @@ const DialogConfirm = ({
   type,
 }: IProps) => {
   const nav = useNavigate();
+  const { mutateAsync: startExam, isPending } = useStartExam();
   const handStart = async () => {
     await startExam(id ?? "");
     setOpenDia(false);
@@ -49,6 +50,7 @@ const DialogConfirm = ({
           </Button>
           <Button
             onClick={handStart}
+            isLoading={isPending}
             className="bg-[#66B032] hover:bg-[#66B032]/80 text-white font-bold rounded-xl"
           >
             Start

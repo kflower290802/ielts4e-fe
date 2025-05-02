@@ -14,6 +14,8 @@ export const createExam = (exam: FormData): Promise<IExcerciseDetail> =>
       "Content-Type": "multipart/form-data",
     },
   });
+export const deleteExam = (id: string): Promise<string> =>
+  api.delete(`/exams/${id}`);
 export const getFullExamDetail = (id: string): Promise<IExamDetail> =>
   api.get(`/exams/exam-detail/${id}`);
 export const createPassage = (data: ICreatePassage): Promise<string> =>
@@ -40,3 +42,5 @@ export const createQuestion = (data: ICreateQuestion): Promise<string> =>
 export const createListeningQuestion = (
   data: ICreateListeningQuestion
 ): Promise<string> => api.post(`/exam-listen-questions`, data);
+export const getTotalExam = (): Promise<number> =>
+  api.get(`/exams/total-exam`);

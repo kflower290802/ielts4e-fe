@@ -10,3 +10,5 @@ export const createLearnBlog = (blog: FormData): Promise<string> =>
       "Content-Type": "multipart/form-data",
     },
   });
+export const getTotalBlog = (): Promise<number> =>
+    api.get(`/blogs/total-blog`);

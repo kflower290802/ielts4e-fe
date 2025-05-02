@@ -17,8 +17,11 @@ import { formatMillisecondsToMMSS } from "@/utils/time";
 import { useGetFullExam } from "./features/CreateReading/hooks/useGetFullExam";
 import { FilePlus2 } from "lucide-react";
 import { Route } from "@/constant/route";
+import DialogDeleteExam from "./components/DialogDeleteExam";
 const AdminExam = () => {
   const nav = useNavigate();
+  const [idExam, setIdExam] = useState("");
+  const [openDeleteExam, setOpenDeleteExam] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = useState<IRequestExcercise>(() => {
     return {
@@ -39,8 +42,18 @@ const AdminExam = () => {
   useEffect(() => {
     refetch();
   }, [params]);
+  const handleDelete = (id: string) => {
+    setOpenDeleteExam(true);
+    setIdExam(id);
+  };
   return (
     <div className="h-full p-8 gap-14">
+      <DialogDeleteExam
+        openDeleteExam={openDeleteExam}
+        id={idExam}
+        setOpenDeleteExam={setOpenDeleteExam}
+        refetch={refetch}
+      />
       <div className="flex-1 flex flex-col items-center">
         <div className="flex items-center justify-end w-full mb-4">
           <Button
@@ -90,14 +103,25 @@ const AdminExam = () => {
                         </div>
                       </CardContent>
                       <CardFooter className="flex flex-col items-center gap-2 px-3">
-                        <p className="text-sm text-center line-clamp-1" title={card.name}>
+                        <p
+                          className="text-sm text-center line-clamp-1"
+                          title={card.name}
+                        >
                           {card.name}
                         </p>
                         <div className="flex gap-1 items-center justify-between w-full">
-                          <button className="w-1/2 px-2 py-1 line-clamp-1 bg-transparent rounded-lg text-xs hover:bg-red-500 hover:text-white font-semibold border-red-500 border-2 text-red-500">
+                          <button
+                            className="w-1/2 px-2 py-1 line-clamp-1 bg-transparent rounded-lg text-xs hover:bg-red-500 hover:text-white font-semibold border-red-500 border-2 text-red-500"
+                            onClick={() => handleDelete(card.id)}
+                          >
                             Delete Exam
                           </button>
-                          <button className="w-1/2 px-2 py-1 line-clamp-1  bg-transparent rounded-lg text-xs hover:bg-blue-500 hover:text-white font-semibold border-blue-500 border-2 text-blue-500">
+                          <button
+                            className="w-1/2 px-2 py-1 line-clamp-1  bg-transparent rounded-lg text-xs hover:bg-blue-500 hover:text-white font-semibold border-blue-500 border-2 text-blue-500"
+                            onClick={() => {
+                              nav(`${Route.EditExam}/${card.id}`);
+                            }}
+                          >
                             Edit Exam
                           </button>
                         </div>

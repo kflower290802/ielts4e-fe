@@ -8,6 +8,10 @@ export const createPractice = (practice: FormData): Promise<IExcerciseDetail> =>
       "Content-Type": "multipart/form-data",
     },
   });
+
+export const deletePractice = (id: string): Promise<string> =>
+  api.delete(`/practices/${id}`);
+
 export const createPracticePassage = (data: FormData): Promise<string> =>
   api.post(`/practice-readings/`, data, {
     headers: {
@@ -27,27 +31,35 @@ export const createPracticeType = (data: FormData): Promise<string> =>
 export const createReadingPracticeQuestion = (
   data: ICreateReadingPracticeQuestion
 ): Promise<string> => api.post(`/practice-reading-questions`, data);
+
 export const createPracticeListen = (practice: FormData): Promise<string> =>
   api.post("/practice-listens", practice, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
+
 export const createPracticeWriting = (practice: FormData): Promise<string> =>
   api.post("/practice-writings", practice, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
+
 export const createPracticeSpeaking = (practice: FormData): Promise<string> =>
   api.post("/practice-speaking-questions", practice, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
+
   export const createPracticeListeningType = (
     data: ICreatePracticeListeningType
   ): Promise<string> => api.post(`/practice-listen-types`, data);
+
   export const createListeningPracticeQuestion = (
     data: ICreatePracticeListeningQuestion
   ): Promise<string> => api.post(`/practice-listen-questions`, data);
+
+  export const getTotalPractices = (): Promise<number> =>
+    api.get(`/practices/total-practice`);

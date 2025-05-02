@@ -22,9 +22,11 @@ const WritingTestResult = () => {
   const [currentTask, setCurrentTask] = useState(
     taskParam ? parseInt(taskParam) : 1
   );
-  const currentResult = result?.summary[currentTask - 1];
   const task = data?.exam.examPassage[currentTask - 1];
-  const answer = data?.exam.examPassage[currentTask - 1].answer?.answer;
+  const currentResult = result?.summary.find(
+    (summaryItem) => summaryItem.questionId === task?.id
+  );
+  const answer = task?.answer?.answer;
   useEffect(() => {
     const newSearchParams = new URLSearchParams();
     if (currentTask) newSearchParams.set("task", currentTask.toString());
@@ -114,23 +116,23 @@ const WritingTestResult = () => {
                 <div className="space-y-4">
                   <ScoreCategory
                     title="Coherence and Cohesion:"
-                    score={currentResult?.coherenceAndCohesion}
-                    detail={currentResult?.coherenceAndCohesionDetails}
+                    score={currentResult?.coherenceAndCohesion ?? 0}
+                    detail={currentResult?.coherenceAndCohesionDetails ?? ''}
                   />
                   <ScoreCategory
                     title="Lexical Resource:"
-                    score={currentResult?.lexicalResource}
-                    detail={currentResult?.lexicalResourceDetails}
+                    score={currentResult?.lexicalResource ?? 0}
+                    detail={currentResult?.lexicalResourceDetails ?? ''}
                   />
                   <ScoreCategory
                     title="Grammatical Range and Accuracy:"
-                    score={currentResult?.grammaticalRangeAndAccuracy}
-                    detail={currentResult?.grammaticalRangeAndAccuracyDetails}
+                    score={currentResult?.grammaticalRangeAndAccuracy ?? 0}
+                    detail={currentResult?.grammaticalRangeAndAccuracyDetails ?? ''}
                   />
                   <ScoreCategory
                     title="Task Achievement:"
-                    score={currentResult?.taskResponse}
-                    detail={currentResult?.taskResponseDetails}
+                    score={currentResult?.taskResponse ?? 0}
+                    detail={currentResult?.taskResponseDetails ?? ''}
                   />
                 </div>
               </div>

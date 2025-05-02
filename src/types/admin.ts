@@ -77,3 +77,7 @@ export interface ICreatePracticeListeningQuestion {
   typeId: string;
   answers: IAnswer[];
 }
+export interface IRequestChart {
+  startDate?: Date;
+  endDate?: Date;
+}

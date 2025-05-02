@@ -24,9 +24,16 @@ import { examTabs, statusFilters } from "@/constant/filter";
 import { useSearchParams } from "react-router-dom";
 import DialogConfirm from "./components/DialogConfirm";
 import { formatMillisecondsToMMSS } from "@/utils/time";
+import { useAuthStore } from "@/store/auth";
+import DialogUpgrade from "./components/DialogUpgrade";
+import { ESubcription } from "@/types/auth";
 
 export function Exam() {
   const [openDia, setOpenDia] = useState(false);
+  const [openSubscriptionDialog, setOpenSubscriptionDialog] = useState(false);
+  const { subscription } = useAuthStore();
+  console.log(subscription);
+  
   const [id, setId] = useState("");
   const [type, setType] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,6 +63,10 @@ export function Exam() {
     refetch();
   }, [params]);
   const handleStartExam = (id: string, type: string) => {
+    if (subscription === ESubcription.Free && type === "writing") {
+      setOpenSubscriptionDialog(true);
+      return;
+    }
     setId(id);
     setType(type);
     setOpenDia(true);
@@ -68,6 +79,10 @@ export function Exam() {
         title={`ARE YOU READY TO START THE ${type.toUpperCase()} TEST?`}
         id={id}
         type={type}
+      />
+      <DialogUpgrade
+        openSubscriptionDialog={openSubscriptionDialog}
+        setOpenSubscriptionDialog={setOpenSubscriptionDialog}
       />
       <div className="w-64 border bg-white rounded-lg p-6">
         <div className="space-y-6">
@@ -162,7 +177,10 @@ export function Exam() {
                         </div>
                       </CardContent>
                       <CardFooter className="flex flex-col items-center gap-2 p-3">
-                        <p className="text-sm text-center line-clamp-1" title={card.name}>
+                        <p
+                          className="text-sm text-center line-clamp-1"
+                          title={card.name}
+                        >
                           {card.name}
                         </p>
                         <Button

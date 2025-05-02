@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ESubcription } from "@/types/auth";
 import { useUpgradeSub } from "./hooks/useUpgradeSub";
-import { getStorage, setStorage } from "@/utils/storage";
+import { setStorage } from "@/utils/storage";
 import { useAuthStore } from "@/store/auth";
 
 interface PricingFeature {
@@ -37,8 +37,7 @@ interface PricingTier {
 
 export default function Store() {
   const { mutateAsync: upgrade, isPending } = useUpgradeSub();
-  const { setAuthStatus } = useAuthStore();
-  const subscription = getStorage("subscription");
+  const { setAuthStatus, subscription } = useAuthStore();
   const pricingTiers: PricingTier[] = [
     {
       id: ESubcription.Free,
