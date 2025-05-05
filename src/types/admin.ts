@@ -20,6 +20,10 @@ export interface ICreatePassage {
   title: string;
   passage: string;
 }
+export interface IEditPassage {
+  title: string;
+  passage: string;
+}
 export interface ICreateListeningType {
   examSectionId: string;
   type: string;

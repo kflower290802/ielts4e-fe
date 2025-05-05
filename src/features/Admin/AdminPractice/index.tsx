@@ -87,7 +87,7 @@ const AdminPractice = () => {
 
           {practiceTabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id} className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                 {data?.data?.map((card) => {
                   return (
                     <Card key={card.id} className="overflow-hidden">

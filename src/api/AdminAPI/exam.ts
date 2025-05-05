@@ -4,6 +4,7 @@ import {
   ICreateListeningType,
   ICreatePassage,
   ICreateQuestion,
+  IEditPassage,
   IExamDetail,
 } from "@/types/admin";
 import { IExcerciseDetail } from "@/types/excercise";
@@ -16,6 +17,8 @@ export const createExam = (exam: FormData): Promise<IExcerciseDetail> =>
   });
 export const deleteExam = (id: string): Promise<string> =>
   api.delete(`/exams/${id}`);
+export const deletePassage = (id: string): Promise<string> =>
+  api.delete(`/exam-passages/${id}`);
 export const getFullExamDetail = (id: string): Promise<IExamDetail> =>
   api.get(`/exams/exam-detail/${id}`);
 export const createPassage = (data: ICreatePassage): Promise<string> =>
@@ -42,5 +45,6 @@ export const createQuestion = (data: ICreateQuestion): Promise<string> =>
 export const createListeningQuestion = (
   data: ICreateListeningQuestion
 ): Promise<string> => api.post(`/exam-listen-questions`, data);
-export const getTotalExam = (): Promise<number> =>
-  api.get(`/exams/total-exam`);
+export const getTotalExam = (): Promise<number> => api.get(`/exams/total-exam`);
+export const editPassage = (id: string, data: IEditPassage): Promise<string> =>
+  api.patch(`/exam-passages/${id}`, data);

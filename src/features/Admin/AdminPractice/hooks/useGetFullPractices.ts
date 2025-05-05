@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useGetFullPractice = ({
   page = 1,
-  limit = 5,
+  limit = 8,
   type = TypeExcercise.Reading,
   ...rest
 }: IRequestExcercisePractice) => {
