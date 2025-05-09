@@ -27,7 +27,6 @@ const questionTypeDisplayNames: Record<string, string> = {
 const contentEnabledTypes = [
   EQuestionType.BlankPassageDrag,
   EQuestionType.BlankPassageTextbox,
-  EQuestionType.BlankPassageImageTextbox,
 ];
 const DialogCreateListeningType = ({
   openDia,
@@ -127,7 +126,7 @@ const DialogCreateListeningType = ({
                   ? "Enter Content"
                   : "Content is disabled for this type"
               }
-              className="border-[#164C7E] text-[#164C7E]"
+              className="border-[#164C7E] text-[#164C7E] h-56"
             />
           </div>
         )}

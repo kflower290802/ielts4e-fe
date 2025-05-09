@@ -29,7 +29,6 @@ const questionTypeDisplayNames: Record<string, string> = {
 const contentEnabledTypes = [
   EQuestionType.BlankPassageDrag,
   EQuestionType.BlankPassageTextbox,
-  EQuestionType.BlankPassageImageTextbox,
 ];
 const DialogCreateType = ({ openDia, setOpenDia, id, refetch }: IProps) => {
   const { mutateAsync: createType, isPending } = useCreateType();
@@ -99,6 +98,8 @@ const DialogCreateType = ({ openDia, setOpenDia, id, refetch }: IProps) => {
   const isContentEnabled =
     formData.type &&
     contentEnabledTypes.includes(formData.type as EQuestionType);
+  const isImageEnabled =
+    formData.type && formData.type === EQuestionType.BlankPassageImageTextbox;
   return (
     <Dialog open={openDia} onOpenChange={setOpenDia}>
       <DialogContent className="p-6 bg-white border-2 font-medium border-[#164C7E] text-[#164C7E]">
@@ -128,33 +129,32 @@ const DialogCreateType = ({ openDia, setOpenDia, id, refetch }: IProps) => {
         </div>
 
         {isContentEnabled && (
-          <>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Content</label>
-              <Textarea
-                name="content"
-                value={formData.content}
-                onChange={handleInputChange}
-                placeholder={
-                  isContentEnabled
-                    ? "Enter Content"
-                    : "Content is disabled for this type"
-                }
-                className="border-[#164C7E] text-[#164C7E]"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Image</label>
-              <Input
-                type="file"
-                accept="image/*"
-                disabled={!isContentEnabled}
-                onChange={handleImageChange}
-                className="border-[#164C7E] text-[#164C7E]"
-              />
-            </div>
-          </>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Content</label>
+            <Textarea
+              name="content"
+              value={formData.content}
+              onChange={handleInputChange}
+              placeholder={
+                isContentEnabled
+                  ? "Enter Content"
+                  : "Content is disabled for this type"
+              }
+              className="border-[#164C7E] h-56 text-[#164C7E]"
+            />
+          </div>
+        )}
+        {isImageEnabled && (
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Image</label>
+            <Input
+              type="file"
+              accept="image/*"
+              disabled={!isContentEnabled}
+              onChange={handleImageChange}
+              className="border-[#164C7E] text-[#164C7E]"
+            />
+          </div>
         )}
         <Button
           isLoading={isPending}

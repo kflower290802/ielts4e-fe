@@ -1,4 +1,4 @@
-import { createExam } from "@/api/AdminAPI/exam";
+import { editExam } from "@/api/AdminAPI/exam";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,9 +21,10 @@ import { useGetFullExamDetail } from "../CreateReading/hooks/useGetFullExamDetai
 import StepEdit from "./components/stepEdit";
 const EditExam = () => {
   const { id } = useParams<{ id: string }>();
-  const { data, refetch } = useGetFullExamDetail(id ?? "");
+  const { data } = useGetFullExamDetail(id ?? "");
   const nav = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const {
     register,
     watch,
@@ -47,9 +48,19 @@ const EditExam = () => {
         type: (data.type as TypeExcercise) || TypeExcercise.Listening,
         year: data.year || 2024,
       });
+      setPreviewImage(data.image);
     }
   }, [data, reset]);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewImage(imageUrl);
+      return () => URL.revokeObjectURL(imageUrl);
+    }
+  };
   const selectedType = watch("type");
+  const selectedYear = watch("year");
   const onSubmit = async (values: ICreateExam) => {
     try {
       setLoading(true);
@@ -57,7 +68,7 @@ const EditExam = () => {
 
       Object.entries(values).forEach(([key, value]) => {
         if (value && key !== "file" && key !== "audio") {
-          formData.append(key, value);
+          formData.append(key, value.toString());
         }
       });
 
@@ -67,7 +78,7 @@ const EditExam = () => {
       if (values.audio && values.audio[0]) {
         formData.append("audio", values.audio[0]);
       }
-      const res = await createExam(formData);
+      const res = await editExam(formData, data?.id ?? "");
       toast.success("Edit Exam Success!");
       nav(`${Route.EditExamDetail}/${res.type}/${res.id}`);
     } catch (error) {
@@ -103,44 +114,6 @@ const EditExam = () => {
               <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
             )}
           </div>
-
-          {/* Type Field */}
-          <div className="flex flex-col items-center gap-1">
-            <div className="flex justify-between w-full gap-5">
-              <Label htmlFor="type" className="flex gap-2 w-32">
-                Type <span className="text-red-500">*</span>
-              </Label>
-              <Select
-                onValueChange={(value) =>
-                  setValue("type", value as TypeExcercise)
-                }
-                defaultValue={TypeExcercise.Listening}
-                value={watch("type")}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={TypeExcercise.Listening}>
-                    Listening
-                  </SelectItem>
-                  <SelectItem value={TypeExcercise.Reading}>Reading</SelectItem>
-                  <SelectItem value={TypeExcercise.Writing}>Writing</SelectItem>
-                  <SelectItem value={TypeExcercise.Speaking}>
-                    Speaking
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <input
-                type="hidden"
-                {...register("type", { required: "Type is required" })}
-              />
-            </div>
-            {errors.type && (
-              <p className="text-red-500 text-sm mt-1">{errors.type.message}</p>
-            )}
-          </div>
-
           {/* File Field */}
           <div className="flex flex-col items-center gap-1">
             <div className="flex justify-between w-full gap-5">
@@ -150,11 +123,22 @@ const EditExam = () => {
               <Input
                 id="file"
                 type="file"
-                {...register("file", { required: "File is required" })}
+                accept="image/*"
+                {...register("file")}
+                onChange={handleFileChange}
               />
             </div>
             {errors.file && (
               <p className="text-red-500 text-sm mt-1">{errors.file.message}</p>
+            )}
+            {previewImage && (
+              <div className="mt-4">
+                <img
+                  src={previewImage}
+                  alt="Exam Image"
+                  className="mt-2 max-w-xs rounded-lg shadow-sm"
+                />
+              </div>
             )}
           </div>
 
@@ -179,7 +163,7 @@ const EditExam = () => {
               </Label>
               <Select
                 onValueChange={(value) => setValue("year", Number(value))}
-                defaultValue={String(currentYear)}
+                value={String(selectedYear)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select year" />

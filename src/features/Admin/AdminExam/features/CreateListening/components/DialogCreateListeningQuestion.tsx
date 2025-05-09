@@ -107,7 +107,7 @@ const DialogCreateListeningQuestion = ({
               value={questionData.question}
               onChange={handleInputChange}
               placeholder="Enter the question"
-              className="border-[#164C7E]"
+              className="border-[#164C7E] h-20"
             />
           </div>
           <div>

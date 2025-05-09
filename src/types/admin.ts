@@ -34,6 +34,10 @@ export interface ICreateQuestion {
   examReadingTypeId: string;
   answers: IAnswer[];
 }
+export interface IEditQuestion {
+  question: string;
+  answers: IAnswer[];
+}
 export interface ICreateListeningQuestion {
   question: string;
   examListenTypeId: string;

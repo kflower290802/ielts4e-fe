@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { EQuestionType } from "@/types/ExamType/exam";
+import { EQuestionType, ReadingAnswer } from "@/types/ExamType/exam";
 import { useGetFullExamDetail } from "../../CreateReading/hooks/useGetFullExamDetail";
 import StepEdit from "../components/stepEdit";
 import { HiOutlineDotsVertical } from "react-icons/hi";
@@ -18,6 +18,10 @@ import {
 } from "@/components/ui/popover";
 import DialogDeletePassage from "./components/DialogDeletePassage";
 import DialogEditPassage from "./components/DialogEditPassage";
+import { Edit } from "lucide-react";
+import DialogEditType from "./components/DialogEditType";
+import DialogEditQuestion from "./components/DialogEditQuestion";
+import DialogDeleteQuestion from "./components/DialogDeleteQuestion";
 const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.TextBox]: "Text Box",
   [EQuestionType.MultipleChoice]: "Multiple Choice",
@@ -27,8 +31,15 @@ const questionTypeDisplayNames: Record<string, string> = {
   [EQuestionType.BlankPassageTextbox]: "Blank Passage Textbox",
   [EQuestionType.BlankPassageImageTextbox]: "Blank Passage Image Textbox",
 };
+const contentEnabledTypes = [
+  EQuestionType.BlankPassageDrag,
+  EQuestionType.BlankPassageTextbox,
+  EQuestionType.BlankPassageImageTextbox,
+];
 const EditReadingExam = () => {
   const [openDiaDeletePassage, setOpenDiaDeletePassage] =
+    useState<boolean>(false);
+  const [openDiaDeleteQuestion, setOpenDiaDeleteQuestion] =
     useState<boolean>(false);
   const [openDiaEditPassage, setOpenDiaEditPassage] = useState<boolean>(false);
   const [selectedPassage, setSelectedPassage] = useState<{
@@ -36,12 +47,23 @@ const EditReadingExam = () => {
     title: string;
     passage: string;
   } | null>(null);
-  const [openDiaCreateType, setOpenDiaCreateType] = useState<boolean>(false);
-  const [openDiaCreateQuestion, setOpenDiaCreateQuestion] =
+  const [selectedType, setSelectedType] = useState<{
+    id: string;
+    content: string;
+    type: EQuestionType;
+    image: string;
+  } | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<{
+    id: string;
+    question: string;
+    answers: ReadingAnswer[];
+    type: EQuestionType;
+  } | null>(null);
+  const [openDiaEditType, setOpenDiaEditType] = useState<boolean>(false);
+  const [openDiaEditQuestion, setOpenDiaEditQuestion] =
     useState<boolean>(false);
   const [idPassage, setIdPassage] = useState("");
-  const [idType, setIdType] = useState("");
-  const [type, setType] = useState("");
+  const [idQuestion, setIdQuestion] = useState("");
   const { id } = useParams<{ id: string }>();
   const { data, refetch } = useGetFullExamDetail(id ?? "");
   useEffect(() => {
@@ -49,15 +71,6 @@ const EditReadingExam = () => {
       refetch();
     }
   }, [id, refetch]);
-  const handleOpenCreateType = (idPassage: string) => {
-    setIdPassage(idPassage);
-    setOpenDiaCreateType(true);
-  };
-  const handleOpenCreateQuestion = (idType: string, type: string) => {
-    setIdType(idType);
-    setType(type);
-    setOpenDiaCreateQuestion(true);
-  };
   const passages = data?.examPassage;
   const handleOpenDiaDeletePassage = (
     id: string,
@@ -67,12 +80,46 @@ const EditReadingExam = () => {
     setIdPassage(id);
     e.stopPropagation();
   };
+  const handleOpenDiaDeleteQuestion = (
+    id: string,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    setOpenDiaDeleteQuestion(true);
+    setIdQuestion(id);
+    e.stopPropagation();
+  };
   const handleOpenEditPassage = (
     passage: { id: string; title: string; passage: string },
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     setSelectedPassage(passage);
     setOpenDiaEditPassage(true);
+    e.stopPropagation();
+  };
+  const handleOpenEditType = (
+    typeQuestion: {
+      id: string;
+      content: string;
+      type: EQuestionType;
+      image: string;
+    },
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    setOpenDiaEditType(true);
+    setSelectedType(typeQuestion);
+    e.stopPropagation();
+  };
+  const handleOpenEditQuestion = (
+    typeQuestion: {
+      id: string;
+      question: string;
+      answers: ReadingAnswer[];
+      type: EQuestionType;
+    },
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    setOpenDiaEditQuestion(true);
+    setSelectedQuestion(typeQuestion);
     e.stopPropagation();
   };
 
@@ -84,23 +131,28 @@ const EditReadingExam = () => {
         passageData={selectedPassage}
         refetch={refetch}
       />
-      {/* <DialogCreateType
-        openDia={openDiaCreateType}
-        setOpenDia={setOpenDiaCreateType}
-        id={idPassage}
+      <DialogEditType
+        openDia={openDiaEditType}
+        setOpenDia={setOpenDiaEditType}
+        selectedType={selectedType}
         refetch={refetch}
       />
-      <DialogCreateQuestion
-        openDia={openDiaCreateQuestion}
-        setOpenDia={setOpenDiaCreateQuestion}
-        id={idType}
-        type={type}
+      <DialogEditQuestion
+        openDia={openDiaEditQuestion}
+        setOpenDia={setOpenDiaEditQuestion}
+        questions={selectedQuestion}
         refetch={refetch}
-      /> */}
+      />
       <DialogDeletePassage
         openDeletePassage={openDiaDeletePassage}
         id={idPassage}
         setOpenDeletePassage={setOpenDiaDeletePassage}
+        refetch={refetch}
+      />
+      <DialogDeleteQuestion
+        openDeleteQuestion={openDiaDeleteQuestion}
+        id={idQuestion}
+        setOpenDeleteQuestion={setOpenDiaDeleteQuestion}
         refetch={refetch}
       />
       <div className="w-9/12 mx-auto">
@@ -159,55 +211,104 @@ const EditReadingExam = () => {
                   </Popover>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="flex justify-end">
-                    <Button
-                      className="border-2 flex gap-3 border-blue-500 font-bold bg-white text-blue-500 hover:text-white hover:bg-blue-500"
-                      onClick={() => handleOpenCreateType(passage.id)}
-                    >
-                      Create New Type Question
-                    </Button>
-                  </div>
                   {passage.types && passage.types.length > 0 ? (
-                    passage.types.map((type) => (
-                      <Accordion
-                        type="single"
-                        collapsible
-                        className="w-full bg-[#F1FFEF] border-2 border-[#164C7E] rounded-lg px-4 mt-4"
-                      >
-                        <AccordionItem value="item-1" key={type.id}>
-                          <AccordionTrigger className="flex gap-3 items-center font-bold">
-                            <span>Type:</span>{" "}
-                            <span>
-                              {questionTypeDisplayNames[type.type] || type.type}
-                            </span>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="flex justify-end">
-                              <Button
-                                className="border-2 flex gap-3 border-[#188F09] font-bold bg-white text-[#188F09] hover:text-white hover:bg-[#188F09]"
-                                onClick={() =>
-                                  handleOpenCreateQuestion(type.id, type.type)
-                                }
-                              >
-                                Create New Question
-                              </Button>
-                            </div>
-                            {type.questions && type.questions.length > 0 ? (
-                              type.questions.map((question, index) => (
-                                <div className="w-full flex gap-4 font-bold text-black items-center bg-yellow-200 border-2 border-[#188F09] rounded-lg p-3 mt-4">
-                                  <span>Question {index + 1}:</span>{" "}
-                                  <span>{question.question}</span>
+                    passage.types.map((type) => {
+                      const isContentEnabled =
+                        type.type &&
+                        contentEnabledTypes.includes(
+                          type.type as EQuestionType
+                        );
+                      return (
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="w-full bg-blue-200 border-2 border-[#164C7E] rounded-lg px-4 mt-4"
+                        >
+                          <AccordionItem value="item-1" key={type.id}>
+                            <AccordionTrigger className="flex gap-3 items-center font-bold relative">
+                              <span>Type:</span>{" "}
+                              <span>
+                                {questionTypeDisplayNames[type.type] ||
+                                  type.type}
+                              </span>
+                              {isContentEnabled && (
+                                <Button
+                                  className="absolute right-10 w-10 px-2 py-1 line-clamp-1 bg-transparent rounded-lg text-xs hover:bg-transparent hover:text-yellow-400 font-semibold text-yellow-500"
+                                  onClick={(e) => {
+                                    handleOpenEditType(
+                                      {
+                                        id: type.id,
+                                        content: type.content,
+                                        type: type.type,
+                                        image: type.image,
+                                      },
+                                      e
+                                    );
+                                  }}
+                                >
+                                  <Edit />
+                                </Button>
+                              )}
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              {type.questions && type.questions.length > 0 ? (
+                                type.questions.map((question, index) => (
+                                  <div className="w-full justify-between relative flex items-center bg-yellow-200 border-2 border-[#188F09] rounded-lg p-3 mt-4">
+                                    <div className="flex gap-4 font-bold text-black">
+                                      <span>Question {index + 1}:</span>
+                                      <span>{question.question}</span>
+                                    </div>
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <Button
+                                          className="absolute right-10 bg-transparent hover:bg-black/10 rounded-full p-3"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <HiOutlineDotsVertical className="size-5" />
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-40 flex items-center justify-center flex-col gap-5">
+                                        <Button
+                                          className="w-28 px-2 py-1 line-clamp-1 bg-transparent rounded-lg text-xs hover:bg-yellow-500 hover:text-white font-semibold border-yellow-500 border-2 text-yellow-500"
+                                          onClick={(e) => {
+                                            handleOpenEditQuestion(
+                                              {
+                                                id: question.id,
+                                                question: question.question,
+                                                answers: question.answers,
+                                                type: type.type,
+                                              },
+                                              e
+                                            );
+                                          }}
+                                        >
+                                          Edit Question
+                                        </Button>
+                                        <Button
+                                          className="w-28 px-2 py-1 line-clamp-1 bg-transparent rounded-lg text-xs hover:bg-red-500 hover:text-white font-semibold border-red-500 border-2 text-red-500"
+                                          onClick={(e) => {
+                                            handleOpenDiaDeleteQuestion(
+                                              question.id,
+                                              e
+                                            );
+                                          }}
+                                        >
+                                          Delete Question
+                                        </Button>
+                                      </PopoverContent>
+                                    </Popover>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="text-center text-black">
+                                  There are currently no Question available.
                                 </div>
-                              ))
-                            ) : (
-                              <div className="text-center text-black">
-                                There are currently no Question available.
-                              </div>
-                            )}
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    ))
+                              )}
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      );
+                    })
                   ) : (
                     <div className="text-center text-black">
                       There are currently no Type Question available.

@@ -110,7 +110,7 @@ const CreateListeningExamDetail = () => {
                       <Accordion
                         type="single"
                         collapsible
-                        className="w-full bg-[#F1FFEF] border-2 border-[#164C7E] rounded-lg px-4 mt-4"
+                        className="w-full bg-blue-200 border-2 border-[#164C7E] rounded-lg px-4 mt-4"
                       >
                         <AccordionItem value="item-1" key={type.id}>
                           <AccordionTrigger className="flex gap-3 items-center font-bold">

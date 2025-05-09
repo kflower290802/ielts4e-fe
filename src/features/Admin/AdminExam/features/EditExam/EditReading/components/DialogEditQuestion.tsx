@@ -3,25 +3,30 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useCreateQuestion } from "../hooks/useCreateQuestion";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { EQuestionType } from "@/types/ExamType/exam";
+import { EQuestionType, ReadingAnswer } from "@/types/ExamType/exam";
+import { useEditQuestion } from "../hooks/useEditQuestion";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
   openDia: boolean;
-  id: string | undefined;
-  type: string;
+  questions: {
+    id: string;
+    question: string;
+    answers: ReadingAnswer[];
+    type: EQuestionType;
+  } | null;
   refetch: () => void;
 }
-const DialogCreateQuestion = ({
+const DialogEditQuestion = ({
   openDia,
   setOpenDia,
-  id,
+  questions,
   refetch,
-  type,
 }: IProps) => {
-  const { mutateAsync: createQuestion, isPending } = useCreateQuestion();
+  const { mutateAsync: editQuestion, isPending } = useEditQuestion(
+    questions?.id ?? ""
+  );
   const getInitialAnswers = () => {
     const singleAnswerTypes = [
       EQuestionType.TextBox,
@@ -31,29 +36,33 @@ const DialogCreateQuestion = ({
       EQuestionType.BlankPassageImageTextbox,
     ];
 
-    if (singleAnswerTypes.includes(type as EQuestionType)) {
-      return [{ answer: "", isCorrect: true }];
+    if (singleAnswerTypes.includes(questions?.type as EQuestionType)) {
+      return questions?.answers?.length
+        ? questions.answers
+        : [{ answer: "", isCorrect: true }];
     }
 
-    return [
-      { answer: "", isCorrect: false },
-      { answer: "", isCorrect: false },
-      { answer: "", isCorrect: false },
-      { answer: "", isCorrect: false },
-    ];
+    return questions?.answers?.length
+      ? questions.answers
+      : [
+          { answer: "", isCorrect: false },
+          { answer: "", isCorrect: false },
+          { answer: "", isCorrect: false },
+          { answer: "", isCorrect: false },
+        ];
   };
   const [questionData, setQuestionData] = useState({
-    question: "",
-    examReadingTypeId: id || "",
-    answers: [{ answer: "", isCorrect: false }],
+    question: questions?.question || "",
+    answers: getInitialAnswers(),
   });
   useEffect(() => {
-    setQuestionData((prev) => ({
-      ...prev,
-      examReadingTypeId: id || "",
-      answers: getInitialAnswers(),
-    }));
-  }, [id, type]);
+    if (questions) {
+      setQuestionData({
+        question: questions.question,
+        answers: getInitialAnswers(),
+      });
+    }
+  }, [questions]);
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -63,11 +72,10 @@ const DialogCreateQuestion = ({
       [name]: value,
     }));
   };
-
   const handleAnswerChange = (
     index: number,
-    field: string,
-    value: string | boolean
+    field: keyof ReadingAnswer,
+    value: string
   ) => {
     setQuestionData((prev) => {
       const newAnswers = [...prev.answers];
@@ -75,16 +83,28 @@ const DialogCreateQuestion = ({
       return { ...prev, answers: newAnswers };
     });
   };
+  const handleCorrectAnswerChange = (selectedIndex: string) => {
+    const index = parseInt(selectedIndex, 10);
+    setQuestionData((prev) => {
+      const newAnswers = prev.answers.map((answer, i) => ({
+        ...answer,
+        isCorrect: i === index,
+      }));
+      return { ...prev, answers: newAnswers };
+    });
+  };
   const handleSubmit = async () => {
     try {
-      await createQuestion({
+      const formattedAnswers = questionData.answers.map((answer) => ({
+        answer: answer.answer,
+        isCorrect: answer.isCorrect,
+      }));
+      await editQuestion({
         question: questionData.question,
-        examReadingTypeId: id || "",
-        answers: questionData.answers,
+        answers: formattedAnswers,
       });
       setQuestionData({
         question: "",
-        examReadingTypeId: id || "",
         answers: getInitialAnswers(),
       });
     } catch (error) {
@@ -122,17 +142,23 @@ const DialogCreateQuestion = ({
                   placeholder={`Answer ${index + 1}`}
                   className="border-[#164C7E]"
                 />
-                {(type === EQuestionType.MultipleChoice ||
-                  type === EQuestionType.SingleChoice) && (
+                {(questions?.type === EQuestionType.MultipleChoice ||
+                  questions?.type === EQuestionType.SingleChoice) && (
                   <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`isCorrect-${index}`}
-                      checked={answer.isCorrect}
-                      onCheckedChange={(checked) =>
-                        handleAnswerChange(index, "isCorrect", checked)
-                      }
-                    />
-                    <Label htmlFor={`isCorrect-${index}`}>Correct</Label>
+                    <RadioGroup
+                      value={questionData.answers
+                        .findIndex((a) => a.isCorrect)
+                        .toString()}
+                      onValueChange={handleCorrectAnswerChange}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value={index.toString()}
+                          id={`isCorrect-${index}`}
+                        />
+                        <Label htmlFor={`isCorrect-${index}`}>Correct</Label>
+                      </div>
+                    </RadioGroup>
                   </div>
                 )}
               </div>
@@ -152,4 +178,4 @@ const DialogCreateQuestion = ({
   );
 };
 
-export default DialogCreateQuestion;
+export default DialogEditQuestion;

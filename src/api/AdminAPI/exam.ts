@@ -5,6 +5,7 @@ import {
   ICreatePassage,
   ICreateQuestion,
   IEditPassage,
+  IEditQuestion,
   IExamDetail,
 } from "@/types/admin";
 import { IExcerciseDetail } from "@/types/excercise";
@@ -15,10 +16,18 @@ export const createExam = (exam: FormData): Promise<IExcerciseDetail> =>
       "Content-Type": "multipart/form-data",
     },
   });
+export const editExam = (exam: FormData, id: string): Promise<IExcerciseDetail> =>
+  api.patch(`/exams/${id}`, exam, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 export const deleteExam = (id: string): Promise<string> =>
   api.delete(`/exams/${id}`);
 export const deletePassage = (id: string): Promise<string> =>
   api.delete(`/exam-passages/${id}`);
+export const deleteQuestion = (id: string): Promise<string> =>
+  api.delete(`/exam-passage-questions/${id}`);
 export const getFullExamDetail = (id: string): Promise<IExamDetail> =>
   api.get(`/exams/exam-detail/${id}`);
 export const createPassage = (data: ICreatePassage): Promise<string> =>
@@ -48,3 +57,13 @@ export const createListeningQuestion = (
 export const getTotalExam = (): Promise<number> => api.get(`/exams/total-exam`);
 export const editPassage = (id: string, data: IEditPassage): Promise<string> =>
   api.patch(`/exam-passages/${id}`, data);
+export const editType = (data: FormData, id: string): Promise<string> =>
+  api.patch(`/exam-reading-types/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+export const editQuestion = (
+  data: IEditQuestion,
+  id: string
+): Promise<string> => api.patch(`/exam-passage-questions/${id}`, data);
