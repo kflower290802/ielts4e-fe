@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { EQuestionType, ReadingAnswer } from "@/types/ExamType/exam";
-import { useEditQuestion } from "../hooks/useEditQuestion";
+import { useEditListenQuestion } from "../hooks/useEditListenQuestion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 interface IProps {
   setOpenDia: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,7 +24,7 @@ const DialogEditQuestion = ({
   questions,
   refetch,
 }: IProps) => {
-  const { mutateAsync: editQuestion, isPending } = useEditQuestion(
+  const { mutateAsync: editQuestion, isPending } = useEditListenQuestion(
     questions?.id ?? ""
   );
   const getInitialAnswers = () => {
@@ -39,16 +39,16 @@ const DialogEditQuestion = ({
     if (singleAnswerTypes.includes(questions?.type as EQuestionType)) {
       return questions?.answers?.length
         ? questions.answers
-        : [{ answer: "", isCorrect: true, id: '' }];
+        : [{ answer: "", isCorrect: true, id: "" }];
     }
 
     return questions?.answers?.length
       ? questions.answers
       : [
-          { answer: "", isCorrect: false, id: '' },
-          { answer: "", isCorrect: false, id: '' },
-          { answer: "", isCorrect: false, id: '' },
-          { answer: "", isCorrect: false, id: '' },
+          { answer: "", isCorrect: false, id: "" },
+          { answer: "", isCorrect: false, id: "" },
+          { answer: "", isCorrect: false, id: "" },
+          { answer: "", isCorrect: false, id: "" },
         ];
   };
   const [questionData, setQuestionData] = useState({
@@ -98,7 +98,7 @@ const DialogEditQuestion = ({
       const formattedAnswers = questionData.answers.map((answer) => ({
         answer: answer.answer,
         isCorrect: answer.isCorrect,
-        id: answer.id
+        id: answer.id,
       }));
       await editQuestion({
         question: questionData.question,
@@ -134,7 +134,7 @@ const DialogEditQuestion = ({
           <div>
             <Label>Answers</Label>
             {questionData.answers.map((answer, index) => (
-              <div key={answer.id} className="flex items-center space-x-2 mt-2">
+              <div key={index} className="flex items-center space-x-2 mt-2">
                 <Input
                   value={answer.answer}
                   onChange={(e) =>

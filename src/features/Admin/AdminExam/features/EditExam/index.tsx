@@ -25,6 +25,7 @@ const EditExam = () => {
   const nav = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewAudio, setPreviewAudio] = useState<string | null>(null);
   const {
     register,
     watch,
@@ -49,6 +50,7 @@ const EditExam = () => {
         year: data.year || 2024,
       });
       setPreviewImage(data.image);
+      setPreviewAudio(data.audio);
     }
   }, [data, reset]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +61,15 @@ const EditExam = () => {
       return () => URL.revokeObjectURL(imageUrl);
     }
   };
+  const handleAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const audioUrl = URL.createObjectURL(file);
+      setPreviewAudio(audioUrl);
+      return () => URL.revokeObjectURL(audioUrl);
+    }
+  };
+
   const selectedType = watch("type");
   const selectedYear = watch("year");
   const onSubmit = async (values: ICreateExam) => {
@@ -99,7 +110,7 @@ const EditExam = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Name Field */}
           <div className="flex flex-col items-center gap-1">
-            <div className="flex justify-between w-full gap-5">
+            <div className="flex justify-between items-center w-full gap-5">
               <Label htmlFor="name" className="flex gap-2 w-32">
                 Name <span className="text-red-500">*</span>
               </Label>
@@ -116,7 +127,7 @@ const EditExam = () => {
           </div>
           {/* File Field */}
           <div className="flex flex-col items-center gap-1">
-            <div className="flex justify-between w-full gap-5">
+            <div className="flex justify-between items-center w-full gap-5">
               <Label htmlFor="file" className="flex gap-2 w-32">
                 Image <span className="text-red-500">*</span>
               </Label>
@@ -143,21 +154,31 @@ const EditExam = () => {
           </div>
 
           {/* Audio Field */}
-          <div className="flex items-center gap-5">
-            <Label htmlFor="audio" className="w-32">
-              Audio
-            </Label>
-            <Input
-              id="audio"
-              type="file"
-              {...register("audio")}
-              disabled={selectedType !== TypeExcercise.Listening}
-            />
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex justify-between items-center w-full gap-5">
+              <Label htmlFor="audio" className="flex gap-2 w-32">
+                Audio
+              </Label>
+              <Input
+                id="audio"
+                type="file"
+                accept="audio/*"
+                {...register("audio")}
+                onChange={handleAudioChange}
+                disabled={selectedType !== TypeExcercise.Listening}
+              />
+            </div>
+            {previewAudio && selectedType === TypeExcercise.Listening && (
+              <div className="mt-4 w-full">
+                <audio controls src={previewAudio} className="w-full pl-28">
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            )}
           </div>
-
           {/* Year Field */}
           <div className="flex flex-col items-center gap-1">
-            <div className="flex justify-between w-full gap-5">
+            <div className="flex justify-between items-center w-full gap-5">
               <Label htmlFor="year" className="flex gap-2 w-32">
                 Year <span className="text-red-500">*</span>
               </Label>
@@ -189,13 +210,22 @@ const EditExam = () => {
             )}
           </div>
           {/* Submit Button */}
-          <Button
-            isLoading={loading}
-            type="submit"
-            className="w-full border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white font-bold"
-          >
-            Edit Basic Exam
-          </Button>
+          <div className="flex flex-col w-full gap-4">
+            <Button
+              isLoading={loading}
+              type="submit"
+              className="w-full rounded-full border-2 border-[#188F09] text-[#188F09] hover:bg-[#188F09] hover:text-white bg-white font-bold"
+            >
+              Edit Basic Exam
+            </Button>
+            <Button
+              type="submit"
+              className="w-full rounded-full border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white bg-white font-bold"
+              onClick={() => nav(`${Route.EditExamDetail}/${data?.type}/${id}`)}
+            >
+              Continute Edit Detail
+            </Button>
+          </div>
         </form>
       </div>
     </div>
